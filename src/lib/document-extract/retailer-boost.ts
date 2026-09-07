@@ -62,7 +62,7 @@ export function boostInvoiceNumber(text: string, retailer: RetailerId) {
 
 export function boostSerialNumber(text: string) {
   const value = firstMatch(text, [
-    // Flipkart style: [IMEI/Serial No: 356805361134937 ]
+    /imei\s*\/\s*s(?:erial|r)\s*(?:no)?\s*[:\-]?\s*\[\[\s*([A-Z0-9]{5,})\s*\]\]/i,
     /\[?\s*imei\s*\/\s*serial\s*(?:no|number)?\s*[:\-]?\s*([A-Z0-9]{8,})\s*\]?/i,
     /imei(?:\s*(?:no|number|#|1|2))?\s*[:\-]?\s*([0-9]{10,20})/i,
     /serial(?:\s*(?:no|number|#))?\s*[:\-]?\s*([A-Z0-9][A-Z0-9\-\/]{4,40})/i,
@@ -85,6 +85,7 @@ export function boostPurchaseDateRaw(text: string, retailer: RetailerId) {
     /(?:invoice\s*date|order\s*date|bill\s*date|date\s*of\s*purchase|purchase\s*date|bill\s*of\s*supply\s*date)\s*[:\-]?\s*([0-9]{1,2}[\/\-.][0-9]{1,2}[\/\-.][0-9]{2,4})/i,
     /(?:invoice\s*date|order\s*date|bill\s*date|date\s*of\s*purchase|purchase\s*date)\s*[:\-]?\s*([0-9]{1,2}\s+[A-Za-z]{3,9}\s*,?\s*[0-9]{4})/i,
     /(?:invoice\s*date|order\s*date)\s*[:\-]?\s*([0-9]{1,2}[\/\-.][0-9]{1,2}[\/\-.][0-9]{2,4})(?:\s*,?\s*\d{1,2}:\d{2})?/i,
+    /\b([0-9]{1,2}[\/\-.][0-9]{1,2}[\/\-.][0-9]{2,4})\s+(?:invoice\s*date|order\s*date)\b/i,
   ];
 
   // Amazon often uses dd.MM.yyyy

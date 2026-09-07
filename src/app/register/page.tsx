@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -17,7 +17,7 @@ import AuthShell, {
 } from "@/components/auth/auth-shell";
 import EmailOtpForm from "@/components/email-otp-form";
 import SocialAuthButtons from "@/components/social-auth-buttons";
-import { safeAuthCallbackUrl } from "@/lib/auth-callback";
+import { safeAuthCallbackUrl, authErrorToast } from "@/lib/auth-callback";
 import { registerSchema } from "@/lib/validations/auth";
 
 export default function RegisterPage() {
@@ -55,6 +55,13 @@ function RegisterPageContent() {
   });
 
   const password = useWatch({ control, name: "password" }) || "";
+
+  useEffect(() => {
+    const message = authErrorToast(searchParams.get("error"));
+    if (message) {
+      toast.error(message);
+    }
+  }, [searchParams]);
 
   async function onSubmit(data: {
     name: string;

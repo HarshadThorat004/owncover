@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { addMinutes } from "date-fns";
 
+import { withDbRetry } from "@/lib/db";
 import { prisma } from "@/lib/prisma";
 
 export const OTP_LENGTH = 6;
@@ -92,34 +93,36 @@ export async function findOrCreateOAuthUser(input: {
 }) {
   const email = normalizeEmail(input.email);
 
-  const existing = await prisma.user.findUnique({
-    where: { email },
-  });
+  return withDbRetry(async () => {
+    const existing = await prisma.user.findUnique({
+      where: { email },
+    });
 
-  if (existing) {
-    if (
-      (input.name && !existing.name) ||
-      (input.image && !existing.image)
-    ) {
-      return prisma.user.update({
-        where: { id: existing.id },
-        data: {
-          name: existing.name ?? input.name ?? null,
-          image: existing.image ?? input.image ?? null,
-        },
-      });
+    if (existing) {
+      if (
+        (input.name && !existing.name) ||
+        (input.image && !existing.image)
+      ) {
+        return prisma.user.update({
+          where: { id: existing.id },
+          data: {
+            name: existing.name ?? input.name ?? null,
+            image: existing.image ?? input.image ?? null,
+          },
+        });
+      }
+
+      return existing;
     }
 
-    return existing;
-  }
-
-  return prisma.user.create({
-    data: {
-      email,
-      name: input.name ?? null,
-      image: input.image ?? null,
-      password: null,
-    },
+    return prisma.user.create({
+      data: {
+        email,
+        name: input.name ?? null,
+        image: input.image ?? null,
+        password: null,
+      },
+    });
   });
 }
 

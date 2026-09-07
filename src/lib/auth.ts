@@ -144,14 +144,20 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      const dbUser = await findOrCreateOAuthUser({
-        email: user.email,
-        name: user.name,
-        image: user.image,
-      });
+      try {
+        const dbUser = await findOrCreateOAuthUser({
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        });
 
-      user.id = dbUser.id;
-      return true;
+        user.id = dbUser.id;
+        return true;
+      } catch (error) {
+        console.error("OAUTH_SIGNIN_ERROR", error);
+        // ASCII-only: Prisma messages include Unicode arrows that crash NextAuth cookies.
+        return "/login?error=OAuthCallback";
+      }
     },
 
     async redirect({ url, baseUrl }) {

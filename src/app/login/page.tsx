@@ -15,7 +15,7 @@ import AuthShell, {
 } from "@/components/auth/auth-shell";
 import EmailOtpForm from "@/components/email-otp-form";
 import SocialAuthButtons from "@/components/social-auth-buttons";
-import { safeAuthCallbackUrl } from "@/lib/auth-callback";
+import { safeAuthCallbackUrl, authErrorToast } from "@/lib/auth-callback";
 
 export default function LoginPage() {
   return (
@@ -44,21 +44,10 @@ function LoginPageContent() {
   const [mode, setMode] = useState<"password" | "otp">("password");
 
   useEffect(() => {
-    const error = searchParams.get("error");
-    if (!error) return;
-
-    if (
-      error === "OAuthCallback" ||
-      error === "OAuthSignin" ||
-      error === "google"
-    ) {
-      toast.error(
-        "Google sign-in failed. Open the app at http://localhost:3000 (not 127.0.0.1) and try again."
-      );
-      return;
+    const message = authErrorToast(searchParams.get("error"));
+    if (message) {
+      toast.error(message);
     }
-
-    toast.error("Sign-in failed. Please try again.");
   }, [searchParams]);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {

@@ -23,7 +23,8 @@ export function inferCategory(
   const hay = `${name}\n${extraText}`.toLowerCase();
 
   if (
-    /\b(phone|mobile|smartphone|handset|tablet|ipad|iphone|galaxy)\b/.test(hay)
+    /\b(smartphone|handset|tablet|ipad|iphone|galaxy)\b/.test(hay) ||
+    /\bphones?\b(?!\s*:)/.test(hay)
   ) {
     return "phones";
   }
@@ -37,7 +38,7 @@ export function inferCategory(
   }
 
   if (
-    /\b(tv|television|smart\s*tv|headphones?|earbuds?|earphones?|speaker|soundbar|watch|smartwatch)\b/.test(
+    /\b(tv|television|smart\s*tv|headphones?|earbuds?|earphones?|airdopes?|buds\b|speaker|soundbar|watch|smartwatch)\b/.test(
       hay
     )
   ) {
@@ -45,7 +46,7 @@ export function inferCategory(
   }
 
   if (
-    /\b(refrigerator|fridge|washer|washing\s*machine|ac\b|air\s*conditioner|split\s*ac|microwave|oven|geyser|purifier|fan|cooler|inverter|dishwasher|vacuum|mixer|grinder)\b/.test(
+    /\b(refrigerator|fridge|washer|washing\s*machine|ac\b|air\s*conditioner|split\s*ac|microwave|oven|geyser|purifier|fan|cooler|inverter|dishwasher|vacuum|mixer|grinder|trimmer|shaver)\b/.test(
       hay
     )
   ) {

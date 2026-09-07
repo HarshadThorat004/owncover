@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
+import { withPrismaConnectionParams } from "@/lib/db";
+
 /** Bump when `prisma generate` adds models so `next dev` drops a stale client. */
-const PRISMA_CLIENT_GEN = 2;
+const PRISMA_CLIENT_GEN = 3;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -9,7 +11,10 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
+  const url = process.env.DATABASE_URL?.trim();
+
   return new PrismaClient({
+    ...(url ? { datasourceUrl: withPrismaConnectionParams(url) } : {}),
     log:
       process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });

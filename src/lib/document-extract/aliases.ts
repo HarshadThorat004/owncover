@@ -155,6 +155,10 @@ export const COMMON_BRANDS = [
   "Nike",
   "Adidas",
   "Puma",
+  "Red Tape",
+  "Van Heusen",
+  "Beardo",
+  "GOBOULT",
   "Yonex",
   "Fastrack",
   "Titan",
@@ -182,7 +186,7 @@ export const COMMON_BRANDS = [
 ];
 
 export const PRODUCT_HINT =
-  /\b(laptop|notebook|ultrabook|chromebook|phone|mobile|smartphone|handset|tablet|ipad|tv|television|smart\s*tv|monitor|refrigerator|fridge|washer|washing\s*machine|ac\b|air\s*conditioner|split\s*ac|headphones?|earbuds?|earphones?|watch|smartwatch|router|camera|printer|console|keyboard|mouse|ssd|hdd|gpu|graphics|mixer|grinder|geyser|microwave|oven|induction|purifier|fan|cooler|inverter|powerbank|charger|cable|speaker|soundbar|dishwasher|vacuum|trimmer|shaver|iron|kettle)\b/i;
+  /\b(laptop|notebook|ultrabook|chromebook|phone|mobile|smartphone|handset|tablet|ipad|tv|television|smart\s*tv|monitor|refrigerator|fridge|washer|washing\s*machine|ac\b|air\s*conditioner|split\s*ac|headphones?|earbuds?|earphones?|airdopes?|buds\b|watch|smartwatch|router|camera|printer|console|keyboard|mouse|ssd|hdd|gpu|graphics|mixer|grinder|geyser|microwave|oven|induction|purifier|fan|cooler|inverter|powerbank|charger|cable|speaker|soundbar|dishwasher|vacuum|trimmer|shaver|iron|kettle|sneakers?|clogs?)\b/i;
 
 export const NOISE_LINE =
   /^(total|sub\s*total|grand\s*total|gst|cgst|sgst|igst|tax|amount|qty|quantity|price|rate|hsn|sac|fsn|asin|thank\s*you|terms|conditions|bill\s*to|ship\s*to|sold\s*to|ship(?:ping)?\s*address|billing\s*address|customer|address|phone|mobile|email|www\.|http|gstin|gst\s*reg|pan\b|cin\b|state\b|place\s*of\s*supply|place\s*of\s*delivery|bank\s*details|account|ifsc|signature|authorized|page\s*\d|continued|round\s*off|discount|coupon|promo|payment|mode\s*of\s*payment|amount\s*in\s*words|whether\s*tax|reverse\s*charge|nature\s*of\s*supply|e\.\s*&\s*o\.e)/i;
