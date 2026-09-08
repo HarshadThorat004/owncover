@@ -97,7 +97,7 @@ export default function HomePage() {
             Your warranty. Our responsibility.
           </p>
           <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-            GST invoices in a vault you can take to a service centre
+            GST invoices you can take to a service centre
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-gray-500 md:text-base">
             Scan Amazon, Flipkart, and Croma bills, track manufacturer vs store

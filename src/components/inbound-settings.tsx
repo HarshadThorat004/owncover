@@ -121,7 +121,7 @@ export default function InboundSettings() {
           )}
 
           <p className="mt-3 text-xs text-gray-600">
-            Receiving needs MX on inbound.warrantyvault.in in Resend. Until
+            Receiving needs MX on inbound.owncover.in in Resend. Until
             that is live, this address is reserved for you.
           </p>
 

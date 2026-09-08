@@ -1,4 +1,4 @@
-# Warranty Vault AI
+# OwnCover
 
 AI-powered warranty and product management platform built with Next.js 16, Prisma, PostgreSQL, UploadThing, and Tailwind CSS.
 
@@ -71,7 +71,7 @@ src/
 ```bash
 git clone <repo-url>
 
-cd warranty-vault-ai
+cd owncover
 
 npm install
 ```
@@ -132,16 +132,16 @@ The app guards the daily cap and returns clear errors instead of failing silentl
 ## Recommended free production setup
 
 1. Create a Resend account + API key
-2. Open [Resend Domains](https://resend.com/domains) and add `warrantyvault.in`
+2. Open [Resend Domains](https://resend.com/domains) and add `owncover.in`
 3. Add the SPF / DKIM / DMARC DNS records Resend shows
 4. Wait until the domain status is **Verified**
 5. Set env (local + Vercel):
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxx
-RESEND_FROM_EMAIL=Warranty Vault <noreply@warrantyvault.in>
-RESEND_REPLY_TO=warrantyvault.in@gmail.com
-RESEND_TEST_RECIPIENT=warrantyvault.in@gmail.com
+RESEND_FROM_EMAIL=OwnCover <noreply@owncover.in>
+RESEND_REPLY_TO=hello@owncover.in
+RESEND_TEST_RECIPIENT=hello@owncover.in
 RESEND_DAILY_LIMIT=95
 CRON_SECRET=your-random-secret
 ```
@@ -156,21 +156,21 @@ CRON_SECRET=your-random-secret
 
 ### Email-forward inbox (optional)
 
-Forward Amazon/Flipkart invoice PDFs to a per-user address such as `ab2dk4xq@inbound.warrantyvault.in`. The file is stored as a **draft**. Nothing becomes a live product until you review it.
+Forward Amazon/Flipkart invoice PDFs to a per-user address such as `ab2dk4xq@inbound.owncover.in`. The file is stored as a **draft**. Nothing becomes a live product until you review it.
 
-1. Add **MX only** on `inbound.warrantyvault.in` in Resend Receiving. Leave root `warrantyvault.in` mail (Gmail, etc.) unchanged.
+1. Add **MX only** on `inbound.owncover.in` in Resend Receiving. Leave root `owncover.in` mail (Gmail, etc.) unchanged.
 2. Webhook URL: `https://<your-domain>/api/inbound/resend` for event `email.received`.
-3. Set `INBOUND_EMAIL_DOMAIN=inbound.warrantyvault.in` and `RESEND_WEBHOOK_SECRET`.
+3. Set `INBOUND_EMAIL_DOMAIN=inbound.owncover.in` and `RESEND_WEBHOOK_SECRET`.
 
 Each signed-in user copies their address from **Settings**.
 
 **Important:** Resend cannot send *from* `@gmail.com`. Until the domain is verified, you may temporarily use:
 
 ```bash
-RESEND_FROM_EMAIL=Warranty Vault <onboarding@resend.dev>
+RESEND_FROM_EMAIL=OwnCover <onboarding@resend.dev>
 ```
 
-That shared sender can only deliver to your Resend account email. After domain verification, switch to `noreply@warrantyvault.in` so OTP/reminders work for any user.
+That shared sender can only deliver to your Resend account email. After domain verification, switch to `noreply@owncover.in` so OTP/reminders work for any user.
 
 ### Test send (local)
 
@@ -178,7 +178,7 @@ That shared sender can only deliver to your Resend account email. After domain v
 curl -X POST http://localhost:3000/api/cron/test-email \
   -H "Authorization: Bearer $CRON_SECRET" \
   -H "Content-Type: application/json" \
-  -d '{"to":"warrantyvault.in@gmail.com"}'
+  -d '{"to":"hello@owncover.in"}'
 ```
 
 Daily production reminders run via [`vercel.json`](vercel.json) → `GET /api/cron/reminders`.
@@ -233,7 +233,7 @@ If Google env vars are missing, that button stays hidden automatically. Password
 
 Do these in order — trust and reliability before more features:
 
-1. **Production email** — Verify `warrantyvault.in` in Resend, set `RESEND_FROM_EMAIL` / `CRON_SECRET` on Vercel so OTP and warranty reminders reach real users.
+1. **Production email** — Verify `owncover.in` in Resend, set `RESEND_FROM_EMAIL` / `CRON_SECRET` on Vercel so OTP and warranty reminders reach real users.
 2. **First-run empty dashboard** — When a user has 0 products, show one clear “Add your first product” path.
 3. **Mobile / polish pass** — Document viewer, logo, and add-product flow on small screens.
 4. **Later (after real usage)** — Pricing, help center, analytics dashboard, multi-user orgs, export reports.

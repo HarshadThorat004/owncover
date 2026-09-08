@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { jsonError } from "@/lib/api";
+import { BRAND_NAME } from "@/constants/brand";
 import { productsToCsv } from "@/lib/exports/csv";
 import { attachmentFilename, slugifyFilename } from "@/lib/exports/format";
 import { productsToIcs } from "@/lib/exports/ics";
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
       const body = productsToCsv(products);
       const filename = productId
         ? `${slugifyFilename(products[0]?.name ?? "product")}.csv`
-        : "warranty-vault-products.csv";
+        : "owncover-products.csv";
 
       return new NextResponse(body, {
         headers: attachmentFilename(filename, "text/csv; charset=utf-8"),
@@ -43,11 +44,11 @@ export async function GET(req: Request) {
     const body = productsToIcs(products, {
       calendarName: productId
         ? `${products[0]?.name ?? "Product"} warranty`
-        : "Warranty Vault",
+        : BRAND_NAME,
     });
     const filename = productId
       ? `${slugifyFilename(products[0]?.name ?? "product")}-warranty.ics`
-      : "warranty-vault.ics";
+      : "owncover.ics";
 
     return new NextResponse(body, {
       headers: attachmentFilename(filename, "text/calendar; charset=utf-8"),

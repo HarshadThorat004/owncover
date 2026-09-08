@@ -117,7 +117,7 @@ function RegisterPageContent() {
       <div className="text-center">
         <AuthBrandMark />
         <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">
-          Create a Warranty Vault account
+          Create an OwnCover account
         </h1>
         <p className="mt-2 text-sm text-white/45">
           Already have an account?{" "}

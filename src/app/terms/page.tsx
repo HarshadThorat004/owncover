@@ -3,14 +3,15 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import AuthShell, { AuthBrandMark } from "@/components/auth/auth-shell";
+import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Warranty Vault AI",
+  title: "Terms of Service — OwnCover",
   description:
-    "Terms of Service for Warranty Vault AI, including accounts, scanning, email-forward, household vaults, and liability limits.",
+    "Terms of Service for OwnCover, including accounts, scanning, email-forward, household sharing, and liability limits.",
 };
 
-const CONTACT = "warrantyvault.in@gmail.com";
+const CONTACT = BRAND_CONTACT_EMAIL;
 
 function Section({
   title,
@@ -54,9 +55,9 @@ export default function TermsPage() {
       <div className="mt-10 space-y-8">
         <p className="text-sm leading-7 text-white/55">
           These Terms of Service (&quot;Terms&quot;) are a binding agreement
-          between you and the operator of Warranty Vault AI
-          (&quot;Warranty Vault,&quot; &quot;we,&quot; &quot;us&quot;) for the
-          website, application, and related services at warrantyvault.in (the
+          between you and the operator of OwnCover
+          (&quot;OwnCover,&quot; &quot;we,&quot; &quot;us&quot;) for the
+          website, application, and related services at owncover.in (the
           &quot;Service&quot;). By creating an account, signing in, or using
           the Service, you agree to these Terms and to our{" "}
           <Link
@@ -74,7 +75,7 @@ export default function TermsPage() {
 
         <Section title="1. Who we are">
           <p>
-            Warranty Vault is a personal warranty vault. It helps you store
+            OwnCover is a personal warranty tracker. It helps you store
             product details, GST invoices, warranty cards, and related files,
             scan those documents to autofill forms, share a family vault, and
             receive expiry reminders. It is not a manufacturer, retailer,
@@ -165,7 +166,7 @@ export default function TermsPage() {
         <Section title="6. Email-forward inbox">
           <p>
             If inbound receiving is live, Settings shows a personal address on
-            inbound.warrantyvault.in. Forward Amazon, Flipkart, or similar
+            inbound.owncover.in. Forward Amazon, Flipkart, or similar
             invoice PDFs or images to that address. We store usable PDF/JPEG/PNG
             attachments as a <strong className="font-medium text-white/80">draft</strong>.
             Nothing becomes a live product until you review and save it. We do
@@ -265,8 +266,8 @@ export default function TermsPage() {
         <Section title="12. Intellectual property">
           <p>
             The Service — including software, design, branding, and
-            documentation, but excluding User Content — is owned by Warranty
-            Vault or its licensors. You may not copy, modify, or distribute our
+            documentation, but excluding User Content — is owned by OwnCover
+            or its licensors. You may not copy, modify, or distribute our
             materials except as these Terms allow or with prior written
             permission. Feedback you send us may be used to improve the Service
             without obligation to you.
@@ -286,7 +287,7 @@ export default function TermsPage() {
 
         <Section title="14. Limitation of liability">
           <p>
-            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, WARRANTY VAULT
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, OWNCOVER
             AND ITS OPERATORS WILL NOT BE LIABLE FOR INDIRECT, INCIDENTAL,
             SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR FOR LOST PROFITS,
             DATA, CLAIMS, OR BUSINESS OPPORTUNITIES, ARISING FROM YOUR USE OF

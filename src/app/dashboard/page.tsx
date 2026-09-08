@@ -62,7 +62,7 @@ export default async function DashboardPage() {
               <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white md:text-4xl">
                 {membership && membership.household.members.length > 1
                   ? membership.household.name
-                  : "Your warranty vault"}
+                  : "Your coverage"}
               </h1>
               <p className="mt-3 text-sm leading-7 text-gray-500 md:text-base">
                 {membership && membership.household.members.length > 1

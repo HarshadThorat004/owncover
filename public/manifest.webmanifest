@@ -1,6 +1,6 @@
 {
-  "name": "Warranty Vault AI",
-  "short_name": "Warranty Vault",
+  "name": "OwnCover",
+  "short_name": "OwnCover",
   "description": "Track warranties, invoices, and expiry reminders.",
   "start_url": "/dashboard",
   "display": "standalone",

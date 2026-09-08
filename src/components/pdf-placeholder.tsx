@@ -45,7 +45,7 @@ export default function PdfPlaceholder({
             {label}
           </p>
           <p className="mt-1 text-[11px] text-gray-500">
-            Warranty Vault · secure file
+            OwnCover · secure file
           </p>
         </div>
       </div>

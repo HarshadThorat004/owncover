@@ -13,8 +13,8 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: "Join household vault — Warranty Vault AI",
-  description: "Accept an invite to share a Warranty Vault with your household.",
+  title: "Join household — OwnCover",
+  description: "Accept an invite to share OwnCover with your household.",
 };
 
 export default async function InvitePage({ params }: Props) {
@@ -83,7 +83,7 @@ export default async function InvitePage({ params }: Props) {
         </h1>
         <p className="mt-3 text-sm leading-7 text-white/45">
           {inviter} invited <span className="text-white/70">{invite.email}</span>{" "}
-          to share one warranty vault. You will see the same products,
+          to share one OwnCover household. You will see the same products,
           documents, and expiry reminders.
         </p>
       </div>

@@ -10,13 +10,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Warranty Vault AI",
+  title: "OwnCover",
   description: "Track your product warranties easily",
-  applicationName: "Warranty Vault AI",
+  applicationName: "OwnCover",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Warranty Vault",
+    title: "OwnCover",
     statusBarStyle: "black-translucent",
   },
   icons: {

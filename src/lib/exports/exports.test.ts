@@ -53,7 +53,7 @@ describe("productsToIcs", () => {
     });
 
     expect(ics.startsWith("BEGIN:VCALENDAR")).toBe(true);
-    expect(ics).toContain("UID:clxyz123@warrantyvault.in");
+    expect(ics).toContain("UID:clxyz123@owncover.in");
     expect(ics).toContain("DTSTAMP:20260902T100000Z");
     expect(ics).toContain("DTSTART;VALUE=DATE:20260615");
     expect(ics).toContain("DTEND;VALUE=DATE:20260616");
@@ -73,7 +73,7 @@ describe("productsToIcs", () => {
       { now: new Date("2026-09-02T10:00:00.000Z") }
     );
 
-    expect(ics).toContain("UID:clxyz123-extended@warrantyvault.in");
+    expect(ics).toContain("UID:clxyz123-extended@owncover.in");
     expect(ics).toContain("DTSTART;VALUE=DATE:20280615");
     expect(ics).toContain("SUMMARY:Store / retailer expires: Pixel 8\\, 128GB");
   });

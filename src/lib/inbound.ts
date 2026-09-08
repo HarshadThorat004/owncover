@@ -8,6 +8,7 @@ import {
   type ExtractedDocumentFields,
   type FieldConfidence,
 } from "@/lib/document-extract/types";
+import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
 import { getHouseholdIdForUser } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { computeExpiryFromPeriod } from "@/lib/warranty";
@@ -37,7 +38,7 @@ const ALLOWED_MIME = new Set([
 export function getInboundEmailDomain() {
   return (
     process.env.INBOUND_EMAIL_DOMAIN?.trim().toLowerCase() ||
-    "inbound.warrantyvault.in"
+    BRAND_INBOUND_DOMAIN
   );
 }
 

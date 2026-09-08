@@ -33,7 +33,7 @@ export default function BrandLogo({
   const mark = (
     <Image
       src="/brand/logo-mark.svg"
-      alt="Warranty Vault"
+      alt="OwnCover"
       width={px}
       height={px}
       className={`shrink-0 ${markClassName}`.trim()}
@@ -48,7 +48,7 @@ export default function BrandLogo({
         className={`inline-flex shrink-0 ${className}`.trim()}
         style={{ width: px, height: px }}
         role="img"
-        aria-label="Warranty Vault"
+        aria-label="OwnCover"
       >
         {mark}
       </span>
@@ -73,8 +73,7 @@ export default function BrandLogo({
         <span
           className={`block font-semibold tracking-tight text-white ${WORDMARK_CLASS[size]}`}
         >
-          <span className="sm:hidden">Warranty Vault</span>
-          <span className="hidden sm:inline">Warranty Vault AI</span>
+          OwnCover
         </span>
         {resolvedTagline ? (
           <span className="mt-0.5 block truncate text-[11px] text-gray-500">

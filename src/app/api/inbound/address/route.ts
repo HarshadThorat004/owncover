@@ -1,4 +1,5 @@
 import { jsonError, jsonSuccess } from "@/lib/api";
+import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
 import {
   ensureInboundSlug,
   inboundAddressForSlug,
@@ -19,7 +20,7 @@ export async function GET() {
 
     return jsonSuccess({
       address: inboundAddressForSlug(slug),
-      domain: process.env.INBOUND_EMAIL_DOMAIN?.trim() || "inbound.warrantyvault.in",
+      domain: process.env.INBOUND_EMAIL_DOMAIN?.trim() || BRAND_INBOUND_DOMAIN,
       drafts: drafts.map((draft) => ({
         id: draft.id,
         fromEmail: draft.fromEmail,

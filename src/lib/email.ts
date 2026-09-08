@@ -1,14 +1,15 @@
 import { Resend } from "resend";
 
+import { BRAND_DOMAIN, BRAND_FROM_EMAIL, BRAND_NAME } from "@/constants/brand";
 import { consumeRateLimit } from "@/lib/rate-limit";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const DEFAULT_FROM = "Warranty Vault <noreply@warrantyvault.in>";
-const DEFAULT_REPLY_TO = "warrantyvault.in@gmail.com";
-const DEFAULT_DOMAIN_FROM = "Warranty Vault <noreply@warrantyvault.in>";
+const DEFAULT_FROM = BRAND_FROM_EMAIL;
+const DEFAULT_REPLY_TO = `hello@${BRAND_DOMAIN}`;
+const DEFAULT_DOMAIN_FROM = BRAND_FROM_EMAIL;
 
 /** Resend free tier is 100/day — keep a small buffer for OTP + tests. */
 export const RESEND_FREE_DAILY_LIMIT = 95;
@@ -174,7 +175,7 @@ export function friendlyEmailError(error: unknown) {
       return "Email daily limit reached (Resend free tier ~100/day). Try again tomorrow.";
     }
     if (error.kind === "domain") {
-      return "Email domain is not verified in Resend yet. Verify warrantyvault.in and set RESEND_FROM_EMAIL to noreply@warrantyvault.in.";
+      return `Email domain is not verified in Resend yet. Verify ${BRAND_DOMAIN} and set RESEND_FROM_EMAIL to noreply@${BRAND_DOMAIN}.`;
     }
     if (error.kind === "test_recipient") {
       const allowed = getResendTestRecipient();
@@ -193,7 +194,7 @@ export function friendlyEmailError(error: unknown) {
     return "Email daily limit reached (Resend free tier ~100/day). Try again tomorrow.";
   }
   if (kind === "domain") {
-    return "Email domain is not verified in Resend yet. Verify warrantyvault.in and set RESEND_FROM_EMAIL to noreply@warrantyvault.in.";
+    return `Email domain is not verified in Resend yet. Verify ${BRAND_DOMAIN} and set RESEND_FROM_EMAIL to noreply@${BRAND_DOMAIN}.`;
   }
   if (kind === "test_recipient") {
     const allowed = getResendTestRecipient();
@@ -231,11 +232,11 @@ function buildBody(input: ReminderEmailInput) {
 
   return `
     <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-      <h2 style="margin-bottom: 8px;">Warranty Vault AI</h2>
+      <h2 style="margin-bottom: 8px;">OwnCover</h2>
       <p>Hi ${name},</p>
       <p>${messages[input.type] ?? "You have a warranty update."}</p>
       <p>Log in to your dashboard to review documents and take action.</p>
-      <p style="color:#666;font-size:12px;margin-top:24px;">You received this because you have reminders enabled in Warranty Vault AI.</p>
+      <p style="color:#666;font-size:12px;margin-top:24px;">You received this because you have reminders enabled in OwnCover.</p>
     </div>
   `;
 }
@@ -243,9 +244,9 @@ function buildBody(input: ReminderEmailInput) {
 function buildTestBody() {
   return `
     <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-      <h2 style="margin-bottom: 8px;">Warranty Vault AI</h2>
+      <h2 style="margin-bottom: 8px;">OwnCover</h2>
       <p>Hi there,</p>
-      <p>This is a test email from <strong>Warranty Vault</strong>. Reminder delivery is working.</p>
+      <p>This is a test email from <strong>OwnCover</strong>. Reminder delivery is working.</p>
       <p>If you reply to this message, it will go to our support inbox.</p>
       <p style="color:#666;font-size:12px;margin-top:24px;">You can ignore this message if you received it during setup.</p>
     </div>
@@ -327,7 +328,7 @@ export async function sendTestEmail(to: string) {
 
   const result = await sendViaResend({
     to,
-    subject: "Warranty Vault — test email",
+    subject: `${BRAND_NAME} — test email`,
     html: buildTestBody(),
   });
 
@@ -342,10 +343,10 @@ export async function sendOtpEmail(to: string, code: string) {
 
   await sendViaResend({
     to,
-    subject: "Your Warranty Vault sign-in code",
+    subject: `Your ${BRAND_NAME} sign-in code`,
     html: `
       <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-        <h2 style="margin-bottom: 8px;">Warranty Vault AI</h2>
+        <h2 style="margin-bottom: 8px;">OwnCover</h2>
         <p>Use this one-time code to sign in:</p>
         <p style="font-size: 28px; letter-spacing: 6px; font-weight: 700; margin: 20px 0;">${code}</p>
         <p>This code expires in 10 minutes. If you did not request it, you can ignore this email.</p>
@@ -373,14 +374,14 @@ export async function sendHouseholdInviteEmail(input: {
 
   await sendViaResend({
     to: input.to,
-    subject: `${input.inviterName?.trim() || input.inviterEmail} invited you to a shared Warranty Vault`,
+    subject: `${input.inviterName?.trim() || input.inviterEmail} invited you to a shared ${BRAND_NAME} household`,
     html: `
       <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-        <h2 style="margin-bottom: 8px;">Warranty Vault AI</h2>
-        <p>${who} invited you to share <strong>${vaultName}</strong> — one vault for household invoices, warranties, and expiry reminders.</p>
+        <h2 style="margin-bottom: 8px;">OwnCover</h2>
+        <p>${who} invited you to share <strong>${vaultName}</strong> — one household for invoices, warranties, and expiry reminders.</p>
         <p style="margin: 24px 0;">
           <a href="${input.acceptUrl}" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600;">
-            Join the vault
+            Join household
           </a>
         </p>
         <p>This invite expires in 7 days. If you did not expect this, you can ignore the email.</p>

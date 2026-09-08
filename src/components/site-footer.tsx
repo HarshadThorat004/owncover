@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import BrandLogo from "@/components/brand-logo";
+import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 
-const CONTACT_EMAIL = "warrantyvault.in@gmail.com";
+const CONTACT_EMAIL = BRAND_CONTACT_EMAIL;
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
@@ -84,7 +85,7 @@ export default function SiteFooter() {
 
       <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-gray-600 md:flex-row md:items-center md:justify-between md:px-8">
-          <p>© {year} Warranty Vault AI. All rights reserved.</p>
+          <p>© {year} OwnCover. All rights reserved.</p>
           <p>Built to keep your warranties safe.</p>
         </div>
       </div>

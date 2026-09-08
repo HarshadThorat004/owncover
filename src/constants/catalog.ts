@@ -1,8 +1,17 @@
 export const PRODUCT_CATEGORIES = [
   { id: "phones", label: "Phones & tablets" },
-  { id: "computers", label: "Computers" },
-  { id: "appliances", label: "Home appliances" },
+  { id: "computers", label: "Computers & laptops" },
+  { id: "wearables", label: "Smartwatch & wearables" },
   { id: "tv_audio", label: "TV & audio" },
+  { id: "cameras", label: "Camera & photography" },
+  { id: "gaming", label: "Gaming & consoles" },
+  { id: "appliances", label: "Home appliances" },
+  { id: "kitchen", label: "Kitchen appliances" },
+  { id: "personal_care", label: "Personal care & grooming" },
+  { id: "furniture", label: "Furniture & décor" },
+  { id: "fitness", label: "Fitness & sports" },
+  { id: "automotive", label: "Automotive" },
+  { id: "power_tools", label: "Power tools & hardware" },
   { id: "other", label: "Other" },
 ] as const;
 

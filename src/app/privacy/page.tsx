@@ -3,14 +3,15 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import AuthShell, { AuthBrandMark } from "@/components/auth/auth-shell";
+import { BRAND_CONTACT_EMAIL, BRAND_NAME } from "@/constants/brand";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Warranty Vault AI",
+  title: `Privacy Policy — ${BRAND_NAME}`,
   description:
-    "Privacy Policy for Warranty Vault AI, including DPDP 2023 rights, document scanning, email-forward, and household vaults.",
+    `Privacy Policy for ${BRAND_NAME}, including DPDP 2023 rights, document scanning, email-forward, and household sharing.`,
 };
 
-const CONTACT = "warrantyvault.in@gmail.com";
+const CONTACT = BRAND_CONTACT_EMAIL;
 
 function Section({
   title,
@@ -53,9 +54,9 @@ export default function PrivacyPage() {
 
       <div className="mt-10 space-y-8">
         <p className="text-sm leading-7 text-white/55">
-          This Privacy Policy is the notice of how Warranty Vault AI
+          This Privacy Policy is the notice of how OwnCover
           (&quot;we,&quot; &quot;us,&quot; the Data Fiduciary) collects, uses,
-          stores, and shares personal data when you use warrantyvault.in (the
+          stores, and shares personal data when you use owncover.in (the
           &quot;Service&quot;). It should be read with our{" "}
           <Link
             href="/terms"
@@ -75,7 +76,7 @@ export default function PrivacyPage() {
 
         <Section title="1. Who we are">
           <p>
-            We operate a personal warranty vault: you store invoices and cover
+            We operate a personal warranty tracker: you store invoices and cover
             dates, we help you organise them and remind you before they lapse.
             Contact / grievance: <MailLink />.
           </p>
@@ -198,7 +199,7 @@ export default function PrivacyPage() {
         <Section title="5. Email-forward inbox">
           <p>
             Settings can show a personal address such as
-            ab2dk4xq@inbound.warrantyvault.in. Forward Amazon or Flipkart invoice
+            ab2dk4xq@inbound.owncover.in. Forward Amazon or Flipkart invoice
             PDFs there. We keep PDF/JPEG/PNG attachments (size-limited) and
             whatever fields the extractor can fill. The result is a draft you
             must review. Dismissing a draft removes it from your pending list;

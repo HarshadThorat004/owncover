@@ -20,7 +20,7 @@ describe("extractEmailAddress", () => {
 describe("parseInboundSlug", () => {
   it("reads the local part on the inbound domain", () => {
     expect(
-      parseInboundSlug(["Name <ab2dk4xq@inbound.warrantyvault.in>"])
+      parseInboundSlug(["Name <ab2dk4xq@inbound.owncover.in>"])
     ).toBe("ab2dk4xq");
   });
 
@@ -28,7 +28,7 @@ describe("parseInboundSlug", () => {
     expect(
       parseInboundSlug([
         "other@gmail.com",
-        "ab2dk4xq+amazon@inbound.warrantyvault.in",
+        "ab2dk4xq+amazon@inbound.owncover.in",
       ])
     ).toBe("ab2dk4xq");
   });

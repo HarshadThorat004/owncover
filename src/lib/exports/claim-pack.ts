@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 import { categoryLabel, extendedCoverLabel } from "@/constants/catalog";
+import { BRAND_NAME } from "@/constants/brand";
 import { getServiceChecklist } from "@/constants/service-checklist";
 import { isoDate } from "@/lib/exports/format";
 import { isAllowedRemoteUrl } from "@/lib/url-allowlist";
@@ -101,7 +102,7 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
   const maxWidth = width - 96;
   let y = height - 56;
 
-  page.drawText("WARRANTY VAULT", {
+  page.drawText(BRAND_NAME.toUpperCase(), {
     x: left,
     y,
     size: 10,
@@ -215,7 +216,7 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
   y -= 14;
 
   if (docs.length === 0) {
-    page.drawText("No files attached in the vault.", {
+    page.drawText("No files attached for this product.", {
       x: left,
       y,
       size: 10,
@@ -324,7 +325,7 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
   }
 
   listPage.drawText(
-    `${product.name}  ·  Warranty Vault claim pack`,
+    `${product.name}  ·  OwnCover claim pack`,
     {
       x: left,
       y: 36,

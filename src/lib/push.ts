@@ -1,4 +1,5 @@
 import type { ReminderType } from "@/lib/reminders";
+import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 
 export function getVapidPublicKey() {
   return process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() || "";
@@ -10,7 +11,7 @@ export function getVapidPrivateKey() {
 
 export function getVapidSubject() {
   return (
-    process.env.VAPID_SUBJECT?.trim() || "mailto:warrantyvault.in@gmail.com"
+    process.env.VAPID_SUBJECT?.trim() || `mailto:${BRAND_CONTACT_EMAIL}`
   );
 }
 

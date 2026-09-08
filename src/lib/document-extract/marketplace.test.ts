@@ -46,7 +46,7 @@ describe("Amazon / Flipkart invoice training samples", () => {
     expect(fields.warrantyPeriod).toBe(12);
     expect(fields.brand).toBe("GOBOULT");
     expect(fields.name.toLowerCase()).toMatch(/goboult|crown/);
-    expect(fields.category).toBe("tv_audio");
+    expect(fields.category).toBe("wearables");
     expect(fields.sellerGstin).toBe("27AAECS1679J1ZY");
   });
 

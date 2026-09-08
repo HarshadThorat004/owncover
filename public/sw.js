@@ -1,10 +1,10 @@
 self.addEventListener("push", (event) => {
   const data = event.data
     ? event.data.json()
-    : { title: "Warranty Vault", body: "You have a warranty update.", url: "/dashboard" };
+    : { title: "OwnCover", body: "You have a warranty update.", url: "/dashboard" };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || "Warranty Vault", {
+    self.registration.showNotification(data.title || "OwnCover", {
       body: data.body || "",
       icon: "/brand/logo-mark.svg",
       badge: "/brand/logo-mark.svg",

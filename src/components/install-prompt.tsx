@@ -73,7 +73,7 @@ export default function InstallPrompt() {
       <div className="pointer-events-auto mx-auto flex max-w-lg items-start gap-3 rounded-2xl border border-white/10 bg-neutral-950/95 p-4 shadow-2xl backdrop-blur-xl">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white">
-            Install Warranty Vault
+            Install OwnCover
           </p>
           {iosHint ? (
             <p className="mt-1 text-xs leading-5 text-gray-400">

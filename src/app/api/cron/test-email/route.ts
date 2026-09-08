@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 import { jsonError, jsonSuccess } from "@/lib/api";
+import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 import {
   EmailSendError,
   friendlyEmailError,
@@ -8,7 +9,7 @@ import {
   sendTestEmail,
 } from "@/lib/email";
 
-const DEFAULT_TEST_TO = "warrantyvault.in@gmail.com";
+const DEFAULT_TEST_TO = BRAND_CONTACT_EMAIL;
 
 export async function POST(req: NextRequest) {
   try {
