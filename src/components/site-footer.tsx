@@ -9,7 +9,7 @@ export default function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/10 bg-black">
+    <footer className="relative border-t border-white/10 bg-[#030304]/80">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-10 md:flex-row md:items-start md:justify-between md:px-8 md:py-12">
         <div className="max-w-sm">
           <BrandLogo
@@ -19,7 +19,7 @@ export default function SiteFooter() {
           />
           <p className="mt-4 text-sm leading-6 text-gray-500">
             Scan GST invoices, track manufacturer and store cover, and walk into
-            a service centre with a claim pack.
+            a service centre with a claim pack. We do not run the desk.
           </p>
         </div>
 
@@ -30,8 +30,18 @@ export default function SiteFooter() {
             </p>
             <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
               <li>
-                <a href="#features" className="transition hover:text-white">
-                  Features
+                <a href="#how-it-works" className="transition hover:text-white">
+                  How it works
+                </a>
+              </li>
+              <li>
+                <a href="#compare" className="transition hover:text-white">
+                  Compare
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="transition hover:text-white">
+                  FAQ
                 </a>
               </li>
               <li>

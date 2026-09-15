@@ -25,33 +25,52 @@ export default function PushToggle() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const ok =
-      typeof window !== "undefined" &&
-      "serviceWorker" in navigator &&
-      "PushManager" in window &&
-      "Notification" in window;
+    let cancelled = false;
 
-    setSupported(ok);
+    async function run() {
+      await Promise.resolve();
 
-    if (!ok) {
-      setLoading(false);
-      return;
-    }
+      const ok =
+        "serviceWorker" in navigator &&
+        "PushManager" in window &&
+        "Notification" in window;
 
-    void (async () => {
+      if (!ok) {
+        if (!cancelled) {
+          setSupported(false);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const response = await fetch("/api/push");
-        if (!response.ok) return;
+        if (!response.ok) {
+          if (!cancelled) {
+            setSupported(true);
+          }
+          return;
+        }
         const data = (await response.json()) as {
           enabled?: boolean;
           subscribed?: boolean;
         };
-        setConfigured(Boolean(data.enabled));
-        setSubscribed(Boolean(data.subscribed));
+        if (!cancelled) {
+          setSupported(true);
+          setConfigured(Boolean(data.enabled));
+          setSubscribed(Boolean(data.subscribed));
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-    })();
+    }
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function enable() {

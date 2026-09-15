@@ -17,7 +17,9 @@ import {
 } from "@/lib/warranty";
 import { categoryLabel, extendedCoverLabel } from "@/constants/catalog";
 import { getServiceChecklist } from "@/constants/service-checklist";
-import { getCoverageStatus, getEffectiveCover } from "@/lib/coverage";
+import { getCoverageStatus, getEffectiveCover, coverageStatusLabel } from "@/lib/coverage";
+import CoverageTimeline from "@/components/coverage-timeline";
+import ReminderSchedule from "@/components/reminder-schedule";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -47,51 +49,27 @@ export default async function ProductPage({ params }: Props) {
   const coverageStatus = getCoverageStatus(product);
   const checklist = getServiceChecklist(product.category);
 
-  const totalWarrantyDays =
-    purchaseDate && manufacturerExpiry
-      ? Math.max(
-          Math.ceil(
-            (manufacturerExpiry.getTime() - purchaseDate.getTime()) /
-              (1000 * 60 * 60 * 24)
-          ),
-          0
-        )
-      : 0;
-
   const daysRemaining = expiryDate ? getDaysRemaining(expiryDate) : 0;
   const safeDaysRemaining = Math.max(daysRemaining, 0);
   const expired = coverageStatus === "expired";
   const expiringSoon = coverageStatus === "expiring";
-  const manufacturerDaysRemaining = manufacturerExpiry
-    ? getDaysRemaining(manufacturerExpiry)
-    : 0;
-
-  const elapsedDays =
-    totalWarrantyDays - Math.max(manufacturerDaysRemaining, 0);
-  const progress =
-    totalWarrantyDays > 0
-      ? Math.min((elapsedDays / totalWarrantyDays) * 100, 100)
-      : 0;
 
   const thumbnail = getProductThumbnail(product);
   const pdfCover = productUsesPdfCover(product);
 
-  const statusLabel =
-    coverageStatus === "expired"
-      ? "Expired"
-      : coverageStatus === "expiring"
-        ? `${safeDaysRemaining} days left`
-        : coverageStatus === "active"
-          ? effectiveCover?.id === "extended"
-            ? `${extendedCoverLabel(product.extendedType)} active`
-            : "Active"
-          : "No expiry set";
+  const statusLabel = coverageStatusLabel(
+    coverageStatus,
+    coverageStatus === "expiring" ? safeDaysRemaining : null
+  );
 
-  const statusClass = expired
-    ? "border-red-500/20 bg-red-500/10 text-red-300"
-    : expiringSoon
-      ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-      : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+  const statusClass =
+    coverageStatus === "unknown"
+      ? "border-white/15 bg-white/5 text-gray-300"
+      : expired
+        ? "border-red-500/20 bg-red-500/10 text-red-300"
+        : expiringSoon
+          ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
+          : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
 
   return (
     <DashboardShell className="max-w-5xl">
@@ -134,7 +112,7 @@ export default async function ProductPage({ params }: Props) {
                 {statusLabel}
               </span>
 
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">
+              <h1 className="font-display mt-4 text-3xl text-white md:text-4xl">
                 {product.name}
               </h1>
               <p className="mt-2 text-sm text-gray-500">
@@ -161,14 +139,14 @@ export default async function ProductPage({ params }: Props) {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href={`/dashboard/products/${product.id}/edit`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100"
+                  className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black"
                 >
                   <Pencil size={14} />
                   Edit
                 </Link>
                 <a
                   href={`/api/products/${product.id}/claim-pack`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200 transition hover:border-white/20 hover:text-white"
+                  className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200"
                 >
                   <FileDown size={14} />
                   Claim pack
@@ -176,7 +154,7 @@ export default async function ProductPage({ params }: Props) {
                 {(manufacturerExpiry || extendedExpiry) && (
                   <a
                     href={`/api/exports?format=ics&productId=${product.id}`}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200 transition hover:border-white/20 hover:text-white"
+                    className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200"
                   >
                     <CalendarDays size={14} />
                     Calendar
@@ -248,52 +226,57 @@ export default async function ProductPage({ params }: Props) {
           </section>
         )}
 
-        {manufacturerDaysRemaining >= 0 && totalWarrantyDays > 0 && (
-          <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5 md:p-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-semibold text-white">
-                  Manufacturer coverage
-                </h2>
-                <p className="mt-1 text-xs text-gray-500">
-                  How much of the brand warranty period has passed
-                </p>
-              </div>
-              <span className="text-sm font-medium text-gray-300">
-                {Math.floor(progress)}%
-              </span>
-            </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <CoverageTimeline
+            purchaseDate={purchaseDate}
+            manufacturerExpiry={manufacturerExpiry}
+            extendedExpiry={extendedExpiry}
+            extendedLabel={
+              product.extendedType
+                ? extendedCoverLabel(product.extendedType)
+                : undefined
+            }
+          />
+          <ReminderSchedule
+            expiry={expiryDate}
+            coverLabel={effectiveCover?.label}
+          />
+        </div>
 
-            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
-              <div
-                className={`h-full rounded-full ${
-                  expiringSoon ? "bg-amber-400" : "bg-cyan-400"
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-white/5 bg-black/30 p-4">
-                <p className="text-xs text-gray-500">Days left</p>
-                <p className="mt-1 text-2xl font-semibold text-white">
-                  {Math.max(manufacturerDaysRemaining, 0)}
-                </p>
-              </div>
-              <div className="rounded-xl border border-white/5 bg-black/30 p-4">
-                <p className="text-xs text-gray-500">Total days</p>
-                <p className="mt-1 text-2xl font-semibold text-white">
-                  {totalWarrantyDays}
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
+        <section className="rounded-2xl border border-white/10 p-5 md:p-6">
+          <div className="mb-4">
+            <h2 className="text-sm font-medium text-white">
+              Claim-desk checklist
+            </h2>
+            <p className="mt-1 text-xs leading-6 text-gray-500">
+              {checklist.title}. Print the pack and tick these before you leave.
+              Do not leave originals behind.
+            </p>
+          </div>
+          <ul className="space-y-2.5">
+            {checklist.items.map((item) => (
+              <li
+                key={item}
+                className="flex gap-3 text-sm leading-6 text-gray-300"
+              >
+                <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/20" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <a
+            href={`/api/products/${product.id}/claim-pack`}
+            className="premium-ghost mt-5 inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm font-medium text-gray-200"
+          >
+            <FileDown size={14} />
+            Download claim pack
+          </a>
+        </section>
 
         <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5 md:p-6">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-white">Documents</h2>
+              <h2 className="text-sm font-medium text-white">Documents</h2>
               <p className="mt-1 text-xs text-gray-500">
                 Invoices, warranty cards, and related files
               </p>
@@ -311,36 +294,6 @@ export default async function ProductPage({ params }: Props) {
               documentType: doc.documentType,
             }))}
           />
-        </section>
-
-        <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5 md:p-6">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-white">
-              {checklist.title}
-            </h2>
-            <p className="mt-1 text-xs text-gray-500">
-              Print the claim pack and tick these at the desk. Do not leave
-              originals behind.
-            </p>
-          </div>
-          <ul className="space-y-2.5">
-            {checklist.items.map((item) => (
-              <li
-                key={item}
-                className="flex gap-3 text-sm leading-6 text-gray-300"
-              >
-                <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/20" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <a
-            href={`/api/products/${product.id}/claim-pack`}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-cyan-300/90 hover:text-cyan-200"
-          >
-            <FileDown size={14} />
-            Download claim pack
-          </a>
         </section>
 
         <AIInsightsCard

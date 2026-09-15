@@ -30,6 +30,8 @@ export default function AnimatedButton({
       <Link
         href={href}
         className={`
+          premium-btn
+          premium-btn-solid
           inline-flex
           items-center
           justify-center
@@ -37,8 +39,6 @@ export default function AnimatedButton({
           px-6
           py-4
           font-semibold
-          transition-all
-          duration-300
           ${className}
         `}
       >

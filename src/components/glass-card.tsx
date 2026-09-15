@@ -13,14 +13,8 @@ export default function GlassCard({
 }: Props) {
   return (
     <motion.div
-      whileHover={{
-        y: -5,
-        scale: 1.01,
-      }}
-      transition={{
-        duration: 0.25,
-      }}
       className={`
+        premium-card
         rounded-3xl
         border
         border-white/10

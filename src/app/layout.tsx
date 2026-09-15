@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "sonner";
+import { getAppBaseUrl } from "@/lib/app-url";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getAppBaseUrl()),
   title: "OwnCover",
   description: "Track your product warranties easily",
   applicationName: "OwnCover",
@@ -35,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${inter.className} bg-black text-white`}>
+      <body
+        className={`${geist.variable} ${geist.className} antialiased bg-[#030304] text-white`}
+      >
         {children}
         <Toaster
           position="top-right"

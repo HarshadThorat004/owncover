@@ -37,7 +37,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
   const [vaultName, setVaultName] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
 
-  async function load() {
+  async function fetchHousehold() {
     const response = await fetch("/api/household");
     const body = (await response.json()) as HouseholdPayload & {
       error?: string;
@@ -47,19 +47,41 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       throw new Error(body.error || "Could not load household");
     }
 
+    return body;
+  }
+
+  function applyHousehold(body: HouseholdPayload) {
     setData(body);
     setVaultName(body.household?.name ?? "Family vault");
   }
 
   useEffect(() => {
-    load()
-      .catch((error) => {
+    let cancelled = false;
+
+    async function run() {
+      try {
+        const payload = await fetchHousehold();
+        if (!cancelled) {
+          applyHousehold(payload);
+        }
+      } catch (error) {
         console.error(error);
-        toast.error(
-          error instanceof Error ? error.message : "Could not load household"
-        );
-      })
-      .finally(() => setLoading(false));
+        if (!cancelled) {
+          toast.error(
+            error instanceof Error ? error.message : "Could not load household"
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function invite(event: React.FormEvent) {
@@ -82,7 +104,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
         body.resent ? "Invite resent" : `Invite sent to ${email.trim()}`
       );
       setEmail("");
-      await load();
+      applyHousehold(await fetchHousehold());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not send invite");
     } finally {
@@ -107,7 +129,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       }
 
       toast.success("Vault name updated");
-      await load();
+      applyHousehold(await fetchHousehold());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not rename");
     } finally {
@@ -128,7 +150,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       }
 
       toast.success("Invite revoked");
-      await load();
+      applyHousehold(await fetchHousehold());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not revoke");
     } finally {
@@ -149,7 +171,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       }
 
       toast.success("Member removed");
-      await load();
+      applyHousehold(await fetchHousehold());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not remove");
     } finally {
@@ -168,7 +190,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       }
 
       toast.success("You left the shared vault");
-      await load();
+      applyHousehold(await fetchHousehold());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not leave");
     } finally {
@@ -178,7 +200,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
 
   if (loading || !data) {
     return (
-      <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+      <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 size={16} className="animate-spin" />
           Loading household…
@@ -191,7 +213,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
   const canInvite = isOwner && data.seats.used < data.seats.max;
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+    <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
       <div className="flex items-start gap-3">
         <Users size={18} className="mt-0.5 text-cyan-300" />
         <div className="min-w-0 flex-1">
@@ -241,7 +263,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
               <button
                 type="submit"
                 disabled={busy === "invite" || !canInvite}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-gray-100 disabled:opacity-50"
+                className="premium-btn premium-btn-solid inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black disabled:opacity-50"
               >
                 {busy === "invite" && (
                   <Loader2 size={14} className="animate-spin" />

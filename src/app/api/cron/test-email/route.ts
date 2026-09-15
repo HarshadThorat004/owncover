@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 import { jsonError, jsonSuccess } from "@/lib/api";
+import { isCronAuthorized } from "@/lib/cron-auth";
 import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 import {
   EmailSendError,
@@ -9,14 +10,15 @@ import {
   sendTestEmail,
 } from "@/lib/email";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
+
 const DEFAULT_TEST_TO = BRAND_CONTACT_EMAIL;
 
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    if (!isCronAuthorized(req)) {
       return jsonError("Unauthorized", 401);
     }
 

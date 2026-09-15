@@ -8,10 +8,10 @@ export const authInputClass =
   "w-full rounded-[10px] border border-white/15 bg-transparent px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/35";
 
 export const authPrimaryButtonClass =
-  "inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35";
+  "premium-btn premium-btn-solid inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-medium text-black disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35";
 
 export const authSecondaryButtonClass =
-  "inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/15 bg-transparent px-3 py-2.5 text-sm font-medium text-white transition hover:bg-white/[0.04] disabled:opacity-50";
+  "premium-ghost inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-white/15 bg-transparent px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50";
 
 function AuthBackground() {
   return (

@@ -1,4 +1,6 @@
-const TRANSIENT_PRISMA_CODES = new Set(["P1001", "P1002", "P1008", "P1017"]);
+type PrismaEnv = Record<string, string | undefined>;
+
+const TRANSIENT_PRISMA_CODES = new Set(["P1001", "P1002", "P1008", "P1017", "P2024"]);
 
 const TRANSIENT_MESSAGE_SNIPPETS = [
   "Can't reach database server",
@@ -8,7 +10,10 @@ const TRANSIENT_MESSAGE_SNIPPETS = [
   "Connection terminated unexpectedly",
 ];
 
-export function withPrismaConnectionParams(databaseUrl: string) {
+export function withPrismaConnectionParams(
+  databaseUrl: string,
+  env: PrismaEnv = process.env
+) {
   const question = databaseUrl.indexOf("?");
   const base = question === -1 ? databaseUrl : databaseUrl.slice(0, question);
   const params = new URLSearchParams(
@@ -20,12 +25,36 @@ export function withPrismaConnectionParams(databaseUrl: string) {
     params.set("pgbouncer", "true");
   }
 
+  if (hostPart.includes("-pooler.") && !params.has("connection_limit")) {
+    const serverless = env.VERCEL === "1" || env.NODE_ENV === "production";
+    params.set("connection_limit", serverless ? "1" : "5");
+  }
+
   if (!params.has("connect_timeout")) {
     params.set("connect_timeout", "30");
   }
 
+  if (!params.has("pool_timeout")) {
+    params.set("pool_timeout", "20");
+  }
+
   const qs = params.toString();
   return qs ? `${base}?${qs}` : base;
+}
+
+export function unpooledDatabaseUrl(databaseUrl: string) {
+  return databaseUrl.replace("-pooler.", ".");
+}
+
+/** Prisma schema requires DIRECT_URL; derive it from a Neon pooled URL at runtime. */
+export function ensurePrismaDirectUrl(env: PrismaEnv = process.env) {
+  const databaseUrl = env.DATABASE_URL?.trim();
+
+  if (!env.DIRECT_URL?.trim() && databaseUrl) {
+    env.DIRECT_URL = unpooledDatabaseUrl(databaseUrl);
+  }
+
+  return env.DIRECT_URL;
 }
 
 export function isTransientDbError(error: unknown) {

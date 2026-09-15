@@ -37,9 +37,11 @@ export default function InstallPrompt() {
     }
 
     if (isIos()) {
-      setIosHint(true);
-      setHidden(false);
-      return;
+      const frame = window.requestAnimationFrame(() => {
+        setIosHint(true);
+        setHidden(false);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
 
     function onPrompt(event: Event) {

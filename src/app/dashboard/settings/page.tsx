@@ -50,7 +50,7 @@ export default async function SettingsPage() {
           ]}
         />
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+        <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-cyan-300/80">
             Account
           </p>
@@ -81,7 +81,7 @@ export default async function SettingsPage() {
 
         <InboundSettings />
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+        <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
           <div className="flex items-start gap-3">
             <Shield size={18} className="mt-0.5 text-cyan-300" />
             <div>
@@ -112,7 +112,7 @@ export default async function SettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+        <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
           <div className="flex items-start gap-3">
             <Bell size={18} className="mt-0.5 text-cyan-300" />
             <div className="min-w-0 flex-1">
@@ -132,7 +132,7 @@ export default async function SettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+        <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
           <h2 className="text-base font-semibold text-white">Your data</h2>
           <p className="mt-2 text-sm leading-7 text-gray-500">
             Download a spreadsheet of every product, or add expiry dates to your
@@ -141,14 +141,14 @@ export default async function SettingsPage() {
           <div className="mt-5 flex flex-wrap gap-2">
             <a
               href="/api/exports?format=csv"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-300 transition hover:border-white/20 hover:text-white"
+              className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-300"
             >
               <Download size={14} />
               CSV export
             </a>
             <a
               href="/api/exports?format=ics"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-300 transition hover:border-white/20 hover:text-white"
+              className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-300"
             >
               <CalendarDays size={14} />
               Calendar

@@ -166,7 +166,7 @@ export default function NotificationPanel({ initialItems = [] }: Props) {
       <button
         type="button"
         onClick={toggleOpen}
-        className="relative flex items-center justify-center rounded-xl border border-gray-800 bg-neutral-900 p-2.5 text-gray-300 transition hover:border-cyan-400 hover:text-cyan-300"
+        className="premium-ghost relative flex items-center justify-center rounded-xl border border-gray-800 bg-neutral-900 p-2.5 text-gray-300 hover:border-cyan-400 hover:text-cyan-300"
         aria-label="Notifications"
         aria-expanded={open}
       >

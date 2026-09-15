@@ -2,6 +2,7 @@ import { addDays, startOfDay } from "date-fns";
 import { describe, expect, it } from "vitest";
 
 import {
+  coverageStatusLabel,
   getCoverageStatus,
   getCoverLayers,
   getEffectiveCover,
@@ -102,5 +103,14 @@ describe("getReminderHits", () => {
     );
 
     expect(hits.map((hit) => hit.type)).toEqual(["expiring_1"]);
+  });
+});
+
+describe("coverageStatusLabel", () => {
+  it("names household states clearly", () => {
+    expect(coverageStatusLabel("active")).toBe("Active cover");
+    expect(coverageStatusLabel("expired")).toBe("Cover ended");
+    expect(coverageStatusLabel("unknown")).toBe("Needs a date");
+    expect(coverageStatusLabel("expiring", 12)).toBe("12d to desk");
   });
 });

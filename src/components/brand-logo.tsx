@@ -36,7 +36,7 @@ export default function BrandLogo({
       alt="OwnCover"
       width={px}
       height={px}
-      className={`shrink-0 ${markClassName}`.trim()}
+      className={`brand-mark shrink-0 transition-transform duration-300 ${markClassName}`.trim()}
       unoptimized
       priority
     />
@@ -71,7 +71,7 @@ export default function BrandLogo({
       </span>
       <span className="min-w-0 text-left">
         <span
-          className={`block font-semibold tracking-tight text-white ${WORDMARK_CLASS[size]}`}
+          className={`font-display block font-medium tracking-tight text-white ${WORDMARK_CLASS[size]}`}
         >
           OwnCover
         </span>

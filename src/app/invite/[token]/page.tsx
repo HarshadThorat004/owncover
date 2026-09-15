@@ -12,6 +12,8 @@ type Props = {
   params: Promise<{ token: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Join household — OwnCover",
   description: "Accept an invite to share OwnCover with your household.",

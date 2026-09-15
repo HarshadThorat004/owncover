@@ -19,7 +19,7 @@ export default function InboundSettings() {
   const [copied, setCopied] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function load() {
+  async function fetchInbox() {
     const response = await fetch("/api/inbound/address");
     const body = (await response.json()) as {
       address?: string;
@@ -31,19 +31,44 @@ export default function InboundSettings() {
       throw new Error(body.error || "Could not load inbound address");
     }
 
+    return body;
+  }
+
+  function applyInbox(body: {
+    address?: string;
+    drafts?: DraftRow[];
+  }) {
     setAddress(body.address ?? null);
     setDrafts(body.drafts ?? []);
   }
 
   useEffect(() => {
-    load()
-      .catch((error) => {
+    let cancelled = false;
+
+    async function run() {
+      try {
+        const payload = await fetchInbox();
+        if (!cancelled) {
+          applyInbox(payload);
+        }
+      } catch (error) {
         console.error(error);
-        toast.error(
-          error instanceof Error ? error.message : "Could not load inbox"
-        );
-      })
-      .finally(() => setLoading(false));
+        if (!cancelled) {
+          toast.error(
+            error instanceof Error ? error.message : "Could not load inbox"
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function copyAddress() {
@@ -71,7 +96,7 @@ export default function InboundSettings() {
         throw new Error(body.error || "Could not dismiss");
       }
       toast.success("Draft dismissed");
-      await load();
+      applyInbox(await fetchInbox());
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not dismiss");
     } finally {
@@ -81,7 +106,7 @@ export default function InboundSettings() {
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+      <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 size={16} className="animate-spin" />
           Loading inbox…
@@ -91,7 +116,7 @@ export default function InboundSettings() {
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+    <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
       <div className="flex items-start gap-3">
         <Inbox size={18} className="mt-0.5 text-cyan-300" />
         <div className="min-w-0 flex-1">

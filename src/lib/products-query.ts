@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
 
-import { productStatusWhere } from "@/lib/coverage";
+import { getCoverageStatus, productStatusWhere } from "@/lib/coverage";
 import { getHouseholdIdForUser, vaultProductWhere } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { getReminderWindowDates } from "@/lib/reminders";
@@ -179,34 +179,31 @@ export async function listProductsForExport(userId: string, productId?: string) 
 }
 
 export async function getDashboardCounts(userId: string) {
-  const { today, in30 } = getReminderWindowDates();
   const householdId = await getHouseholdIdForUser(userId);
   const vault = vaultProductWhere(userId, householdId);
 
-  const [totalProducts, activeProducts, expiringProducts, expiredProducts] =
-    await Promise.all([
-      prisma.product.count({
-        where: vault,
-      }),
-      prisma.product.count({
-        where: {
-          AND: [vault, productStatusWhere("active", today, in30) ?? {}],
-        },
-      }),
-      prisma.product.count({
-        where: {
-          AND: [vault, productStatusWhere("expiring", today, in30) ?? {}],
-        },
-      }),
-      prisma.product.count({
-        where: {
-          AND: [vault, productStatusWhere("expired", today, in30) ?? {}],
-        },
-      }),
-    ]);
+  const rows = await prisma.product.findMany({
+    where: vault,
+    select: {
+      warrantyExpiry: true,
+      extendedExpiry: true,
+      extendedType: true,
+    },
+  });
+
+  let activeProducts = 0;
+  let expiringProducts = 0;
+  let expiredProducts = 0;
+
+  for (const row of rows) {
+    const status = getCoverageStatus(row);
+    if (status === "active") activeProducts += 1;
+    else if (status === "expiring") expiringProducts += 1;
+    else if (status === "expired") expiredProducts += 1;
+  }
 
   return {
-    totalProducts,
+    totalProducts: rows.length,
     activeProducts,
     expiringProducts,
     expiredProducts,

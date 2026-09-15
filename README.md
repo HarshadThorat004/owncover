@@ -75,6 +75,36 @@ cd owncover
 
 npm install
 ```
+
+---
+
+# Deploy on Vercel
+
+This app is set up for Vercel (cron + serverless). The build runs `prisma generate`, `prisma migrate deploy`, then `next build`.
+
+1. Import the GitHub repo in [Vercel](https://vercel.com/new)
+2. Framework preset: **Next.js**
+3. Set environment variables (Production + Preview):
+
+| Variable | Required | Notes |
+|----------|----------|--------|
+| `DATABASE_URL` | Yes | Neon **pooled** URL (`-pooler.`). The app adds `pgbouncer=true`. |
+| `DIRECT_URL` | Recommended | Neon **unpooled** URL for migrations. If omitted, build strips `-pooler` from `DATABASE_URL`. |
+| `NEXTAUTH_URL` | Yes | Public origin, e.g. `https://owncover.in` (no trailing slash) |
+| `NEXTAUTH_SECRET` | Yes | `openssl rand -base64 32` |
+| `CRON_SECRET` | Yes | Vercel cron sends `Authorization: Bearer $CRON_SECRET` to `/api/cron/reminders` |
+| `UPLOADTHING_TOKEN` | Yes | File uploads |
+| `RESEND_API_KEY` | Yes | OTP + warranty emails |
+| `RESEND_FROM_EMAIL` | Yes | `OwnCover <noreply@owncover.in>` after domain verify |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional | Google sign-in; add prod redirect `https://YOUR_DOMAIN/api/auth/callback/google` |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Optional | Browser push |
+
+4. Deploy. Confirm `https://YOUR_DOMAIN/api/health` returns `"ready": true`. That payload lists which required env vars are present (not their values).
+
+Preview deployments need the same env vars. Use a **separate Neon branch** for Preview so `prisma migrate deploy` cannot change production. Google OAuth also needs each preview callback URL registered, or keep Google disabled on Preview.
+
+Local `npm run build` skips migrations unless you run `npm run db:migrate`. Vercel sets `VERCEL=1` and applies migrations during production/preview builds.
+
 ---
 
 # Prisma Setup
@@ -82,7 +112,7 @@ npm install
 ```bash
 npx prisma generate
 
-npx prisma db push
+npx prisma migrate deploy
 ```
 
 ---

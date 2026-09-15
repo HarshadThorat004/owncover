@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 import { jsonError, jsonSuccess } from "@/lib/api";
+import { isCronAuthorized } from "@/lib/cron-auth";
 import { prisma } from "@/lib/prisma";
 import {
   EmailSendError,
@@ -17,6 +18,10 @@ import {
   getReminderWindowDates,
   type ReminderType,
 } from "@/lib/reminders";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 const BATCH_SIZE = 100;
 
@@ -70,10 +75,7 @@ async function createEmailNotification(params: {
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    if (!isCronAuthorized(req)) {
       return jsonError("Unauthorized", 401);
     }
 

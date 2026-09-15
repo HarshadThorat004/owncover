@@ -13,7 +13,7 @@ export default function DashboardShell({
 }: Props) {
   return (
     <PageWrapper>
-      <main className={`mx-auto max-w-7xl px-4 pb-20 pt-6 md:px-8 ${className}`}>
+      <main className={`mx-auto max-w-7xl px-4 pb-24 pt-8 md:px-8 ${className}`}>
         {children}
       </main>
     </PageWrapper>

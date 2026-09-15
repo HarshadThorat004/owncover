@@ -80,6 +80,19 @@ export function getCoverageStatus(
   return "active";
 }
 
+export function coverageStatusLabel(
+  status: ReturnType<typeof getCoverageStatus>,
+  daysRemaining?: number | null
+) {
+  if (status === "expired") return "Cover ended";
+  if (status === "expiring") {
+    if (daysRemaining == null) return "Needs attention";
+    return `${daysRemaining}d to desk`;
+  }
+  if (status === "active") return "Active cover";
+  return "Needs a date";
+}
+
 export function productStatusWhere(
   status: "all" | "active" | "expiring" | "expired",
   today: Date,

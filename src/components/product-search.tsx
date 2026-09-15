@@ -11,7 +11,7 @@ import {
   getProductThumbnail,
   productUsesPdfCover,
 } from "@/lib/warranty";
-import { getCoverageStatus, getEffectiveExpiry } from "@/lib/coverage";
+import { getCoverageStatus, getEffectiveExpiry, coverageStatusLabel } from "@/lib/coverage";
 import PdfPlaceholder from "@/components/pdf-placeholder";
 
 type Props = {
@@ -73,7 +73,7 @@ export default function ProductSearch({ products }: Props) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search products"
-            className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white outline-none placeholder:text-gray-600 focus:border-cyan-400/60"
+            className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white outline-none placeholder:text-gray-600 transition focus:border-cyan-400/60 focus:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]"
           />
         </div>
 
@@ -85,19 +85,19 @@ export default function ProductSearch({ products }: Props) {
           {(
             [
               { key: "all", label: "All" },
-              { key: "active", label: "Active" },
-              { key: "expiring", label: "Expiring" },
-              { key: "expired", label: "Expired" },
+              { key: "active", label: "Active cover" },
+              { key: "expiring", label: "Needs attention" },
+              { key: "expired", label: "Cover ended" },
             ] as const
           ).map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => setFilter(item.key)}
-              className={`rounded-xl border px-3.5 py-2 text-xs font-medium transition ${
+              className={`premium-ghost rounded-xl border px-3.5 py-2 text-xs font-medium ${
                 filter === item.key
                   ? "border-white bg-white text-black"
-                  : "border-white/10 text-gray-400 hover:border-white/20 hover:text-white"
+                  : "border-white/10 text-gray-400"
               }`}
             >
               {item.label}
@@ -131,9 +131,9 @@ export default function ProductSearch({ products }: Props) {
               <Link
                 key={product.id}
                 href={`/dashboard/products/${product.id}`}
-                className="group overflow-hidden rounded-2xl border border-white/10 bg-neutral-950/80 transition hover:border-white/20"
+                className="premium-card group rounded-2xl border border-white/10 bg-neutral-950/80"
               >
-                <div className="relative border-b border-white/5">
+                <div className="premium-media relative overflow-hidden rounded-t-2xl border-b border-white/5">
                   {thumbnail ? (
                     <Image
                       src={thumbnail}
@@ -151,23 +151,19 @@ export default function ProductSearch({ products }: Props) {
                     </div>
                   )}
 
-                  {daysRemaining !== null && (
-                    <span
-                      className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[11px] font-medium backdrop-blur-md ${
-                        expired
-                          ? "border-red-500/30 bg-red-500/20 text-red-200"
-                          : expiring
-                            ? "border-amber-500/30 bg-amber-500/20 text-amber-200"
+                  <span
+                    className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[11px] font-medium backdrop-blur-md ${
+                      status === "expired"
+                        ? "border-red-500/30 bg-red-500/20 text-red-200"
+                        : status === "expiring"
+                          ? "border-amber-500/30 bg-amber-500/20 text-amber-200"
+                          : status === "unknown"
+                            ? "border-white/15 bg-black/50 text-gray-300"
                             : "border-emerald-500/30 bg-emerald-500/20 text-emerald-200"
-                      }`}
-                    >
-                      {expired
-                        ? "Expired"
-                        : expiring
-                          ? `${daysRemaining}d left`
-                          : "Active"}
-                    </span>
-                  )}
+                    }`}
+                  >
+                    {coverageStatusLabel(status, daysRemaining)}
+                  </span>
                 </div>
 
                 <div className="p-4">

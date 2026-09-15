@@ -10,6 +10,8 @@ import { getSessionUser } from "@/lib/product-access";
 import { syncInAppNotifications } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -70,7 +72,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white">
+    <div className="relative min-h-screen bg-[#030304] text-white">
       <BackgroundGlow />
       <DashboardNavbar
         name={session.user.name}

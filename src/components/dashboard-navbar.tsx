@@ -29,7 +29,7 @@ export default function DashboardNavbar({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+    <header className="site-header sticky top-0 z-50">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 md:px-8">
         <Link href="/dashboard" className="flex items-center gap-3">
           <BrandLogo
@@ -44,7 +44,7 @@ export default function DashboardNavbar({
 
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-300 transition hover:border-white/20 hover:text-white"
+            className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-300"
           >
             <LayoutDashboard size={16} />
             Dashboard
@@ -52,7 +52,7 @@ export default function DashboardNavbar({
 
           <Link
             href="/dashboard/add-product"
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 text-sm font-semibold text-black transition hover:bg-gray-100"
+            className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 text-sm font-semibold text-black"
           >
             <Plus size={16} />
             Add product
@@ -60,7 +60,7 @@ export default function DashboardNavbar({
 
           <Link
             href="/dashboard/settings"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-300 transition hover:border-white/20 hover:text-white"
+            className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-300"
           >
             <Settings size={16} />
             Settings
@@ -69,7 +69,7 @@ export default function DashboardNavbar({
           <button
             type="button"
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-400 transition hover:border-red-500/30 hover:text-red-300"
+            className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-400 hover:border-red-500/30 hover:text-red-300"
             aria-label="Logout"
           >
             <LogOut size={16} />
@@ -82,7 +82,7 @@ export default function DashboardNavbar({
           <button
             type="button"
             onClick={() => setMobileOpen((open) => !open)}
-            className="rounded-xl border border-white/10 p-2 text-white"
+            className="premium-ghost rounded-xl border border-white/10 p-2 text-white"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >

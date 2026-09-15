@@ -1195,7 +1195,7 @@ export default function ProductForm({
       <button
         type="submit"
         disabled={loading || scanning}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 font-semibold text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+        className="premium-btn premium-btn-solid inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading && <Loader2 size={16} className="animate-spin" />}
         {loading
