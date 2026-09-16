@@ -5,9 +5,6 @@ import Link from "next/link";
 import {
   Menu,
   X,
-  FileText,
-  Bell,
-  Sparkles,
   ArrowRight,
   Check,
   Minus,
@@ -15,7 +12,41 @@ import {
 
 import BrandLogo from "@/components/brand-logo";
 import BackgroundGlow from "@/components/background-glow";
+import FeatureCarousel from "@/components/feature-carousel";
 import SiteFooter from "@/components/site-footer";
+
+const FEATURE_SLIDES = [
+  {
+    title: "Desk-ready claim pack",
+    desc: "Invoice facts, serial, and a service-centre checklist in one PDF — print it before you leave the house.",
+    image: "/brand/features/claim-pack.png",
+    imageAlt: "Claim pack document with cyan glow",
+  },
+  {
+    title: "Reminders that land",
+    desc: "Email and browser alerts at 30 days, 7 days, and the day before manufacturer or store cover ends.",
+    image: "/brand/features/reminders.png",
+    imageAlt: "Reminder notifications and calendar markers",
+  },
+  {
+    title: "GST-aware scan",
+    desc: "QR first, then on-device OCR — English and Hindi labels, empty if unsure. You confirm dates before save.",
+    image: "/brand/features/gst-scan.png",
+    imageAlt: "GST invoice scan with holographic beam",
+  },
+  {
+    title: "Household vault",
+    desc: "Share one vault with family. Same products, documents, and expiry reminders — each person still has their own sign-in.",
+    image: "/brand/features/household.png",
+    imageAlt: "Shared household vault network",
+  },
+  {
+    title: "Coverage timeline",
+    desc: "See purchase through manufacturer cover, then store or AMC — so you know which date still matters at the desk.",
+    image: "/brand/features/timeline.png",
+    imageAlt: "Warranty coverage timeline nodes",
+  },
+];
 
 const FAQS = [
   {
@@ -285,49 +316,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section
-        id="features"
-        className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8"
-      >
-        <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
-          Everything you need. Nothing you don’t.
-        </p>
-        <h2 className="font-display mt-3 max-w-2xl text-3xl md:text-4xl">
-          Outcomes, not another folder.
-        </h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {[
-            {
-              icon: <FileText size={18} />,
-              title: "Desk-ready pack",
-              desc: "Invoice facts, serial, and a service-centre checklist in one PDF.",
-            },
-            {
-              icon: <Bell size={18} />,
-              title: "Reminders that land",
-              desc: "Email and browser alerts at 30 days, 7 days, and the day before cover ends.",
-            },
-            {
-              icon: <Sparkles size={18} />,
-              title: "GST-aware scan",
-              desc: "QR first, then on-device OCR — English and Hindi labels, empty if unsure.",
-            },
-          ].map((feature) => (
-            <div
-              key={feature.title}
-              className="premium-card rounded-2xl border border-white/10 p-6"
-            >
-              <div className="icon-well flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300">
-                {feature.icon}
-              </div>
-              <h3 className="mt-5 text-base font-medium">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-gray-500">
-                {feature.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <FeatureCarousel items={FEATURE_SLIDES} />
 
       <section
         id="compare"

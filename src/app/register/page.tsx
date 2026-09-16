@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Check, Loader2 } from "lucide-react";
 
 import AuthShell, {
-  AuthBrandMark,
   AuthLegalFooter,
   authInputClass,
   authPrimaryButtonClass,
@@ -115,8 +114,7 @@ function RegisterPageContent() {
   return (
     <AuthShell>
       <div className="text-center">
-        <AuthBrandMark />
-        <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">
+        <h1 className="font-display text-[28px] tracking-tight text-white sm:text-[32px]">
           Create an OwnCover account
         </h1>
         <p className="mt-2 text-sm text-white/45">

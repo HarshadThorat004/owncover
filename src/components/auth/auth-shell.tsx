@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import BrandLogo from "@/components/brand-logo";
 
 export const authInputClass =
-  "w-full rounded-[10px] border border-white/15 bg-transparent px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/35";
+  "w-full rounded-[10px] border border-white/15 bg-transparent px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/35 focus:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]";
 
 export const authPrimaryButtonClass =
   "premium-btn premium-btn-solid inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-medium text-black disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35";
@@ -17,7 +18,6 @@ function AuthBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       <div className="absolute inset-0 bg-[#050505]" />
-      {/* Soft fabric / smoke sweeps */}
       <div
         className="absolute -left-[20%] bottom-[-10%] h-[70%] w-[70%] opacity-40"
         style={{
@@ -35,14 +35,6 @@ function AuthBackground() {
         }}
       />
       <div
-        className="absolute left-[10%] top-[35%] h-[50%] w-[50%] rotate-[-18deg] opacity-25"
-        style={{
-          background:
-            "linear-gradient(135deg, transparent 20%, rgba(100,100,100,0.45) 45%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-      />
-      <div
         className="absolute inset-0 opacity-[0.18] mix-blend-overlay"
         style={{
           backgroundImage:
@@ -51,6 +43,63 @@ function AuthBackground() {
           backgroundSize: "180px 180px",
         }}
       />
+    </div>
+  );
+}
+
+function AuthHeroPanel({ compact = false }: { compact?: boolean }) {
+  return (
+    <div
+      className={`relative overflow-hidden bg-[#030304] ${
+        compact ? "h-[180px] w-full shrink-0" : "h-full min-h-screen w-full"
+      }`}
+    >
+      <Image
+        src="/brand/auth-hero.png"
+        alt=""
+        fill
+        priority
+        sizes={compact ? "100vw" : "55vw"}
+        className="object-cover object-center"
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: compact
+            ? "linear-gradient(to bottom, rgba(5,5,5,0.15) 0%, rgba(5,5,5,0.55) 70%, rgba(5,5,5,0.95) 100%)"
+            : "linear-gradient(to right, rgba(5,5,5,0.2) 0%, rgba(5,5,5,0.35) 55%, rgba(5,5,5,0.85) 100%), linear-gradient(to top, rgba(5,5,5,0.75) 0%, transparent 45%)",
+        }}
+        aria-hidden
+      />
+      <div
+        className={`absolute z-10 ${
+          compact
+            ? "bottom-4 left-5 right-5"
+            : "bottom-10 left-10 right-10 max-w-md"
+        }`}
+      >
+        {!compact && (
+          <BrandLogo
+            variant="full"
+            size="md"
+            tagline={false}
+            className="mb-5"
+          />
+        )}
+        <p
+          className={`font-display tracking-tight text-white ${
+            compact ? "text-lg" : "text-3xl leading-tight md:text-4xl"
+          }`}
+        >
+          Walk in with facts.
+        </p>
+        {!compact && (
+          <p className="mt-3 text-sm leading-7 text-white/55">
+            GST invoices, cover dates, and a claim pack — ready before you reach
+            the service desk.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -65,7 +114,7 @@ export function AuthBrandMark({ className = "" }: { className?: string }) {
 
 type AuthShellProps = {
   children: ReactNode;
-  /** Narrower max width for forms; wider for legal prose */
+  /** Narrower max width for forms; wider for legal prose (no hero split) */
   wide?: boolean;
   showHomeLink?: boolean;
 };
@@ -75,26 +124,63 @@ export default function AuthShell({
   wide = false,
   showHomeLink = true,
 }: AuthShellProps) {
+  if (wide) {
+    return (
+      <main className="relative min-h-screen overflow-hidden bg-[#050505] text-white">
+        <AuthBackground />
+
+        {showHomeLink && (
+          <Link
+            href="/"
+            className="absolute left-5 top-5 z-20 inline-flex items-center gap-1 text-sm text-white/55 transition hover:text-white"
+          >
+            <ChevronLeft size={16} strokeWidth={1.75} />
+            Home
+          </Link>
+        )}
+
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-16">
+          {children}
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050505] text-white">
-      <AuthBackground />
+    <main className="relative min-h-screen bg-[#050505] text-white">
+      <div className="flex min-h-screen flex-col md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="relative hidden md:block">
+          <AuthHeroPanel />
+        </div>
 
-      {showHomeLink && (
-        <Link
-          href="/"
-          className="absolute left-5 top-5 z-20 inline-flex items-center gap-1 text-sm text-white/55 transition hover:text-white"
-        >
-          <ChevronLeft size={16} strokeWidth={1.75} />
-          Home
-        </Link>
-      )}
+        <div className="relative flex min-h-screen flex-col">
+          <div className="md:hidden">
+            <AuthHeroPanel compact />
+          </div>
 
-      <div
-        className={`relative z-10 mx-auto flex min-h-screen flex-col justify-center px-4 py-16 ${
-          wide ? "max-w-3xl" : "max-w-[380px]"
-        }`}
-      >
-        {children}
+          <AuthBackground />
+
+          <div className="relative z-10 flex flex-1 flex-col">
+            <div className="flex items-center justify-between px-5 pt-5 md:px-8 md:pt-8">
+              {showHomeLink ? (
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-1 text-sm text-white/55 transition hover:text-white"
+                >
+                  <ChevronLeft size={16} strokeWidth={1.75} />
+                  Home
+                </Link>
+              ) : (
+                <span />
+              )}
+              <BrandLogo variant="full" size="sm" tagline={false} />
+            </div>
+
+            <div className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center px-5 py-10 md:px-8 md:py-14">
+              {children}
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

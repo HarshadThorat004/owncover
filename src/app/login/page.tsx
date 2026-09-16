@@ -8,7 +8,6 @@ import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import AuthShell, {
-  AuthBrandMark,
   AuthLegalFooter,
   authInputClass,
   authPrimaryButtonClass,
@@ -87,8 +86,7 @@ function LoginPageContent() {
   return (
     <AuthShell>
       <div className="text-center">
-        <AuthBrandMark />
-        <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">
+        <h1 className="font-display text-[28px] tracking-tight text-white sm:text-[32px]">
           Log in to OwnCover
         </h1>
         <p className="mt-2 text-sm text-white/45">

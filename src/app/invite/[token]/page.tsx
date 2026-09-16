@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import AcceptInviteButton from "@/components/accept-invite-button";
-import AuthShell, { AuthBrandMark } from "@/components/auth/auth-shell";
+import AuthShell from "@/components/auth/auth-shell";
 import { getInviteByToken } from "@/lib/household";
 import { getSessionUser } from "@/lib/product-access";
 import { emailsMatch } from "@/lib/account";
@@ -33,8 +33,7 @@ export default async function InvitePage({ params }: Props) {
     return (
       <AuthShell>
         <div className="text-center">
-          <AuthBrandMark />
-          <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white">
+          <h1 className="font-display text-[28px] tracking-tight text-white">
             Invite not found
           </h1>
           <p className="mt-3 text-sm leading-7 text-white/45">
@@ -56,8 +55,7 @@ export default async function InvitePage({ params }: Props) {
     return (
       <AuthShell>
         <div className="text-center">
-          <AuthBrandMark />
-          <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white">
+          <h1 className="font-display text-[28px] tracking-tight text-white">
             Invite expired
           </h1>
           <p className="mt-3 text-sm leading-7 text-white/45">
@@ -79,8 +77,7 @@ export default async function InvitePage({ params }: Props) {
   return (
     <AuthShell>
       <div className="text-center">
-        <AuthBrandMark />
-        <h1 className="mt-6 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">
+        <h1 className="font-display text-[28px] tracking-tight text-white sm:text-[32px]">
           Join {invite.household.name}
         </h1>
         <p className="mt-3 text-sm leading-7 text-white/45">
@@ -95,13 +92,13 @@ export default async function InvitePage({ params }: Props) {
           <div className="space-y-3">
             <Link
               href={`/login?callbackUrl=${encodeURIComponent(callback)}`}
-              className="inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-medium text-black transition hover:bg-white/90"
+              className="premium-btn premium-btn-solid inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-medium text-black"
             >
               Sign in to join
             </Link>
             <Link
               href={`/register?callbackUrl=${encodeURIComponent(callback)}`}
-              className="inline-flex w-full items-center justify-center rounded-[10px] border border-white/15 py-2.5 text-sm font-medium text-white transition hover:bg-white/[0.04]"
+              className="premium-ghost inline-flex w-full items-center justify-center rounded-[10px] border border-white/15 py-2.5 text-sm font-medium text-white"
             >
               Create an account
             </Link>
