@@ -97,7 +97,7 @@ export default async function DashboardPage() {
                   ? `Shared vault · ${membership.household.members.length} people. Products, documents, and expiry dates together.`
                   : emptyVault
                     ? "Scan a GST bill, or load a sample TV and download a pack in one minute."
-                    : "Active cover, missing serials, dates that need a desk visit, and invoices still in draft."
+                    : "Active cover, missing serials, dates that need a desk visit, and invoices still in draft."}
               </p>
               {membership && membership.household.members.length > 1 && (
                 <Link

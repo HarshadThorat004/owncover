@@ -6,6 +6,9 @@ import { attachmentFilename, slugifyFilename } from "@/lib/exports/format";
 import { assertProductOwner } from "@/lib/product-access";
 import { isSampleVaultProduct } from "@/lib/sample-vault-product";
 
+export const runtime = "nodejs";
+export const maxDuration = 30;
+
 type Params = {
   params: Promise<{
     id: string;

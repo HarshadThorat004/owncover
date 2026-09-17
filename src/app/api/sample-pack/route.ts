@@ -5,6 +5,9 @@ import { jsonError, getRequestIp } from "@/lib/api";
 import { buildClaimPackPdf } from "@/lib/exports/claim-pack";
 import { consumeRateLimit } from "@/lib/rate-limit";
 
+export const runtime = "nodejs";
+export const maxDuration = 30;
+
 export async function GET(request: NextRequest) {
   const rateLimit = consumeRateLimit({
     key: `sample-pack:${getRequestIp(request)}`,

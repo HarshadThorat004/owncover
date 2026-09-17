@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Join vault",
   description: "Accept an invite to share an OwnCover vault.",
+  robots: { index: false, follow: false },
 };
 
 export default async function InvitePage({ params }: Props) {

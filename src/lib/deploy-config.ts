@@ -16,3 +16,22 @@ export function isDeployConfigReady(
 ) {
   return Object.values(config).every(Boolean);
 }
+
+export function buildHealthPayload(input: {
+  config: ReturnType<typeof getRequiredDeployConfig>;
+  database: boolean;
+}) {
+  const ready = isDeployConfigReady(input.config) && input.database;
+
+  return {
+    ok: ready,
+    service: "owncover" as const,
+    ready,
+    database: input.database,
+    config: input.config,
+  };
+}
+
+export function healthHttpStatus(ready: boolean) {
+  return ready ? 200 : 503;
+}

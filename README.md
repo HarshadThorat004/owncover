@@ -76,9 +76,18 @@ npm install
 
 This app is set up for Vercel (cron + serverless). The build runs `prisma generate`, `prisma migrate deploy`, then `next build`.
 
-1. Import the GitHub repo in [Vercel](https://vercel.com/new)
-2. Framework preset: **Next.js**
-3. Set environment variables (Production + Preview):
+## Go live
+
+1. Create a Neon Postgres database. Copy the **pooled** URL into `DATABASE_URL` and the **unpooled** URL into `DIRECT_URL`.
+2. Import this GitHub repo in [Vercel](https://vercel.com/new) (Framework: **Next.js**, Node 20).
+3. Set the environment variables below on **Production** (and Preview if you use it).
+4. Add the production domain. Set `NEXTAUTH_URL` to that origin with no trailing slash.
+5. Verify `owncover.in` in Resend, then set `RESEND_FROM_EMAIL=OwnCover <noreply@owncover.in>`.
+6. If Google sign-in is enabled, add `https://YOUR_DOMAIN/api/auth/callback/google` as an authorized redirect.
+7. Deploy. `GET https://YOUR_DOMAIN/api/health` must return **HTTP 200** and `"ready": true`. Missing env or a down database returns **503**.
+8. Smoke-test: register → add a product (or load the sample TV) → download a claim pack → open `/sample-pack` while signed out.
+
+`/api/health` lists which required env vars are present (not their values).
 
 | Variable | Required | Notes |
 |----------|----------|--------|
@@ -92,8 +101,6 @@ This app is set up for Vercel (cron + serverless). The build runs `prisma genera
 | `RESEND_FROM_EMAIL` | Yes | `OwnCover <noreply@owncover.in>` after domain verify |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional | Google sign-in; add prod redirect `https://YOUR_DOMAIN/api/auth/callback/google` |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Optional | Browser push |
-
-4. Deploy. Confirm `https://YOUR_DOMAIN/api/health` returns `"ready": true`. That payload lists which required env vars are present (not their values).
 
 Preview deployments need the same env vars. Use a **separate Neon branch** for Preview so `prisma migrate deploy` cannot change production. Google OAuth also needs each preview callback URL registered, or keep Google disabled on Preview.
 

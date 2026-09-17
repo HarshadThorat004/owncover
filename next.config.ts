@@ -4,6 +4,23 @@ import type { NextConfig } from "next";
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(self), microphone=(), geolocation=()",
+  },
+];
+
+if (process.env.NODE_ENV === "production") {
+  securityHeaders.push({
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  });
+}
+
 const nextConfig: NextConfig = {
   // Pin the workspace root so Turbopack does not infer `src/app` and fail
   // HMR with "Next.js package not found".
@@ -11,7 +28,10 @@ const nextConfig: NextConfig = {
     root: projectRoot,
   },
   outputFileTracingRoot: projectRoot,
-  agentRules: false,
+  outputFileTracingIncludes: {
+    "/api/ocr": ["./node_modules/tesseract.js/**/*"],
+    "/api/inbound/resend": ["./node_modules/tesseract.js/**/*"],
+  },
   poweredByHeader: false,
   serverExternalPackages: [
     "@prisma/client",
@@ -33,25 +53,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "utfs.io",
       },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
     ],
   },
   async headers() {
     return [
       {
         source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(self), microphone=(), geolocation=()",
-          },
-        ],
+        headers: securityHeaders,
       },
     ];
   },

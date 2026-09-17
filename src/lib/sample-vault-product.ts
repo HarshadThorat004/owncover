@@ -24,8 +24,8 @@ export function sampleVaultProductCreateData() {
     serialNumber: SAMPLE_PRODUCT_SERIAL,
     invoiceNumber: sample.invoiceNumber,
     purchaseAmount: sample.purchaseAmount,
-    purchaseDate: toDate(sample.purchaseDate),
-    warrantyExpiry: toDate(sample.warrantyExpiry),
+    purchaseDate: sample.purchaseDate ? toDate(sample.purchaseDate) : null,
+    warrantyExpiry: sample.warrantyExpiry ? toDate(sample.warrantyExpiry) : null,
     extendedExpiry: sample.extendedExpiry
       ? toDate(sample.extendedExpiry)
       : null,
