@@ -7,6 +7,7 @@ import ProductForm from "@/components/product-form";
 import { getSessionUser } from "@/lib/product-access";
 import {
   draftExtractToFormValues,
+  draftScanHints,
   getAccessibleInboundDraft,
   inboundFilesToDocuments,
   INBOUND_DRAFT_STATUS,
@@ -22,6 +23,7 @@ export default async function AddProductPage({ searchParams }: Props) {
   const user = await getSessionUser();
 
   let inboundDraftId: string | undefined;
+  let inboundScanHints: ReturnType<typeof draftScanHints> | undefined;
   let defaultValues:
     | ReturnType<typeof draftExtractToFormValues> & {
         documents: ReturnType<typeof inboundFilesToDocuments>;
@@ -47,6 +49,7 @@ export default async function AddProductPage({ searchParams }: Props) {
           ? `Forwarded email: ${draft.subject}`
           : undefined,
       };
+      inboundScanHints = draftScanHints(extracted);
     }
   }
 
@@ -78,7 +81,7 @@ export default async function AddProductPage({ searchParams }: Props) {
           <p className="mt-2 text-sm leading-7 text-gray-500">
             {inboundDraftId
               ? "Check the filled fields, complete anything missing, then save. Empty is better than a wrong expiry date."
-              : "Scan an invoice or warranty card to auto-fill, then complete any missing details."}
+              : "Scan → check four facts → save. Then download a pack from the product page."}
           </p>
 
           <div className="mt-8">
@@ -86,6 +89,7 @@ export default async function AddProductPage({ searchParams }: Props) {
               mode="create"
               inboundDraftId={inboundDraftId}
               defaultValues={defaultValues}
+              initialScanHints={inboundScanHints}
             />
           </div>
         </div>

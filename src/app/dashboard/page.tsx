@@ -12,6 +12,7 @@ import {
 
 import AnimatedCounter from "@/components/animated-counter";
 import DashboardOverview from "@/components/dashboard-overview";
+import FirstRunOnboarding from "@/components/first-run-onboarding";
 import ProductSearch from "@/components/product-search";
 import DashboardShell from "@/components/dashboard-shell";
 
@@ -24,6 +25,7 @@ import { getMembership } from "@/lib/household";
 import { listPendingInboundDrafts } from "@/lib/inbound";
 import { getDaysRemaining } from "@/lib/warranty";
 import { getDashboardCounts, listProductsForUser } from "@/lib/products-query";
+import { isMissingSerial } from "@/lib/weekly-digest";
 
 export default async function DashboardPage() {
   const user = await getSessionUser();
@@ -43,8 +45,38 @@ export default async function DashboardPage() {
   const expiringProducts = products.filter(
     (product) => getCoverageStatus(product) === "expiring"
   );
+  const missingSerialProducts = products.filter((product) =>
+    isMissingSerial(product.serialNumber)
+  );
+  const attentionItems = new Map<
+    string,
+    { product: (typeof products)[number]; reasons: string[] }
+  >();
+
+  for (const product of expiringProducts) {
+    const cover = getEffectiveCover(product);
+    const daysRemaining = cover ? getDaysRemaining(cover.date) : null;
+    attentionItems.set(product.id, {
+      product,
+      reasons: [
+        daysRemaining != null
+          ? `${daysRemaining}d left · ${cover?.label ?? "cover"}`
+          : "Cover ending within 30 days",
+      ],
+    });
+  }
+
+  for (const product of missingSerialProducts) {
+    const existing = attentionItems.get(product.id);
+    const reason = "Serial missing — the desk will ask";
+    if (existing) existing.reasons.push(reason);
+    else attentionItems.set(product.id, { product, reasons: [reason] });
+  }
+
+  const needsYou = [...attentionItems.values()];
 
   const firstName = user.name?.split(" ")[0] || "there";
+  const emptyVault = products.length === 0;
 
   return (
     <DashboardShell>
@@ -56,19 +88,23 @@ export default async function DashboardPage() {
               <h1 className="font-display text-3xl text-white md:text-5xl">
                 {membership && membership.household.members.length > 1
                   ? membership.household.name
-                  : "Coverage snapshot"}
+                  : emptyVault
+                    ? "Start your vault"
+                    : "Coverage snapshot"}
               </h1>
               <p className="mt-3 text-sm leading-7 text-gray-500 md:text-base">
                 {membership && membership.household.members.length > 1
                   ? `Shared vault · ${membership.household.members.length} people. Products, documents, and expiry dates together.`
-                  : "Active cover, dates that need a desk visit, and invoices still in draft."}
+                  : emptyVault
+                    ? "Scan a GST bill, or load a sample TV and download a pack in one minute."
+                    : "Active cover, missing serials, dates that need a desk visit, and invoices still in draft."
               </p>
               {membership && membership.household.members.length > 1 && (
                 <Link
                   href="/dashboard/settings"
                   className="mt-3 inline-block text-sm text-cyan-300/90 underline-offset-2 hover:underline"
                 >
-                  Manage household
+                  Manage vault
                 </Link>
               )}
             </div>
@@ -108,6 +144,10 @@ export default async function DashboardPage() {
           </section>
         )}
 
+        {emptyVault ? (
+          <FirstRunOnboarding />
+        ) : (
+          <>
         {/* Stats */}
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-5">
@@ -136,7 +176,7 @@ export default async function DashboardPage() {
               <Clock size={16} className="text-amber-500" />
             </div>
             <p className="mt-3 font-display text-3xl tracking-tight text-amber-400">
-              <AnimatedCounter value={counts.expiringProducts} />
+              <AnimatedCounter value={counts.attentionProducts} />
             </p>
           </div>
 
@@ -157,80 +197,50 @@ export default async function DashboardPage() {
           activeProducts={counts.activeProducts}
           expiredProducts={counts.expiredProducts}
           expiringProducts={counts.expiringProducts}
+          missingSerial={counts.missingSerial}
         />
 
-        {/* Alerts */}
-        {expiringProducts.length > 0 && (
+        {needsYou.length > 0 && (
           <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 md:p-6">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-medium text-white">
-                  Needs a desk visit
-                </h2>
+                <h2 className="text-base font-medium text-white">Needs you</h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Cover ending within 30 days
+                  Cover ending within 30 days, or a serial the desk will ask for
                 </p>
               </div>
               <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
-                {expiringProducts.length}
+                {needsYou.length}
               </span>
             </div>
 
             <div className="space-y-2">
-              {expiringProducts.map((product) => {
-                const cover = getEffectiveCover(product);
-                if (!cover) return null;
-                const daysRemaining = getDaysRemaining(cover.date);
-
-                return (
-                  <Link
-                    key={product.id}
-                    href={`/dashboard/products/${product.id}`}
-                    className="premium-card flex items-center justify-between rounded-xl border border-white/5 bg-black/30 px-4 py-3.5"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        {product.name}
-                      </p>
-                      <p className="mt-0.5 text-xs text-gray-500">
-                        {[product.brand || "Unknown brand", cover.label]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium text-amber-300">
-                      {daysRemaining}d left
-                    </span>
-                  </Link>
-                );
-              })}
+              {needsYou.map(({ product, reasons }) => (
+                <Link
+                  key={product.id}
+                  href={`/dashboard/products/${product.id}`}
+                  className="premium-card flex items-center justify-between rounded-xl border border-white/5 bg-black/30 px-4 py-3.5"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {product.name}
+                    </p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      {[product.brand || "Unknown brand", ...reasons]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-amber-300">
+                    Open
+                  </span>
+                </Link>
+              ))}
             </div>
           </section>
         )}
 
-        {/* Products */}
-        {products.length === 0 ? (
-          <section className="rounded-2xl border border-dashed border-white/10 bg-neutral-950/50 px-6 py-16 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-cyan-300">
-              <Package size={24} />
-            </div>
-            <h2 className="mt-6 text-2xl font-semibold tracking-tight text-white">
-              No products yet
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-gray-500">
-              Add your first product with an invoice or warranty card to start
-              tracking expiry dates and reminders.
-            </p>
-            <Link
-              href="/dashboard/add-product"
-              className="premium-btn premium-btn-solid mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black"
-            >
-              <Plus size={16} />
-              Add first product
-            </Link>
-          </section>
-        ) : (
-          <section id="products" className="space-y-4">
+        <section id="products" className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="text-base font-medium text-white">
@@ -259,6 +269,7 @@ export default async function DashboardPage() {
             </div>
             <ProductSearch products={products} />
           </section>
+          </>
         )}
       </div>
     </DashboardShell>

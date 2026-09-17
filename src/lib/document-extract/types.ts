@@ -20,6 +20,13 @@ export type FieldMeta = {
   confidence: FieldConfidence;
 };
 
+/** UI hint for an autofilled product-form field. */
+export type ScanHint = {
+  confidence: FieldConfidence;
+  source?: FieldSource;
+  derived?: boolean;
+};
+
 export type ExtractedDocumentFields = {
   name: string;
   brand: string;

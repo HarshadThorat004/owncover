@@ -102,10 +102,17 @@ export default async function SettingsPage() {
               </p>
               <p className="mt-4 text-sm">
                 <Link
+                  href="/security"
+                  className="text-cyan-300/90 underline-offset-2 hover:underline"
+                >
+                  Security
+                </Link>
+                <span className="mx-2 text-gray-700">·</span>
+                <Link
                   href="/privacy"
                   className="text-cyan-300/90 underline-offset-2 hover:underline"
                 >
-                  Full privacy policy
+                  Privacy policy
                 </Link>
               </p>
             </div>
@@ -117,13 +124,17 @@ export default async function SettingsPage() {
             <Bell size={18} className="mt-0.5 text-cyan-300" />
             <div className="min-w-0 flex-1">
               <h2 className="text-base font-semibold text-white">
-                Browser alerts
+                Email and browser alerts
               </h2>
               <p className="mt-2 text-sm leading-7 text-gray-500">
-                Get a notification the day before manufacturer or store cover
-                ends, plus the existing 30-day and 7-day email reminders.
-                Turn this off anytime. We only store a push endpoint for this
-                device.
+                Email at 30 days, 7 days, and the day before cover ends. Mondays
+                we also send a vault digest when something needs you — expiry
+                inside 30 days, a missing serial, or a forwarded invoice still
+                in draft. Quiet weeks stay quiet.
+              </p>
+              <p className="mt-3 text-sm leading-7 text-gray-500">
+                Browser alerts are optional. Turn them off anytime. We only
+                store a push endpoint for this device.
               </p>
               <div className="mt-5">
                 <PushToggle />
@@ -160,9 +171,9 @@ export default async function SettingsPage() {
           <h2 className="text-base font-semibold text-white">Danger zone</h2>
           <p className="mt-2 text-sm leading-7 text-gray-400">
             {deleteMode === "member"
-              ? "Delete this account. You will leave the shared vault. Family products stay with the household."
+              ? "Delete this account. You will leave the shared vault. Products stay with the vault."
               : deleteMode === "owner-with-others"
-                ? "Delete this account. Ownership of the shared vault moves to another member. Household products stay."
+                ? "Delete this account. Ownership of the shared vault moves to another member. Products stay."
                 : "Delete this account and every product, document, and reminder tied to it. You will be signed out immediately."}
           </p>
           <div className="mt-5">

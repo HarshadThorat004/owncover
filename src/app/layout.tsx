@@ -3,23 +3,46 @@ import { Geist } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "sonner";
+import {
+  BRAND_DESCRIPTION,
+  BRAND_NAME,
+  BRAND_TITLE,
+} from "@/constants/brand";
 import { getAppBaseUrl } from "@/lib/app-url";
 
 const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
 });
 
+const appUrl = getAppBaseUrl();
+
 export const metadata: Metadata = {
-  metadataBase: new URL(getAppBaseUrl()),
-  title: "OwnCover",
-  description: "Track your product warranties easily",
-  applicationName: "OwnCover",
+  metadataBase: new URL(appUrl),
+  title: {
+    default: BRAND_TITLE,
+    template: `%s — ${BRAND_NAME}`,
+  },
+  description: BRAND_DESCRIPTION,
+  applicationName: BRAND_NAME,
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "OwnCover",
+    title: BRAND_NAME,
     statusBarStyle: "black-translucent",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: appUrl,
+    siteName: BRAND_NAME,
+    title: BRAND_TITLE,
+    description: BRAND_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: BRAND_TITLE,
+    description: BRAND_DESCRIPTION,
   },
   icons: {
     icon: [

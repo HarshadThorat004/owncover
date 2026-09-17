@@ -4,6 +4,7 @@ import { getCoverageStatus, productStatusWhere } from "@/lib/coverage";
 import { getHouseholdIdForUser, vaultProductWhere } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { getReminderWindowDates } from "@/lib/reminders";
+import { isMissingSerial } from "@/lib/weekly-digest";
 
 export type ProductListStatus = "all" | "active" | "expiring" | "expired";
 
@@ -188,18 +189,25 @@ export async function getDashboardCounts(userId: string) {
       warrantyExpiry: true,
       extendedExpiry: true,
       extendedType: true,
+      serialNumber: true,
     },
   });
 
   let activeProducts = 0;
   let expiringProducts = 0;
   let expiredProducts = 0;
+  let missingSerial = 0;
+  let attentionProducts = 0;
 
   for (const row of rows) {
     const status = getCoverageStatus(row);
     if (status === "active") activeProducts += 1;
     else if (status === "expiring") expiringProducts += 1;
     else if (status === "expired") expiredProducts += 1;
+
+    const serialMissing = isMissingSerial(row.serialNumber);
+    if (serialMissing) missingSerial += 1;
+    if (status === "expiring" || serialMissing) attentionProducts += 1;
   }
 
   return {
@@ -207,5 +215,7 @@ export async function getDashboardCounts(userId: string) {
     activeProducts,
     expiringProducts,
     expiredProducts,
+    missingSerial,
+    attentionProducts,
   };
 }

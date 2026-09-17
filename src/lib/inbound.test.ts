@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   draftExtractToFormValues,
+  draftScanHints,
   extractEmailAddress,
   inferInboundDocumentType,
   isUsableInboundAttachment,
@@ -98,5 +99,27 @@ describe("draftExtractToFormValues", () => {
     expect(values.purchaseDate).toBe("2026-01-15");
     expect(values.warrantyExpiry).toBe("2027-01-15");
     expect(values.serialNumber).toBe("");
+  });
+
+  it("returns hover hints for filled fields", () => {
+    const extracted = emptyExtractedFields();
+    extracted.name = "OnePlus 12";
+    extracted.purchaseDate = "2026-01-15";
+    extracted.warrantyPeriod = 12;
+    extracted.serialNumber = "maybe-wrong";
+    extracted.fieldMeta.name = { source: "layout", confidence: "high" };
+    extracted.fieldMeta.purchaseDate = { source: "qr", confidence: "high" };
+    extracted.fieldMeta.warrantyPeriod = { source: "layout", confidence: "medium" };
+    extracted.fieldMeta.serialNumber = { source: "regex", confidence: "low" };
+
+    const hints = draftScanHints(extracted);
+    expect(hints.name).toEqual({ confidence: "high", source: "layout" });
+    expect(hints.purchaseDate).toEqual({ confidence: "high", source: "qr" });
+    expect(hints.warrantyExpiry).toEqual({
+      confidence: "medium",
+      source: "layout",
+      derived: true,
+    });
+    expect(hints.serialNumber).toBeUndefined();
   });
 });

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CalendarDays, FileDown, Pencil, X } from "lucide-react";
 
 import AIInsightsCard from "@/components/ai-insights-card";
+import CarryListActions from "@/components/carry-list-actions";
 import DeleteProductButton from "@/components/delete-product-button";
 import DashboardShell from "@/components/dashboard-shell";
 import Breadcrumbs from "@/components/breadcrumbs";
@@ -10,6 +11,7 @@ import ProductDocuments from "@/components/product-documents";
 import ProductHeroMedia from "@/components/product-hero-media";
 
 import { assertProductOwner } from "@/lib/product-access";
+import { isSampleVaultProduct } from "@/lib/sample-vault-product";
 import {
   getDaysRemaining,
   getProductThumbnail,
@@ -48,6 +50,7 @@ export default async function ProductPage({ params }: Props) {
   const expiryDate = effectiveCover?.date ?? manufacturerExpiry;
   const coverageStatus = getCoverageStatus(product);
   const checklist = getServiceChecklist(product.category);
+  const sampleProduct = isSampleVaultProduct(product);
 
   const daysRemaining = expiryDate ? getDaysRemaining(expiryDate) : 0;
   const safeDaysRemaining = Math.max(daysRemaining, 0);
@@ -127,6 +130,16 @@ export default async function ProductPage({ params }: Props) {
                   .join(" · ")}
               </p>
 
+              {sampleProduct && (
+                <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">
+                  <p className="font-medium">Sample TV — not a real claim</p>
+                  <p className="mt-1 text-cyan-100/70">
+                    Download the pack, then delete this product and add your own
+                    GST bill.
+                  </p>
+                </div>
+              )}
+
               {product.renewalAvailable && (
                 <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">
                   <p className="font-medium">Renewal available</p>
@@ -137,19 +150,12 @@ export default async function ProductPage({ params }: Props) {
               )}
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href={`/dashboard/products/${product.id}/edit`}
-                  className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black"
-                >
-                  <Pencil size={14} />
-                  Edit
-                </Link>
                 <a
                   href={`/api/products/${product.id}/claim-pack`}
-                  className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200"
+                  className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black"
                 >
                   <FileDown size={14} />
-                  Claim pack
+                  Download claim pack
                 </a>
                 {(manufacturerExpiry || extendedExpiry) && (
                   <a
@@ -157,9 +163,16 @@ export default async function ProductPage({ params }: Props) {
                     className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200"
                   >
                     <CalendarDays size={14} />
-                    Calendar
+                    Add expiry to calendar
                   </a>
                 )}
+                <Link
+                  href={`/dashboard/products/${product.id}/edit`}
+                  className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-gray-200"
+                >
+                  <Pencil size={14} />
+                  Edit
+                </Link>
                 <DeleteProductButton productId={product.id} />
               </div>
             </div>
@@ -240,17 +253,19 @@ export default async function ProductPage({ params }: Props) {
           <ReminderSchedule
             expiry={expiryDate}
             coverLabel={effectiveCover?.label}
+            calendarHref={
+              manufacturerExpiry || extendedExpiry
+                ? `/api/exports?format=ics&productId=${product.id}`
+                : undefined
+            }
           />
         </div>
 
         <section className="rounded-2xl border border-white/10 p-5 md:p-6">
           <div className="mb-4">
-            <h2 className="text-sm font-medium text-white">
-              Claim-desk checklist
-            </h2>
+            <h2 className="text-sm font-medium text-white">What to carry</h2>
             <p className="mt-1 text-xs leading-6 text-gray-500">
-              {checklist.title}. Print the pack and tick these before you leave.
-              Do not leave originals behind.
+              {checklist.title}. Print the pack. Do not leave originals behind.
             </p>
           </div>
           <ul className="space-y-2.5">
@@ -264,13 +279,19 @@ export default async function ProductPage({ params }: Props) {
               </li>
             ))}
           </ul>
-          <a
-            href={`/api/products/${product.id}/claim-pack`}
-            className="premium-ghost mt-5 inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm font-medium text-gray-200"
-          >
-            <FileDown size={14} />
-            Download claim pack
-          </a>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <a
+              href={`/api/products/${product.id}/claim-pack`}
+              className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 text-sm font-semibold text-black"
+            >
+              <FileDown size={14} />
+              Download claim pack
+            </a>
+          </div>
+          <CarryListActions
+            productName={product.name}
+            items={checklist.items}
+          />
         </section>
 
         <section className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5 md:p-6">

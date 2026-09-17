@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import AuthShell, { AuthBrandMark } from "@/components/auth/auth-shell";
+import LegalDocument from "@/components/legal-document";
 import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — OwnCover",
+  title: "Terms of Service",
   description:
     "Terms of Service for OwnCover, including accounts, scanning, email-forward, household sharing, and liability limits.",
 };
@@ -41,18 +41,12 @@ function MailLink() {
 
 export default function TermsPage() {
   return (
-    <AuthShell wide>
-      <div className="text-center">
-        <AuthBrandMark />
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-white">
-          Terms of Service
-        </h1>
-        <p className="mt-2 text-sm text-white/40">
-          Last updated: September 3, 2026
-        </p>
-      </div>
-
-      <div className="mt-10 space-y-8">
+    <LegalDocument
+      title="Terms of Service"
+      updated="September 18, 2026"
+      otherHref="/privacy"
+      otherLabel="Privacy Policy"
+    >
         <p className="text-sm leading-7 text-white/55">
           These Terms of Service (&quot;Terms&quot;) are a binding agreement
           between you and the operator of OwnCover
@@ -69,17 +63,19 @@ export default function TermsPage() {
           . If you do not agree, do not use the Service.
         </p>
         <p className="text-sm leading-7 text-white/40">
-          This is a practical template for an early-stage product in India. It
-          is not legal advice and does not replace counsel.
+          This is a practical notice of how OwnCover runs today. It has not
+          been reviewed by a lawyer. Before you store a large archive of tax
+          invoices, have Indian counsel review DPDP duties and these Terms.
         </p>
 
         <Section title="1. Who we are">
           <p>
-            OwnCover is a personal warranty tracker. It helps you store
-            product details, GST invoices, warranty cards, and related files,
-            scan those documents to autofill forms, share a family vault, and
-            receive expiry reminders. It is not a manufacturer, retailer,
-            insurer, claims agent, or law firm.
+            OwnCover is a warranty tracker for personal and small-team use. It
+            helps you store product details, GST invoices, warranty cards, and
+            related files, scan those documents to autofill forms, share a vault
+            with people you invite, and receive expiry reminders. You may use it
+            at home, in a shop, gym, office, or similar. It is not a
+            manufacturer, retailer, insurer, claims agent, or law firm.
           </p>
           <p>
             Questions: <MailLink />.
@@ -126,8 +122,8 @@ export default function TermsPage() {
               and review them as drafts before they become products
             </li>
             <li>
-              Invite household members to a shared family vault (up to five
-              people)
+              Invite people to a shared vault (up to five people) for a home,
+              shop, gym, office, or similar
             </li>
             <li>
               Receive email reminders (including about 30 days, 7 days, and the
@@ -181,12 +177,14 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="7. Household vaults">
+        <Section title="7. Shared vaults">
           <p>
-            A household is a shared family vault, not a company workspace.
-            Invite only people you trust. Members can see shared products,
-            documents, reminder status, and inbound drafts, including personal
-            data printed on invoices (name, address, phone, GSTIN).
+            A shared vault is for people you invite (up to five, all 18+). You
+            may use it for a home, shop, gym, office, or similar. It is not an
+            enterprise workspace with departments, extra admin roles, or company
+            billing. Invite only people you trust. Members can see shared
+            products, documents, reminder status, and inbound drafts, including
+            personal data printed on invoices (name, address, phone, GSTIN).
           </p>
           <p>
             Owners can invite, rename the vault, and manage membership. Members
@@ -368,17 +366,6 @@ export default function TermsPage() {
             For these Terms: <MailLink />.
           </p>
         </Section>
-      </div>
-
-      <p className="mt-12 text-center text-sm text-white/40">
-        <Link href="/login" className="underline underline-offset-2 hover:text-white/70">
-          Back to log in
-        </Link>
-        <span className="mx-2 text-white/20">·</span>
-        <Link href="/privacy" className="underline underline-offset-2 hover:text-white/70">
-          Privacy Policy
-        </Link>
-      </p>
-    </AuthShell>
+      </LegalDocument>
   );
 }

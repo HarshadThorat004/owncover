@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { formatUtcDay } from "@/lib/exports/format";
+
 type Point = {
   label: string;
   date: Date | null;
@@ -11,15 +17,6 @@ type Props = {
   extendedLabel?: string;
 };
 
-function formatDate(date: Date | null) {
-  if (!date) return "Not set";
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 function pointState(date: Date | null, now: Date) {
   if (!date) return "missing" as const;
   if (date.getTime() < now.getTime()) return "done" as const;
@@ -32,7 +29,11 @@ export default function CoverageTimeline({
   extendedExpiry,
   extendedLabel,
 }: Props) {
-  const now = new Date();
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+  }, []);
   const points: Point[] = [
     { label: "Purchased", date: purchaseDate },
     { label: "Manufacturer cover ends", date: manufacturerExpiry },
@@ -45,9 +46,12 @@ export default function CoverageTimeline({
     });
   }
 
-  const upcomingIndex = points.findIndex(
-    (point) => point.date && point.date.getTime() >= now.getTime()
-  );
+  const upcomingIndex =
+    now == null
+      ? -1
+      : points.findIndex(
+          (point) => point.date && point.date.getTime() >= now.getTime()
+        );
 
   return (
     <section className="rounded-2xl border border-white/10 p-5 md:p-6">
@@ -58,7 +62,11 @@ export default function CoverageTimeline({
 
       <ol className="mt-6 space-y-0">
         {points.map((point, index) => {
-          const state = pointState(point.date, now);
+          const state = !point.date
+            ? "missing"
+            : now
+              ? pointState(point.date, now)
+              : "upcoming";
           const current = upcomingIndex === index;
           return (
             <li key={point.label} className="flex gap-4">
@@ -85,7 +93,7 @@ export default function CoverageTimeline({
                     current ? "text-cyan-200/80" : "text-gray-500"
                   }`}
                 >
-                  {formatDate(point.date)}
+                  {formatUtcDay(point.date, "Not set")}
                   {current ? " · next date" : ""}
                   {state === "missing" ? " · add this date" : ""}
                 </p>

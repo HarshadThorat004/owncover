@@ -1,11 +1,17 @@
 import { getReminderSchedule } from "@/lib/reminder-schedule";
+import { CalendarDays } from "lucide-react";
 
 type Props = {
   expiry: Date | null;
   coverLabel?: string | null;
+  calendarHref?: string;
 };
 
-export default function ReminderSchedule({ expiry, coverLabel }: Props) {
+export default function ReminderSchedule({
+  expiry,
+  coverLabel,
+  calendarHref,
+}: Props) {
   if (!expiry) {
     return (
       <section className="rounded-2xl border border-white/10 p-5 md:p-6">
@@ -64,6 +70,16 @@ export default function ReminderSchedule({ expiry, coverLabel }: Props) {
           </li>
         ))}
       </ul>
+
+      {calendarHref && (
+        <a
+          href={calendarHref}
+          className="premium-ghost mt-5 inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm font-medium text-gray-200"
+        >
+          <CalendarDays size={14} />
+          Add expiry to calendar
+        </a>
+      )}
     </section>
   );
 }

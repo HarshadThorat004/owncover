@@ -52,7 +52,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
 
   function applyHousehold(body: HouseholdPayload) {
     setData(body);
-    setVaultName(body.household?.name ?? "Family vault");
+    setVaultName(body.household?.name ?? "Shared vault");
   }
 
   useEffect(() => {
@@ -203,7 +203,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 size={16} className="animate-spin" />
-          Loading household…
+          Loading vault…
         </div>
       </section>
     );
@@ -217,10 +217,11 @@ export default function HouseholdSettings({ currentUserId }: Props) {
       <div className="flex items-start gap-3">
         <Users size={18} className="mt-0.5 text-cyan-300" />
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-white">Household vault</h2>
+          <h2 className="text-base font-semibold text-white">Shared vault</h2>
           <p className="mt-2 text-sm leading-7 text-gray-500">
-            Share this whole vault with family — invoices, warranties, and
-            reminders. Invitees must be 18+. Up to {data.seats.max} people.
+            Share this whole vault with family or staff — invoices, warranties,
+            and reminders. Home, shop, gym, office. Invitees must be 18+. Up to{" "}
+            {data.seats.max} people.
           </p>
 
           {data.household && isOwner && (
@@ -256,7 +257,7 @@ export default function HouseholdSettings({ currentUserId }: Props) {
                 required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="family@email.com"
+                placeholder="name@email.com"
                 disabled={!canInvite}
                 className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-600 focus:border-white/25 disabled:opacity-50"
               />

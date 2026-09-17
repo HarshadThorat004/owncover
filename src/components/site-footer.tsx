@@ -1,9 +1,32 @@
 import Link from "next/link";
 
 import BrandLogo from "@/components/brand-logo";
-import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
+import { BRAND_CONTACT_EMAIL, BRAND_NAME, BRAND_TAGLINE } from "@/constants/brand";
 
 const CONTACT_EMAIL = BRAND_CONTACT_EMAIL;
+
+const PRODUCT_LINKS = [
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/help", label: "Help" },
+  { href: "/help/hi", label: "मदद" },
+  { href: "/#compare", label: "Compare" },
+  { href: "/sample-pack", label: "Sample pack" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/register", label: "Get started" },
+  { href: "/login", label: "Sign in" },
+] as const;
+
+const COMPANY_LINKS = [
+  { href: "/about", label: "About" },
+  { href: "/security", label: "Security" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+const LEGAL_LINKS = [
+  { href: "/terms", label: "Terms" },
+  { href: "/privacy", label: "Privacy" },
+] as const;
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
@@ -12,11 +35,7 @@ export default function SiteFooter() {
     <footer className="relative border-t border-white/10 bg-[#030304]/80">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-10 md:flex-row md:items-start md:justify-between md:px-8 md:py-12">
         <div className="max-w-sm">
-          <BrandLogo
-            variant="full"
-            size="sm"
-            tagline="Your warranty. Our responsibility."
-          />
+          <BrandLogo variant="full" size="sm" tagline={BRAND_TAGLINE} />
           <p className="mt-4 text-sm leading-6 text-gray-500">
             Scan GST invoices, track manufacturer and store cover, and walk into
             a service centre with a claim pack. We do not run the desk.
@@ -29,31 +48,28 @@ export default function SiteFooter() {
               Product
             </p>
             <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
-              <li>
-                <a href="#how-it-works" className="transition hover:text-white">
-                  How it works
-                </a>
-              </li>
-              <li>
-                <a href="#compare" className="transition hover:text-white">
-                  Compare
-                </a>
-              </li>
-              <li>
-                <a href="#faq" className="transition hover:text-white">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <Link href="/register" className="transition hover:text-white">
-                  Get started
-                </Link>
-              </li>
-              <li>
-                <Link href="/login" className="transition hover:text-white">
-                  Sign in
-                </Link>
-              </li>
+              {PRODUCT_LINKS.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="transition hover:text-white">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
+              Company
+            </p>
+            <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
+              {COMPANY_LINKS.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="transition hover:text-white">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -62,16 +78,13 @@ export default function SiteFooter() {
               Legal
             </p>
             <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
-              <li>
-                <Link href="/terms" className="transition hover:text-white">
-                  Terms
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="transition hover:text-white">
-                  Privacy
-                </Link>
-              </li>
+              {LEGAL_LINKS.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="transition hover:text-white">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -80,6 +93,11 @@ export default function SiteFooter() {
               Contact
             </p>
             <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
+              <li>
+                <Link href="/contact" className="transition hover:text-white">
+                  Write to us
+                </Link>
+              </li>
               <li>
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
@@ -95,8 +113,10 @@ export default function SiteFooter() {
 
       <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-xs text-gray-600 md:flex-row md:items-center md:justify-between md:px-8">
-          <p>© {year} OwnCover. All rights reserved.</p>
-          <p>Built to keep your warranties safe.</p>
+          <p>
+            © {year} {BRAND_NAME}. All rights reserved.
+          </p>
+          <p>{BRAND_TAGLINE}</p>
         </div>
       </div>
     </footer>

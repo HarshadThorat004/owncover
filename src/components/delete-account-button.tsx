@@ -93,7 +93,7 @@ export default function DeleteAccountButton({
                 </h2>
                 <p className="mt-2 text-sm text-gray-400">
                   {mode === "member"
-                    ? "This removes your account. Shared vault products stay with the household."
+                    ? "This removes your account. Shared vault products stay with the vault."
                     : mode === "owner-with-others"
                       ? "This removes your account. The shared vault stays, and ownership moves to another member."
                       : "This permanently removes your products, invoices, warranty cards, and reminder history. Uploaded files are deleted from storage. This cannot be undone."}

@@ -1,30 +1,23 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import {
-  Menu,
-  X,
-  ArrowRight,
-  Check,
-  Minus,
-} from "lucide-react";
+import { ArrowRight, Check, Minus } from "lucide-react";
 
-import BrandLogo from "@/components/brand-logo";
-import BackgroundGlow from "@/components/background-glow";
 import FeatureCarousel from "@/components/feature-carousel";
-import SiteFooter from "@/components/site-footer";
+import FaqList from "@/components/faq-list";
+import HeroArtifact from "@/components/hero-artifact";
+import MarketingShell from "@/components/marketing-shell";
+import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
+import { faqsForHome } from "@/constants/faqs";
 
 const FEATURE_SLIDES = [
   {
     title: "Desk-ready claim pack",
-    desc: "Invoice facts, serial, and a service-centre checklist in one PDF — print it before you leave the house.",
+    desc: "Invoice facts, serial, and a service-centre checklist in one PDF — print it before you go to the desk.",
     image: "/brand/features/claim-pack.png",
     imageAlt: "Claim pack document with cyan glow",
   },
   {
     title: "Reminders that land",
-    desc: "Email and browser alerts at 30 days, 7 days, and the day before manufacturer or store cover ends.",
+    desc: "Email and browser alerts at 30 days, 7 days, and the day before — plus a calendar file for Google or Apple Calendar.",
     image: "/brand/features/reminders.png",
     imageAlt: "Reminder notifications and calendar markers",
   },
@@ -35,10 +28,10 @@ const FEATURE_SLIDES = [
     imageAlt: "GST invoice scan with holographic beam",
   },
   {
-    title: "Household vault",
-    desc: "Share one vault with family. Same products, documents, and expiry reminders — each person still has their own sign-in.",
+    title: "Shared vault",
+    desc: "Share one vault with family or staff — home, shop, gym, or office. Same products, documents, and expiry reminders. Each person still has their own sign-in.",
     image: "/brand/features/household.png",
-    imageAlt: "Shared household vault network",
+    imageAlt: "Shared vault network",
   },
   {
     title: "Coverage timeline",
@@ -48,130 +41,14 @@ const FEATURE_SLIDES = [
   },
 ];
 
-const FAQS = [
-  {
-    q: "What does OwnCover actually do?",
-    a: "It keeps GST invoices, serials, and expiry dates in one vault, then builds a claim pack you can take to a brand or retailer desk. We do not file claims or run the service centre.",
-  },
-  {
-    q: "How does GST scan work?",
-    a: "We read the invoice QR first. If that fails, on-device OCR looks at English and Hindi labels. Unsure fields stay empty — you confirm dates before anything is saved.",
-  },
-  {
-    q: "What is a claim pack?",
-    a: "A PDF with invoice facts, serial, cover dates, and a desk checklist. Print it. Do not leave originals behind.",
-  },
-  {
-    q: "What reminders do I get?",
-    a: "Email and optional browser alerts at 30 days, 7 days, and the day before manufacturer or store cover ends.",
-  },
-  {
-    q: "Can family share one vault?",
-    a: "Yes. A household vault holds the same products and documents for everyone you invite. Each person still has their own sign-in.",
-  },
-];
-
 export default function HomePage() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#030304] text-white">
-      <BackgroundGlow />
-
-      <header className="site-header sticky top-0 z-50">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <BrandLogo
-              variant="full"
-              size="md"
-              tagline="Desk-ready, not desk-side."
-            />
-          </Link>
-
-          <nav className="hidden items-center gap-7 md:flex">
-            <a
-              href="#how-it-works"
-              className="text-sm text-gray-400 transition-colors duration-200 hover:text-white"
-            >
-              How it works
-            </a>
-            <a
-              href="#compare"
-              className="text-sm text-gray-400 transition-colors duration-200 hover:text-white"
-            >
-              Compare
-            </a>
-            <a
-              href="#faq"
-              className="text-sm text-gray-400 transition-colors duration-200 hover:text-white"
-            >
-              FAQ
-            </a>
-            <Link
-              href="/login"
-              className="text-sm text-gray-400 transition-colors duration-200 hover:text-white"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/register"
-              className="premium-btn premium-btn-solid rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black"
-            >
-              Get started
-            </Link>
-          </nav>
-
-          <button
-            type="button"
-            className="premium-ghost rounded-xl border border-white/10 p-2 md:hidden"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
-
-        {mobileOpen && (
-          <div className="border-t border-white/10 px-5 py-3 md:hidden">
-            <div className="flex flex-col gap-1">
-              {[
-                ["#how-it-works", "How it works"],
-                ["#compare", "Compare"],
-                ["#faq", "FAQ"],
-              ].map(([href, label]) => (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-xl px-3 py-2.5 text-sm text-gray-300"
-                >
-                  {label}
-                </a>
-              ))}
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-3 py-2.5 text-sm text-gray-300"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMobileOpen(false)}
-                className="premium-btn premium-btn-solid rounded-xl bg-white px-3 py-2.5 text-center text-sm font-semibold text-black"
-              >
-                Get started
-              </Link>
-            </div>
-          </div>
-        )}
-      </header>
-
+    <MarketingShell>
       <section className="relative">
-        <div className="relative mx-auto max-w-6xl px-5 py-24 text-center md:px-8 md:py-32">
+        <div className="relative mx-auto max-w-6xl px-5 py-16 text-center md:px-8 md:py-24">
           <p className="eyebrow-pill text-[11px] font-medium uppercase tracking-[0.2em] text-cyan-200/90">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
-            For households who actually use the service desk
+            For homes, shops, gyms, and offices that use the service desk
           </p>
           <h1 className="font-display mx-auto mt-8 max-w-4xl text-[2.5rem] leading-[1.08] md:text-7xl">
             Walk in with facts.
@@ -180,8 +57,9 @@ export default function HomePage() {
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-gray-400">
             Scan GST invoices, track manufacturer vs store cover, and download a
-            claim pack before you visit the desk. OwnCover does not run the
-            service centre — it gets you desk-ready.
+            claim pack before you visit the desk. Same vault for a house, a shop
+            floor, a gym, an office — OwnCover still does not run the service
+            centre.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -192,33 +70,38 @@ export default function HomePage() {
               Create free account
               <ArrowRight size={16} />
             </Link>
-            <a
-              href="#how-it-works"
+            <Link
+              href="/sample-pack"
               className="premium-ghost rounded-xl border border-white/10 px-5 py-3.5 text-sm font-medium text-gray-300"
             >
-              See the first 10 minutes
+              See a sample pack
+            </Link>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            No card.{" "}
+            <Link
+              href="/pricing"
+              className="text-gray-400 underline-offset-4 hover:text-white hover:underline"
+            >
+              See what&apos;s included
+            </Link>
+            {" · "}
+            <a
+              href="#how-it-works"
+              className="text-gray-400 underline-offset-4 hover:text-white hover:underline"
+            >
+              First 10 minutes
             </a>
+          </p>
+
+          <div className="mx-auto mt-14 max-w-5xl text-left">
+            <HeroArtifact />
           </div>
 
-          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-3 gap-3">
-            {[
-              { value: "GST", label: "Invoice facts" },
-              { value: "30 / 7 / 1", label: "Day reminders" },
-              { value: "PDF", label: "Claim pack" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/10 px-3 py-5"
-              >
-                <p className="font-display text-xl text-white md:text-2xl">
-                  {item.value}
-                </p>
-                <p className="mt-1 text-[11px] tracking-wide text-gray-500">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-[12px] leading-6 tracking-wide text-gray-600">
+            GST QR first · On-device scan when we can · You confirm dates ·
+            Delete anytime
+          </p>
         </div>
       </section>
 
@@ -294,7 +177,7 @@ export default function HomePage() {
             {
               n: "03",
               title: "Reminders go live",
-              desc: "30 days, 7 days, and the day before — email and browser.",
+              desc: "30 days, 7 days, and the day before — email, browser, and a calendar file.",
             },
             {
               n: "04",
@@ -313,6 +196,44 @@ export default function HomePage() {
               <p className="mt-2 text-sm leading-7 text-gray-500">{step.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8">
+        <div className="grid gap-6 overflow-hidden rounded-3xl border border-white/10 md:grid-cols-2">
+          <div className="p-7 md:p-10">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
+              Already in your inbox
+            </p>
+            <h2 className="font-display mt-3 text-2xl md:text-3xl">
+              Forward the Amazon PDF
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-gray-400">
+              After you sign in, Settings shows a private address on{" "}
+              {BRAND_INBOUND_DOMAIN}. Forward Flipkart, Amazon, or Croma
+              invoices. We start a draft. You confirm dates. Then download a
+              pack.
+            </p>
+            <Link
+              href="/register"
+              className="premium-btn premium-btn-solid mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black"
+            >
+              Create free account
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="flex flex-col justify-center border-t border-white/10 bg-cyan-400/[0.04] p-7 md:border-l md:border-t-0 md:p-10">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
+              Calendar
+            </p>
+            <h3 className="mt-3 text-lg font-medium text-white">
+              Add expiry to Google or Apple Calendar
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-gray-400">
+              Email and browser at 30 / 7 / 1 days. Download an .ics file from
+              any product so the date also lives next to your other reminders.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -341,9 +262,10 @@ export default function HomePage() {
               {[
                 ["GST invoice facts", "Extracted and stored", "Scattered photos"],
                 ["Manufacturer vs store cover", "Tracked separately", "One date, if any"],
-                ["Reminders", "30 / 7 / 1 days", "A calendar you forget"],
+                ["Email-forward invoices", "Draft in your vault", "Search the thread"],
+                ["Reminders", "30 / 7 / 1 days + calendar file", "A calendar you forget"],
                 ["Desk checklist", "In the claim pack", "You remember at the counter"],
-                ["Household sharing", "One vault", "Forward the thread"],
+                ["Shared vault", "Family or staff, one vault", "Forward the thread"],
               ].map(([cap, ours, theirs]) => (
                 <tr key={cap} className="border-t border-white/5">
                   <td className="px-5 py-3.5 text-gray-300">{cap}</td>
@@ -363,20 +285,19 @@ export default function HomePage() {
         <h2 className="font-display mt-3 text-center text-3xl md:text-4xl">
           Straight answers
         </h2>
-        <div className="mt-10 divide-y divide-white/10 border-y border-white/10">
-          {FAQS.map((item) => (
-            <details key={item.q} className="group py-5">
-              <summary className="cursor-pointer list-none text-sm font-medium text-white [&::-webkit-details-marker]:hidden">
-                <span className="flex items-start justify-between gap-4">
-                  {item.q}
-                  <span className="text-gray-600 group-open:hidden">+</span>
-                  <span className="hidden text-gray-600 group-open:inline">−</span>
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-7 text-gray-400">{item.a}</p>
-            </details>
-          ))}
+        <div className="mt-10">
+          <FaqList items={faqsForHome()} />
         </div>
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Desk checklists and GST scan:{" "}
+          <Link
+            href="/help"
+            className="text-cyan-300/90 underline-offset-2 hover:underline"
+          >
+            Help
+          </Link>
+          .
+        </p>
       </section>
 
       <section className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8">
@@ -388,20 +309,26 @@ export default function HomePage() {
             </h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-gray-400">
               We don’t run the service centre. We get the invoice, serial, and
-              dates onto one page before you leave the house.
+              dates onto one page before you go to the desk.
             </p>
-            <Link
-              href="/register"
-              className="premium-btn premium-btn-solid mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-black"
-            >
-              Start for free
-              <ArrowRight size={16} />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/register"
+                className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-black"
+              >
+                Start for free
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                href="/sample-pack"
+                className="premium-ghost rounded-xl border border-white/10 px-5 py-3.5 text-sm font-medium text-gray-300"
+              >
+                See a sample pack
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-      <SiteFooter />
-    </main>
+    </MarketingShell>
   );
 }

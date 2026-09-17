@@ -30,6 +30,7 @@ export type ClaimPackProduct = {
   renewalNotes: string | null;
   invoiceImage: string | null;
   documents: ClaimPackDocument[];
+  packKind?: "live" | "sample";
 };
 
 const ink = rgb(0.1, 0.1, 0.12);
@@ -109,8 +110,10 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
     font: heading,
     color: muted,
   });
+  const isSample = product.packKind === "sample";
+
   y -= 22;
-  page.drawText("Claim pack", {
+  page.drawText(isSample ? "Sample claim pack" : "Claim pack", {
     x: left,
     y,
     size: 22,
@@ -119,7 +122,9 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
   });
   y -= 16;
   page.drawText(
-    `Generated ${isoDate(new Date())}  ·  For service centre, manufacturer, or insurer`,
+    isSample
+      ? "Fictional product for demonstration. OwnCover does not file claims."
+      : `Generated ${isoDate(new Date())}  ·  For service centre, manufacturer, or insurer`,
     {
       x: left,
       y,

@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const SIZE_MAP = {
   sm: 32,
   md: 40,
@@ -31,14 +29,13 @@ export default function BrandLogo({
   const px = SIZE_MAP[size];
 
   const mark = (
-    <Image
+    // Local SVG — plain img avoids next/image hydration mismatches on the mark.
+    <img
       src="/brand/logo-mark.svg"
       alt="OwnCover"
       width={px}
       height={px}
       className={`brand-mark shrink-0 transition-transform duration-300 ${markClassName}`.trim()}
-      unoptimized
-      priority
     />
   );
 

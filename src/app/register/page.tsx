@@ -130,6 +130,9 @@ function RegisterPageContent() {
             Log in.
           </Link>
         </p>
+        <p className="mt-3 text-xs leading-5 text-white/35">
+          No card. You confirm every date. Delete anytime.
+        </p>
       </div>
 
       <div className="mt-8">

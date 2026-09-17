@@ -1,25 +1,20 @@
 # OwnCover
 
-AI-powered warranty and product management platform built with Next.js 16, Prisma, PostgreSQL, UploadThing, and Tailwind CSS.
+Desk-ready, not desk-side. OwnCover is an India-first warranty vault: scan GST invoices, track manufacturer vs store cover, and download a claim pack before you visit the desk. It is not an insurer and does not file claims.
 
-Track warranties, upload invoices, manage product documents, and monitor expiry dates from a modern dashboard.
+Stack: Next.js 16, Prisma, PostgreSQL, UploadThing, Tailwind CSS, Resend.
 
 ---
 
-# Features
+# What it does
 
-- Product management dashboard
-- Add / Edit / Delete products
-- Warranty tracking system
-- Warranty expiry alerts
-- Document uploads
-- Invoice & warranty document storage
-- Product detail pages
-- Warranty usage progress tracking
-- Authentication system (password, Google, email OTP)
-- Responsive UI
-- REST API architecture
-- Prisma ORM integration
+- GST QR-first scan, then on-device OCR — you confirm dates before save
+- Vault for homes, shops, gyms, and offices (shared, up to five people)
+- Manufacturer vs store/AMC cover, reminders at 30 / 7 / 1 days
+- Claim pack PDF plus a what-to-carry list
+- Email-forward drafts (`inbound.owncover.in`)
+- CSV and calendar export, weekly digest when something needs you
+- Public sample pack, help in English and Hindi
 
 ---
 
@@ -43,8 +38,7 @@ Track warranties, upload invoices, manage product documents, and monitor expiry 
 ## File Uploads
 - UploadThing
 
-## AI (Planned)
-- Gemini OCR invoice scanning
+Scan is QR first, then OCR. We do not use customer invoices to train public models.
 
 ---
 
@@ -170,8 +164,8 @@ The app guards the daily cap and returns clear errors instead of failing silentl
 ```bash
 RESEND_API_KEY=re_xxxxxxxx
 RESEND_FROM_EMAIL=OwnCover <noreply@owncover.in>
-RESEND_REPLY_TO=hello@owncover.in
-RESEND_TEST_RECIPIENT=hello@owncover.in
+RESEND_REPLY_TO=owncover.in@gmail.com
+RESEND_TEST_RECIPIENT=owncover.in@gmail.com
 RESEND_DAILY_LIMIT=95
 CRON_SECRET=your-random-secret
 ```
@@ -208,7 +202,7 @@ That shared sender can only deliver to your Resend account email. After domain v
 curl -X POST http://localhost:3000/api/cron/test-email \
   -H "Authorization: Bearer $CRON_SECRET" \
   -H "Content-Type: application/json" \
-  -d '{"to":"hello@owncover.in"}'
+  -d '{"to":"owncover.in@gmail.com"}'
 ```
 
 Daily production reminders run via [`vercel.json`](vercel.json) → `GET /api/cron/reminders`.
@@ -259,48 +253,13 @@ If Google env vars are missing, that button stays hidden automatically. Password
 
 ---
 
-# Next priorities
+# Next
 
-Do these in order — trust and reliability before more features:
+1. **Lawyer pass** — Terms and Privacy still say they have not been reviewed by counsel. Get an India DPDP + liability review before a large invoice archive.
+2. **Real desk stories** — three short accounts from real users (name, city, product, what the desk asked). Do not invent them.
+3. **Production email** — Verify `owncover.in` in Resend so OTP, reminders, and the Monday digest reach real inboxes.
 
-1. **Production email** — Verify `owncover.in` in Resend, set `RESEND_FROM_EMAIL` / `CRON_SECRET` on Vercel so OTP and warranty reminders reach real users.
-2. **First-run empty dashboard** — When a user has 0 products, show one clear “Add your first product” path.
-3. **Mobile / polish pass** — Document viewer, logo, and add-product flow on small screens.
-4. **Later (after real usage)** — Pricing, help center, analytics dashboard, multi-user orgs, export reports.
-
-# Production Features
-
-- App Router architecture
-- Dynamic route handling
-- Error boundaries
-- Loading skeletons
-- Responsive UI
-- Prisma ORM integration
-- PostgreSQL database
-- Authentication system
-- File upload support
-- Warranty analytics
-- Email warranty reminders (Resend + cron)
-- Household vault (email invite, owner/member)
-- Lean marketing footer (landing only)
-
-# Future Improvements
-
-- PDF preview enhancements
-- Analytics dashboard
-- Multi-user organization / RBAC (beyond household)
-- Cloud storage optimization
-- Export reports
-
----
-
-# Screenshots
-
-## Dashboard
-<img width="100%" alt="Dashboard Screenshot" src="YOUR_SCREENSHOT_URL" />
-
-## Product Details
-<img width="100%" alt="Product Page Screenshot" src="YOUR_SCREENSHOT_URL" />.
+Paid extras and a full Hindi UI stay later, after the free product is in real use.
 
 ---
 

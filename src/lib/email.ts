@@ -1,14 +1,22 @@
 import { Resend } from "resend";
 
-import { BRAND_DOMAIN, BRAND_FROM_EMAIL, BRAND_NAME } from "@/constants/brand";
+import {
+  BRAND_CONTACT_EMAIL,
+  BRAND_DOMAIN,
+  BRAND_FROM_EMAIL,
+  BRAND_NAME,
+  BRAND_TAGLINE,
+} from "@/constants/brand";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import type { WeeklyDigest } from "@/lib/weekly-digest";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
 const DEFAULT_FROM = BRAND_FROM_EMAIL;
-const DEFAULT_REPLY_TO = `hello@${BRAND_DOMAIN}`;
+const DEFAULT_REPLY_TO = BRAND_CONTACT_EMAIL;
 const DEFAULT_DOMAIN_FROM = BRAND_FROM_EMAIL;
 
 /** Resend free tier is 100/day — keep a small buffer for OTP + tests. */
@@ -87,7 +95,7 @@ export function getResendTestRecipient() {
   return (
     process.env.RESEND_TEST_RECIPIENT ||
     process.env.RESEND_REPLY_TO ||
-    ""
+    BRAND_CONTACT_EMAIL
   )
     .trim()
     .toLowerCase();
@@ -208,6 +216,11 @@ export function friendlyEmailError(error: unknown) {
     : "Failed to send email";
 }
 
+function brandEmailHeader() {
+  return `<h2 style="margin:0 0 4px;">${BRAND_NAME}</h2>
+      <p style="margin:0 0 20px;color:#666;font-size:12px;">${BRAND_TAGLINE}</p>`;
+}
+
 function buildBody(input: ReminderEmailInput) {
   const name = input.userName || "there";
   const brand = input.brand ? ` (${input.brand})` : "";
@@ -232,7 +245,7 @@ function buildBody(input: ReminderEmailInput) {
 
   return `
     <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-      <h2 style="margin-bottom: 8px;">OwnCover</h2>
+      ${brandEmailHeader()}
       <p>Hi ${name},</p>
       <p>${messages[input.type] ?? "You have a warranty update."}</p>
       <p>Log in to your dashboard to review documents and take action.</p>
@@ -244,7 +257,7 @@ function buildBody(input: ReminderEmailInput) {
 function buildTestBody() {
   return `
     <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-      <h2 style="margin-bottom: 8px;">OwnCover</h2>
+      ${brandEmailHeader()}
       <p>Hi there,</p>
       <p>This is a test email from <strong>OwnCover</strong>. Reminder delivery is working.</p>
       <p>If you reply to this message, it will go to our support inbox.</p>
@@ -320,6 +333,76 @@ export async function sendReminderEmail(input: ReminderEmailInput) {
   }
 }
 
+export async function sendWeeklyDigestEmail(input: {
+  to: string;
+  userName: string | null;
+  digest: WeeklyDigest;
+}) {
+  if (!resend) {
+    console.warn("RESEND_API_KEY missing — skipping digest send");
+    return { skipped: true as const, reason: "config" as const };
+  }
+
+  try {
+    await sendViaResend({
+      to: input.to,
+      subject: `${BRAND_NAME} — this week in your vault`,
+      html: buildDigestBody(input),
+    });
+    return { skipped: false as const };
+  } catch (error) {
+    if (error instanceof EmailSendError && error.kind === "quota") {
+      return { skipped: true as const, reason: "quota" as const };
+    }
+    throw error;
+  }
+}
+
+function digestList(title: string, lines: { name: string; detail: string }[]) {
+  if (lines.length === 0) return "";
+
+  const items = lines
+    .slice(0, 8)
+    .map(
+      (line) =>
+        `<li style="margin:0 0 8px;"><strong>${escapeHtml(line.name)}</strong><br/><span style="color:#666;font-size:13px;">${escapeHtml(line.detail)}</span></li>`
+    )
+    .join("");
+
+  return `<h3 style="margin:20px 0 8px;font-size:15px;">${escapeHtml(title)}</h3><ul style="padding-left:18px;margin:0;">${items}</ul>`;
+}
+
+function buildDigestBody(input: {
+  userName: string | null;
+  digest: WeeklyDigest;
+}) {
+  const name = escapeHtml(input.userName?.trim() || "there");
+  const dashboard = `${getAppBaseUrl()}/dashboard`;
+  const drafts =
+    input.digest.inboundDrafts > 0
+      ? `<p>${input.digest.inboundDrafts} forwarded invoice${
+          input.digest.inboundDrafts === 1 ? "" : "s"
+        } waiting to confirm.</p>`
+      : "";
+
+  return `
+    <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
+      ${brandEmailHeader()}
+      <p>Hi ${name},</p>
+      <p>A short look at the vault — what expires soon, what is missing a serial, and invoices still in draft. We do not file claims.</p>
+      ${digestList("Needs a desk visit (30 days)", input.digest.expiring)}
+      ${digestList("Missing serial", input.digest.missingSerial)}
+      ${drafts}
+      <p style="margin: 24px 0;">
+        <a href="${dashboard}" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600;">
+          Open dashboard
+        </a>
+      </p>
+      <p style="color:#666;font-size:12px;margin-top:24px;">Monday vault mail. Quiet weeks stay quiet — we only send when there is something to do.</p>
+    </div>
+  `;
+}
+
 export async function sendTestEmail(to: string) {
   if (!resend) {
     console.warn("RESEND_API_KEY missing — skipping email send");
@@ -346,7 +429,7 @@ export async function sendOtpEmail(to: string, code: string) {
     subject: `Your ${BRAND_NAME} sign-in code`,
     html: `
       <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-        <h2 style="margin-bottom: 8px;">OwnCover</h2>
+        ${brandEmailHeader()}
         <p>Use this one-time code to sign in:</p>
         <p style="font-size: 28px; letter-spacing: 6px; font-weight: 700; margin: 20px 0;">${code}</p>
         <p>This code expires in 10 minutes. If you did not request it, you can ignore this email.</p>
@@ -374,14 +457,14 @@ export async function sendHouseholdInviteEmail(input: {
 
   await sendViaResend({
     to: input.to,
-    subject: `${input.inviterName?.trim() || input.inviterEmail} invited you to a shared ${BRAND_NAME} household`,
+    subject: `${input.inviterName?.trim() || input.inviterEmail} invited you to a shared ${BRAND_NAME} vault`,
     html: `
       <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
-        <h2 style="margin-bottom: 8px;">OwnCover</h2>
-        <p>${who} invited you to share <strong>${vaultName}</strong> — one household for invoices, warranties, and expiry reminders.</p>
+        ${brandEmailHeader()}
+        <p>${who} invited you to share <strong>${vaultName}</strong> — one vault for invoices, warranties, and expiry reminders.</p>
         <p style="margin: 24px 0;">
           <a href="${input.acceptUrl}" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600;">
-            Join household
+            Join vault
           </a>
         </p>
         <p>This invite expires in 7 days. If you did not expect this, you can ignore the email.</p>

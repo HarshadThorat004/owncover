@@ -1,11 +1,11 @@
 {
   "name": "OwnCover",
   "short_name": "OwnCover",
-  "description": "Track warranties, invoices, and expiry reminders.",
+  "description": "Scan GST invoices, track cover, and walk in with a claim pack.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#030304",
+  "theme_color": "#030304",
   "icons": [
     {
       "src": "/brand/logo-mark.svg",

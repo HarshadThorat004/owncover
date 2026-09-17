@@ -7,6 +7,7 @@ import {
   emptyExtractedFields,
   type ExtractedDocumentFields,
   type FieldConfidence,
+  type ScanHint,
 } from "@/lib/document-extract/types";
 import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
 import { getHouseholdIdForUser } from "@/lib/household";
@@ -210,6 +211,34 @@ export function draftExtractToFormValues(extracted: ExtractedDocumentFields | nu
   }
 
   return values;
+}
+
+export function draftScanHints(extracted: ExtractedDocumentFields | null) {
+  const values = draftExtractToFormValues(extracted);
+  const fields = {
+    ...emptyExtractedFields(),
+    ...(extracted ?? {}),
+    fieldMeta: extracted?.fieldMeta ?? {},
+  };
+  const hints: Partial<Record<keyof typeof values, ScanHint>> = {};
+
+  for (const key of FORM_KEYS) {
+    if (!values[key]) continue;
+    const meta = fields.fieldMeta[key];
+    if (!meta) continue;
+    hints[key] = { confidence: meta.confidence, source: meta.source };
+  }
+
+  if (values.warrantyExpiry && fields.fieldMeta.warrantyPeriod) {
+    const meta = fields.fieldMeta.warrantyPeriod;
+    hints.warrantyExpiry = {
+      confidence: meta.confidence,
+      source: meta.source,
+      derived: true,
+    };
+  }
+
+  return hints;
 }
 
 export async function ensureInboundSlug(userId: string) {

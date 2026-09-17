@@ -5,6 +5,32 @@ export function isoDate(value: Date | string | null | undefined) {
   return date.toISOString().slice(0, 10);
 }
 
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+/** UTC calendar day — same string on server and client. */
+export function formatUtcDay(
+  value: Date | string | null | undefined,
+  empty = "—"
+) {
+  if (!value) return empty;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return empty;
+  return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
 export function slugifyFilename(value: string, fallback = "product") {
   const slug = value
     .toLowerCase()

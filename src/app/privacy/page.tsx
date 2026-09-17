@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import AuthShell, { AuthBrandMark } from "@/components/auth/auth-shell";
+import LegalDocument from "@/components/legal-document";
 import { BRAND_CONTACT_EMAIL, BRAND_NAME } from "@/constants/brand";
 
 export const metadata: Metadata = {
-  title: `Privacy Policy — ${BRAND_NAME}`,
+  title: "Privacy Policy",
   description:
     `Privacy Policy for ${BRAND_NAME}, including DPDP 2023 rights, document scanning, email-forward, and household sharing.`,
 };
@@ -41,18 +41,12 @@ function MailLink() {
 
 export default function PrivacyPage() {
   return (
-    <AuthShell wide>
-      <div className="text-center">
-        <AuthBrandMark />
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-white">
-          Privacy Policy
-        </h1>
-        <p className="mt-2 text-sm text-white/40">
-          Last updated: September 3, 2026
-        </p>
-      </div>
-
-      <div className="mt-10 space-y-8">
+    <LegalDocument
+      title="Privacy Policy"
+      updated="September 18, 2026"
+      otherHref="/terms"
+      otherLabel="Terms of Service"
+    >
         <p className="text-sm leading-7 text-white/55">
           This Privacy Policy is the notice of how OwnCover
           (&quot;we,&quot; &quot;us,&quot; the Data Fiduciary) collects, uses,
@@ -68,10 +62,11 @@ export default function PrivacyPage() {
           notice.
         </p>
         <p className="text-sm leading-7 text-white/40">
-          This document is a practical startup template for an India-first
-          product. It is not legal advice and is not a substitute for a
+          This notice describes how we handle personal data today. It has not
+          been reviewed by a lawyer and is not a substitute for a
           counsel-drafted Digital Personal Data Protection Act, 2023
-          (&quot;DPDP Act&quot;) notice.
+          (&quot;DPDP Act&quot;) notice. Email <MailLink /> if you need a copy
+          for your counsel.
         </p>
 
         <Section title="1. Who we are">
@@ -110,8 +105,8 @@ export default function PrivacyPage() {
             We do not fetch files from links in the email body.
           </p>
           <p>
-            <strong className="font-medium text-white/80">Household.</strong>{" "}
-            If you join a family vault: member names and emails, invite emails
+            <strong className="font-medium text-white/80">Shared vault.</strong>{" "}
+            If you join a shared vault: member names and emails, invite emails
             you send, roles (owner/member), and the shared products and drafts
             in that vault.
           </p>
@@ -147,7 +142,7 @@ export default function PrivacyPage() {
               file
             </li>
             <li>
-              Sharing the vault with household members you invite
+              Sharing the vault with people you invite
             </li>
             <li>
               Sending OTP codes, expiry reminders (about 30 days, 7 days, last
@@ -212,15 +207,16 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="6. Household vaults">
+        <Section title="6. Shared vaults">
           <p>
-            A household is a shared family vault (up to five people, all 18+).
-            Members can see shared products, documents, reminder status, and
-            inbound drafts. Invite only people you trust. Their email is stored
-            so we can send the invite.
+            A shared vault is for people you invite (up to five people, all
+            18+) — a home, shop, gym, office, or similar. Members can see
+            shared products, documents, reminder status, and inbound drafts.
+            Invite only people you trust. Their email is stored so we can send
+            the invite.
           </p>
           <p>
-            Leaving the household or deleting your account does not wipe other
+            Leaving the vault or deleting your account does not wipe other
             members&apos; copies of the shared vault. If you are the last
             remaining member, deleting your account also deletes that vault&apos;s
             products and files.
@@ -246,7 +242,7 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p>
-            Household members you invite can see the shared vault as described
+            People you invite to the vault can see shared products as described
             above. We may also disclose information if required by law, to
             protect rights and safety, or in a merger, acquisition, or
             reorganization, with appropriate safeguards.
@@ -372,17 +368,6 @@ export default function PrivacyPage() {
             Privacy and grievance contact: <MailLink />.
           </p>
         </Section>
-      </div>
-
-      <p className="mt-12 text-center text-sm text-white/40">
-        <Link href="/login" className="underline underline-offset-2 hover:text-white/70">
-          Back to log in
-        </Link>
-        <span className="mx-2 text-white/20">·</span>
-        <Link href="/terms" className="underline underline-offset-2 hover:text-white/70">
-          Terms of Service
-        </Link>
-      </p>
-    </AuthShell>
+      </LegalDocument>
   );
 }

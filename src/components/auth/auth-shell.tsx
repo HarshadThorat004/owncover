@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import BrandLogo from "@/components/brand-logo";
+import { BRAND_TAGLINE } from "@/constants/brand";
 
 export const authInputClass =
   "w-full rounded-[10px] border border-white/15 bg-transparent px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/35 focus:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]";
@@ -173,7 +174,7 @@ export default function AuthShell({
               ) : (
                 <span />
               )}
-              <BrandLogo variant="full" size="sm" tagline={false} />
+              <BrandLogo variant="full" size="sm" tagline={BRAND_TAGLINE} />
             </div>
 
             <div className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center px-5 py-10 md:px-8 md:py-14">

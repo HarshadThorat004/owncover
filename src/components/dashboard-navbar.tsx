@@ -16,6 +16,7 @@ import BrandLogo from "@/components/brand-logo";
 import NotificationPanel, {
   type NotificationItem,
 } from "@/components/notification-panel";
+import { BRAND_TAGLINE } from "@/constants/brand";
 
 type Props = {
   name?: string | null;
@@ -35,7 +36,7 @@ export default function DashboardNavbar({
           <BrandLogo
             variant="full"
             size="md"
-            tagline={name ? `Hi, ${name.split(" ")[0]}` : "Warranty manager"}
+            tagline={name ? `Hi, ${name.split(" ")[0]}` : BRAND_TAGLINE}
           />
         </Link>
 
@@ -64,6 +65,13 @@ export default function DashboardNavbar({
           >
             <Settings size={16} />
             Settings
+          </Link>
+
+          <Link
+            href="/help"
+            className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3.5 py-2 text-sm text-gray-300"
+          >
+            Help
           </Link>
 
           <button
@@ -114,6 +122,13 @@ export default function DashboardNavbar({
               className="rounded-xl px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5"
             >
               Settings
+            </Link>
+            <Link
+              href="/help"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-xl px-3 py-2.5 text-sm text-gray-300 hover:bg-white/5"
+            >
+              Help
             </Link>
             <button
               type="button"

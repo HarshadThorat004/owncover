@@ -109,4 +109,21 @@ describe("buildClaimPackPdf", () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(bytes.byteLength).toBeGreaterThan(1000);
   });
+
+  it("labels a sample pack as fictional", async () => {
+    const bytes = await buildClaimPackPdf({
+      ...sample,
+      renewalAvailable: false,
+      renewalNotes: null,
+      invoiceImage: null,
+      documents: [],
+      packKind: "sample",
+    });
+
+    expect(Buffer.from(bytes).subarray(0, 5).toString()).toBe("%PDF-");
+
+    const pdf = await PDFDocument.load(bytes);
+    expect(pdf.getPageCount()).toBe(2);
+    expect(bytes.byteLength).toBeGreaterThan(1000);
+  });
 });

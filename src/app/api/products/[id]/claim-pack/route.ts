@@ -4,6 +4,7 @@ import { jsonError } from "@/lib/api";
 import { buildClaimPackPdf } from "@/lib/exports/claim-pack";
 import { attachmentFilename, slugifyFilename } from "@/lib/exports/format";
 import { assertProductOwner } from "@/lib/product-access";
+import { isSampleVaultProduct } from "@/lib/sample-vault-product";
 
 type Params = {
   params: Promise<{
@@ -43,6 +44,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
         fileType: doc.fileType,
         documentType: doc.documentType,
       })),
+      packKind: isSampleVaultProduct(product) ? "sample" : "live",
     });
 
     const filename = `${slugifyFilename(product.name)}-claim-pack.pdf`;

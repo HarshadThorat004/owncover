@@ -7,18 +7,24 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CheckCircle2, Loader2, Sparkles, X } from "lucide-react";
+import { CheckCircle2, ChevronDown, Loader2, Sparkles, X } from "lucide-react";
 import { z } from "zod";
 
 import UploadButtonComponent from "@/components/upload-button";
 import DocumentCapture from "@/components/document-capture";
 import SmartDateField from "@/components/smart-date-field";
+import ScanFieldBadge from "@/components/scan-field-badge";
 import { FormInput, FormLabel, FormTextarea } from "@/components/form-fields";
 import PdfPlaceholder from "@/components/pdf-placeholder";
 import { PRODUCT_CATEGORIES, EXTENDED_COVER_TYPES } from "@/constants/catalog";
 import { canAutofillField, hasExtractedValue } from "@/lib/document-extract/apply-scan";
 import { mergeByDocumentType } from "@/lib/document-extract/merge-scan";
-import type { ExtractedDocumentFields, FieldConfidence } from "@/lib/document-extract/types";
+import type {
+  ExtractedDocumentFields,
+  FieldConfidence,
+  FieldSource,
+  ScanHint,
+} from "@/lib/document-extract/types";
 import { computeExpiryFromPeriod } from "@/lib/warranty";
 
 const WARRANTY_PERIOD_OPTIONS = [
@@ -134,6 +140,7 @@ type ProductFormProps = {
     documents?: DocumentType[];
     invoiceImage?: string | null;
   };
+  initialScanHints?: Partial<Record<ScanField, ScanHint>>;
 };
 
 type ScanDocType = "Invoice" | "Warranty Card";
@@ -148,36 +155,12 @@ function nonEmpty(value?: string | null) {
     : null;
 }
 
-function ScanBadge({
-  show,
-  confidence,
-}: {
-  show: boolean;
-  confidence?: FieldConfidence;
-}) {
-  if (!show) return null;
-
-  const review = confidence === "medium" || confidence === "low";
-
-  return (
-    <span
-      className={`ml-2 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-        review
-          ? "border-amber-500/20 bg-amber-500/10 text-amber-200"
-          : "border-cyan-500/20 bg-cyan-500/10 text-cyan-300"
-      }`}
-    >
-      <Sparkles size={10} />
-      {review ? "Review" : "Scanned"}
-    </span>
-  );
-}
-
 export default function ProductForm({
   mode,
   productId,
   inboundDraftId,
   defaultValues,
+  initialScanHints,
 }: ProductFormProps) {
   const router = useRouter();
   const [documents, setDocuments] = useState<DocumentType[]>(
@@ -185,14 +168,21 @@ export default function ProductForm({
   );
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
-  const [scanExtracted, setScanExtracted] = useState(false);
+  const [scanExtracted, setScanExtracted] = useState(
+    Boolean(initialScanHints && Object.keys(initialScanHints).length > 0)
+  );
   const [scanDocType, setScanDocType] = useState<ScanDocType>("Invoice");
   const [scanPreviewUrl, setScanPreviewUrl] = useState<string | null>(null);
   const [scanPreviewType, setScanPreviewType] = useState<string>("image");
-  const [scanFilled, setScanFilled] = useState<Set<ScanField>>(new Set());
-  const [scanConfidence, setScanConfidence] = useState<
-    Partial<Record<ScanField, FieldConfidence>>
-  >({});
+  const [scanFilled, setScanFilled] = useState<Set<ScanField>>(
+    () =>
+      new Set(
+        Object.keys(initialScanHints ?? {}) as ScanField[]
+      )
+  );
+  const [scanHints, setScanHints] = useState<Partial<Record<ScanField, ScanHint>>>(
+    () => initialScanHints ?? {}
+  );
   const userEdited = useRef<Set<ScanField>>(new Set());
   const lastScan = useRef<ExtractedDocumentFields | null>(null);
   const [selectedPeriodMonths, setSelectedPeriodMonths] = useState<number | null>(
@@ -202,6 +192,11 @@ export default function ProductForm({
     url: string;
     title: string;
   } | null>(null);
+  const [showMore, setShowMore] = useState(
+    mode === "edit" ||
+      Boolean(defaultValues?.notes) ||
+      Boolean(defaultValues?.renewalAvailable)
+  );
 
   const {
     register,
@@ -406,12 +401,14 @@ export default function ProductForm({
       lastScan.current = result;
 
       const filled: ScanField[] = [];
-      const confidence: Partial<Record<ScanField, FieldConfidence>> = {};
+      const hints: Partial<Record<ScanField, ScanHint>> = {};
 
       const tryFill = (
         field: ScanField,
         value: string | null,
-        fieldConfidence?: FieldConfidence
+        fieldConfidence?: FieldConfidence,
+        source?: FieldSource,
+        extra?: Pick<ScanHint, "derived">
       ) => {
         if (
           !canAutofillField({
@@ -425,43 +422,68 @@ export default function ProductForm({
 
         setValue(field, value as string, { shouldDirty: true });
         filled.push(field);
-        if (fieldConfidence) confidence[field] = fieldConfidence;
+        hints[field] = {
+          confidence: fieldConfidence ?? "medium",
+          source,
+          ...extra,
+        };
       };
 
-      tryFill("name", nonEmpty(result.name), result.fieldMeta?.name?.confidence);
-      tryFill("brand", nonEmpty(result.brand), result.fieldMeta?.brand?.confidence);
-      tryFill("model", nonEmpty(result.model), result.fieldMeta?.model?.confidence);
+      tryFill(
+        "name",
+        nonEmpty(result.name),
+        result.fieldMeta?.name?.confidence,
+        result.fieldMeta?.name?.source
+      );
+      tryFill(
+        "brand",
+        nonEmpty(result.brand),
+        result.fieldMeta?.brand?.confidence,
+        result.fieldMeta?.brand?.source
+      );
+      tryFill(
+        "model",
+        nonEmpty(result.model),
+        result.fieldMeta?.model?.confidence,
+        result.fieldMeta?.model?.source
+      );
       tryFill(
         "category",
         nonEmpty(result.category),
-        result.fieldMeta?.category?.confidence
+        result.fieldMeta?.category?.confidence,
+        result.fieldMeta?.category?.source
       );
       tryFill(
         "retailer",
         nonEmpty(result.retailer),
-        result.fieldMeta?.retailer?.confidence
+        result.fieldMeta?.retailer?.confidence,
+        result.fieldMeta?.retailer?.source
       );
       tryFill(
         "serialNumber",
         nonEmpty(result.serialNumber),
-        result.fieldMeta?.serialNumber?.confidence
+        result.fieldMeta?.serialNumber?.confidence,
+        result.fieldMeta?.serialNumber?.source
       );
       tryFill(
         "invoiceNumber",
         nonEmpty(result.invoiceNumber),
-        result.fieldMeta?.invoiceNumber?.confidence
+        result.fieldMeta?.invoiceNumber?.confidence,
+        result.fieldMeta?.invoiceNumber?.source
       );
       tryFill(
         "purchaseAmount",
         nonEmpty(result.purchaseAmount),
-        result.fieldMeta?.purchaseAmount?.confidence
+        result.fieldMeta?.purchaseAmount?.confidence,
+        result.fieldMeta?.purchaseAmount?.source
       );
 
       const scannedPurchaseDate = nonEmpty(result.purchaseDate);
       tryFill(
         "purchaseDate",
         scannedPurchaseDate,
-        result.fieldMeta?.purchaseDate?.confidence
+        result.fieldMeta?.purchaseDate?.confidence,
+        result.fieldMeta?.purchaseDate?.source
       );
 
       const purchaseDate =
@@ -491,12 +513,16 @@ export default function ProductForm({
           setSelectedPeriodMonths(nearestPeriodOption(periodMonths));
           setValue("warrantyExpiry", expiry, { shouldDirty: true });
           filled.push("warrantyExpiry");
-          if (expiryConfidence) confidence.warrantyExpiry = expiryConfidence;
+          hints.warrantyExpiry = {
+            confidence: expiryConfidence ?? "medium",
+            source: result.fieldMeta?.warrantyPeriod?.source,
+            derived: true,
+          };
         }
       }
 
       markScanFilled(filled);
-      setScanConfidence((prev) => ({ ...prev, ...confidence }));
+      setScanHints((prev) => ({ ...prev, ...hints }));
       setScanExtracted(true);
 
       if (filled.length > 0) {
@@ -607,13 +633,13 @@ export default function ProductForm({
 
       toast.success(
         mode === "create"
-          ? "Product added successfully"
+          ? "Saved. Download a claim pack from this page."
           : "Product updated successfully"
       );
 
       router.push(
         mode === "create"
-          ? "/dashboard"
+          ? `/dashboard/products/${result.id}`
           : `/dashboard/products/${productId}`
       );
       router.refresh();
@@ -627,6 +653,20 @@ export default function ProductForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      {mode === "create" && (
+        <ol className="grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-[0.12em] text-gray-500">
+          <li className="rounded-xl border border-white/10 bg-black/30 px-2 py-2.5 text-cyan-200">
+            1. Scan
+          </li>
+          <li className="rounded-xl border border-white/10 bg-black/30 px-2 py-2.5">
+            2. Check dates
+          </li>
+          <li className="rounded-xl border border-white/10 bg-black/30 px-2 py-2.5">
+            3. Save
+          </li>
+        </ol>
+      )}
+
       {/* SECTION 1 — Smart scan */}
       <section className="space-y-4">
         <div>
@@ -727,18 +767,28 @@ export default function ProductForm({
         <div>
           <h2 className="text-lg font-semibold text-white">Product details</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Review auto-filled values or enter anything missing.
+            {scanExtracted
+              ? "We filled these. Please check every date before you save."
+              : "Review auto-filled values or enter anything missing."}
           </p>
         </div>
+
+        {scanExtracted && !scanning && (
+          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm leading-6 text-amber-100">
+            Scan is a starting point, not a guarantee. Empty is better than a
+            wrong expiry date. Hover or tap a Scanned or Verify tag to see why
+            that field was filled.
+          </div>
+        )}
 
         <div>
           <div className="mb-2 flex flex-wrap items-center gap-1">
             <FormLabel htmlFor="name" className="mb-0">
               Product Name
             </FormLabel>
-            <ScanBadge
+            <ScanFieldBadge
               show={scanFilled.has("name")}
-              confidence={scanConfidence.name}
+              hint={scanHints.name}
             />
           </div>
           <FormInput
@@ -757,9 +807,9 @@ export default function ProductForm({
               <FormLabel htmlFor="invoiceNumber" optional className="mb-0">
                 Invoice Number
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("invoiceNumber")}
-                confidence={scanConfidence.invoiceNumber}
+                hint={scanHints.invoiceNumber}
               />
             </div>
             <FormInput
@@ -776,9 +826,9 @@ export default function ProductForm({
               <FormLabel htmlFor="serialNumber" optional className="mb-0">
                 {categoryValue === "phones" ? "IMEI / serial" : "Serial / IMEI"}
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("serialNumber")}
-                confidence={scanConfidence.serialNumber}
+                hint={scanHints.serialNumber}
               />
             </div>
             <FormInput
@@ -801,9 +851,9 @@ export default function ProductForm({
             <FormLabel htmlFor="brand" optional className="mb-0">
               Brand
             </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("brand")}
-                confidence={scanConfidence.brand}
+                hint={scanHints.brand}
               />
           </div>
           <FormInput
@@ -822,9 +872,9 @@ export default function ProductForm({
               <FormLabel htmlFor="model" optional className="mb-0">
                 Model
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("model")}
-                confidence={scanConfidence.model}
+                hint={scanHints.model}
               />
             </div>
             <FormInput
@@ -841,9 +891,9 @@ export default function ProductForm({
               <FormLabel htmlFor="category" optional className="mb-0">
                 Category
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("category")}
-                confidence={scanConfidence.category}
+                hint={scanHints.category}
               />
             </div>
             <select
@@ -874,9 +924,9 @@ export default function ProductForm({
               <FormLabel htmlFor="retailer" optional className="mb-0">
                 Retailer
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("retailer")}
-                confidence={scanConfidence.retailer}
+                hint={scanHints.retailer}
               />
             </div>
             <FormInput
@@ -893,9 +943,9 @@ export default function ProductForm({
               <FormLabel htmlFor="purchaseAmount" optional className="mb-0">
                 Purchase amount (INR)
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("purchaseAmount")}
-                confidence={scanConfidence.purchaseAmount}
+                hint={scanHints.purchaseAmount}
               />
             </div>
             <FormInput
@@ -916,9 +966,9 @@ export default function ProductForm({
               <FormLabel htmlFor="purchaseDate" className="mb-0">
                 Purchase Date
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("purchaseDate")}
-                confidence={scanConfidence.purchaseDate}
+                hint={scanHints.purchaseDate}
               />
             </div>
             <Controller
@@ -948,9 +998,9 @@ export default function ProductForm({
               <FormLabel htmlFor="warrantyExpiry" className="mb-0">
                 Manufacturer warranty
               </FormLabel>
-              <ScanBadge
+              <ScanFieldBadge
                 show={scanFilled.has("warrantyExpiry")}
-                confidence={scanConfidence.warrantyExpiry}
+                hint={scanHints.warrantyExpiry}
               />
             </div>
             <div className="mb-3 flex flex-wrap gap-2">
@@ -1041,156 +1091,176 @@ export default function ProductForm({
           </div>
         </div>
 
-        <div>
-          <FormLabel htmlFor="notes" optional>
-            Notes
-          </FormLabel>
-          <FormTextarea
-            id="notes"
-            rows={4}
-            placeholder="Service history, claim tips, store location…"
-            error={errors.notes?.message}
-            {...register("notes")}
-          />
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
-          <label className="flex items-center gap-3 text-sm text-gray-300">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-gray-600 bg-black text-cyan-400"
-              {...register("renewalAvailable")}
-            />
-            Renewal / extension available
-          </label>
-
-          {renewalAvailable && (
-            <div className="mt-4">
-              <FormLabel htmlFor="renewalNotes" optional>
-                Renewal Notes
-              </FormLabel>
-              <FormTextarea
-                id="renewalNotes"
-                rows={2}
-                placeholder="e.g. AppleCare+ available until March 2027"
-                error={errors.renewalNotes?.message}
-                {...register("renewalNotes")}
-              />
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* SECTION 3 — More documents */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-white">More documents</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Extra files stay attached. Invoice and warranty card uploads also
-            merge into the form.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-              Invoice
-            </p>
-            <UploadButtonComponent
-              label="Add Invoice"
-              onChange={(url, fileType, file) =>
-                addDocument(url, "Invoice", true, fileType, file)
-              }
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-              Warranty Card
-            </p>
-            <UploadButtonComponent
-              label="Add Card"
-              onChange={(url, fileType, file) =>
-                addDocument(url, "Warranty Card", true, fileType, file)
-              }
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-              Other
-            </p>
-            <UploadButtonComponent
-              label="Add File"
-              onChange={(url, fileType) => addDocument(url, "Other", false, fileType)}
-            />
-          </div>
-        </div>
-
-        {documents.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-700 p-8 text-center text-sm text-gray-500">
-            No documents uploaded yet.
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {documents.map((doc, index) => (
-              <div
-                key={`${doc.fileUrl}-${index}`}
-                className="overflow-hidden rounded-2xl border border-white/10 bg-black/40"
-              >
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
-                  <p className="text-sm text-gray-400">{doc.documentType}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDocuments((prev) =>
-                        prev.filter((_, i) => i !== index)
-                      );
-                      if (doc.fileUrl === scanPreviewUrl) {
-                        setScanPreviewUrl(null);
-                        setScanExtracted(false);
+        {documents.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-white">Attached files</p>
+            <div className="grid gap-4">
+              {documents.map((doc, index) => (
+                <div
+                  key={`${doc.fileUrl}-${index}`}
+                  className="overflow-hidden rounded-2xl border border-white/10 bg-black/40"
+                >
+                  <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
+                    <p className="text-sm text-gray-400">{doc.documentType}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDocuments((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+                        if (doc.fileUrl === scanPreviewUrl) {
+                          setScanPreviewUrl(null);
+                          setScanExtracted(false);
+                        }
+                      }}
+                      className="text-sm text-red-400 transition hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  {doc.fileType === "pdf" ? (
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block transition hover:opacity-90"
+                    >
+                      <PdfPlaceholder
+                        sizeClassName="h-48"
+                        label={doc.documentType}
+                      />
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setLightbox({
+                          url: doc.fileUrl,
+                          title: doc.documentType,
+                        })
                       }
-                    }}
-                    className="text-sm text-red-400 transition hover:text-red-300"
-                  >
-                    Remove
-                  </button>
+                      className="block w-full cursor-zoom-in text-left"
+                    >
+                      <Image
+                        src={doc.fileUrl}
+                        alt={doc.documentType}
+                        width={1200}
+                        height={800}
+                        className="h-48 w-full object-cover transition hover:opacity-90"
+                      />
+                    </button>
+                  )}
                 </div>
-                {doc.fileType === "pdf" ? (
-                  <a
-                    href={doc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block transition hover:opacity-90"
-                  >
-                    <PdfPlaceholder
-                      sizeClassName="h-48"
-                      label={doc.documentType}
-                    />
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setLightbox({
-                        url: doc.fileUrl,
-                        title: doc.documentType,
-                      })
-                    }
-                    className="block w-full cursor-zoom-in text-left"
-                  >
-                    <Image
-                      src={doc.fileUrl}
-                      alt={doc.documentType}
-                      width={1200}
-                      height={800}
-                      className="h-48 w-full object-cover transition hover:opacity-90"
-                    />
-                  </button>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </section>
+
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowMore((open) => !open)}
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-300 transition hover:text-white"
+          aria-expanded={showMore}
+        >
+          <ChevronDown
+            size={16}
+            className={`transition ${showMore ? "rotate-180" : ""}`}
+          />
+          {showMore ? "Hide extra fields" : "Add more (notes, extra files)"}
+        </button>
+
+        {showMore && (
+          <div className="mt-6 space-y-8">
+            <div>
+              <FormLabel htmlFor="notes" optional>
+                Notes
+              </FormLabel>
+              <FormTextarea
+                id="notes"
+                rows={4}
+                placeholder="Service history, claim tips, store location…"
+                error={errors.notes?.message}
+                {...register("notes")}
+              />
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+              <label className="flex items-center gap-3 text-sm text-gray-300">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-600 bg-black text-cyan-400"
+                  {...register("renewalAvailable")}
+                />
+                Renewal / extension available
+              </label>
+
+              {renewalAvailable && (
+                <div className="mt-4">
+                  <FormLabel htmlFor="renewalNotes" optional>
+                    Renewal Notes
+                  </FormLabel>
+                  <FormTextarea
+                    id="renewalNotes"
+                    rows={2}
+                    placeholder="e.g. AppleCare+ available until March 2027"
+                    error={errors.renewalNotes?.message}
+                    {...register("renewalNotes")}
+                  />
+                </div>
+              )}
+            </div>
+
+            <section className="space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white">
+                  Extra files
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  Invoice and warranty card uploads also merge into the form.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Invoice
+                  </p>
+                  <UploadButtonComponent
+                    label="Add Invoice"
+                    onChange={(url, fileType, file) =>
+                      addDocument(url, "Invoice", true, fileType, file)
+                    }
+                  />
+                </div>
+                <div>
+                  <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Warranty Card
+                  </p>
+                  <UploadButtonComponent
+                    label="Add Card"
+                    onChange={(url, fileType, file) =>
+                      addDocument(url, "Warranty Card", true, fileType, file)
+                    }
+                  />
+                </div>
+                <div>
+                  <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Other
+                  </p>
+                  <UploadButtonComponent
+                    label="Add File"
+                    onChange={(url, fileType) =>
+                      addDocument(url, "Other", false, fileType)
+                    }
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+      </div>
 
       <button
         type="submit"
@@ -1198,13 +1268,7 @@ export default function ProductForm({
         className="premium-btn premium-btn-solid inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading && <Loader2 size={16} className="animate-spin" />}
-        {loading
-          ? mode === "create"
-            ? "Adding Product…"
-            : "Saving…"
-          : mode === "create"
-            ? "Add Product"
-            : "Save Changes"}
+        {loading ? "Saving…" : mode === "create" ? "Save to vault" : "Save Changes"}
       </button>
 
       {lightbox && (

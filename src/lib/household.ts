@@ -140,7 +140,7 @@ export async function getOrCreateOwnedHousehold(userId: string) {
   return prisma.$transaction(async (tx) => {
     const household = await tx.household.create({
       data: {
-        name: "Family vault",
+        name: "Shared vault",
         members: {
           create: {
             userId,

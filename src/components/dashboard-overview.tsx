@@ -11,6 +11,7 @@ type Props = {
   activeProducts: number;
   expiredProducts: number;
   expiringProducts: number;
+  missingSerial: number;
 };
 
 export default function DashboardOverview({
@@ -18,6 +19,7 @@ export default function DashboardOverview({
   activeProducts,
   expiredProducts,
   expiringProducts,
+  missingSerial,
 }: Props) {
   const healthPercent =
     totalProducts > 0
@@ -69,12 +71,18 @@ export default function DashboardOverview({
           <AlertTriangle size={22} />
         </div>
         <h3 className="text-lg font-medium text-white">Needs attention</h3>
-        <div className="mt-5 grid grid-cols-2 gap-4">
+        <div className="mt-5 grid grid-cols-3 gap-3">
           <div>
             <p className="font-display text-2xl tracking-tight text-amber-400">
               {expiringProducts}
             </p>
             <p className="mt-1 text-xs text-gray-500">Within 30 days</p>
+          </div>
+          <div>
+            <p className="font-display text-2xl tracking-tight text-amber-200">
+              {missingSerial}
+            </p>
+            <p className="mt-1 text-xs text-gray-500">Serial missing</p>
           </div>
           <div>
             <p className="font-display text-2xl tracking-tight text-red-400">
