@@ -10,7 +10,7 @@ import {
 const readyEnv = {
   DATABASE_URL: "postgresql://example",
   NEXTAUTH_SECRET: "secret",
-  NEXTAUTH_URL: "https://owncover.in",
+  NEXTAUTH_URL: "https://owncover.hvtx.in",
   CRON_SECRET: "cron",
   RESEND_API_KEY: "re_test",
   UPLOADTHING_TOKEN: "ut_test",

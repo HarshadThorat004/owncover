@@ -3,7 +3,11 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import LegalDocument from "@/components/legal-document";
-import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
+import {
+  BRAND_CONTACT_EMAIL,
+  BRAND_DOMAIN,
+  BRAND_INBOUND_DOMAIN,
+} from "@/constants/brand";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -51,7 +55,7 @@ export default function TermsPage() {
           These Terms of Service (&quot;Terms&quot;) are a binding agreement
           between you and the operator of OwnCover
           (&quot;OwnCover,&quot; &quot;we,&quot; &quot;us&quot;) for the
-          website, application, and related services at owncover.in (the
+          website, application, and related services at {BRAND_DOMAIN} (the
           &quot;Service&quot;). By creating an account, signing in, or using
           the Service, you agree to these Terms and to our{" "}
           <Link
@@ -162,7 +166,7 @@ export default function TermsPage() {
         <Section title="6. Email-forward inbox">
           <p>
             If inbound receiving is live, Settings shows a personal address on
-            inbound.owncover.in. Forward Amazon, Flipkart, or similar
+            {BRAND_INBOUND_DOMAIN}. Forward Amazon, Flipkart, or similar
             invoice PDFs or images to that address. We store usable PDF/JPEG/PNG
             attachments as a <strong className="font-medium text-white/80">draft</strong>.
             Nothing becomes a live product until you review and save it. We do

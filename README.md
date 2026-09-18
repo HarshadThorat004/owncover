@@ -76,16 +76,20 @@ npm install
 
 This app is set up for Vercel (cron + serverless). The build runs `prisma generate`, `prisma migrate deploy`, then `next build`.
 
-## Go live
+## Go live (`owncover.hvtx.in`)
 
-1. Create a Neon Postgres database. Copy the **pooled** URL into `DATABASE_URL` and the **unpooled** URL into `DIRECT_URL`.
+Free stack: **Vercel** (app) + **Neon** (Postgres) + **UploadThing** (files) + **Resend** (email).
+
+1. Create a [Neon](https://neon.tech) Postgres database. Copy the **pooled** URL into `DATABASE_URL` and the **unpooled** URL into `DIRECT_URL`.
 2. Import this GitHub repo in [Vercel](https://vercel.com/new) (Framework: **Next.js**, Node 20).
-3. Set the environment variables below on **Production** (and Preview if you use it).
-4. Add the production domain. Set `NEXTAUTH_URL` to that origin with no trailing slash.
-5. Verify `owncover.in` in Resend, then set `RESEND_FROM_EMAIL=OwnCover <noreply@owncover.in>`.
-6. If Google sign-in is enabled, add `https://YOUR_DOMAIN/api/auth/callback/google` as an authorized redirect.
-7. Deploy. `GET https://YOUR_DOMAIN/api/health` must return **HTTP 200** and `"ready": true`. Missing env or a down database returns **503**.
-8. Smoke-test: register → add a product (or load the sample TV) → download a claim pack → open `/sample-pack` while signed out.
+3. Set the environment variables below on **Production**.
+4. In Vercel → **Domains**, add `owncover.hvtx.in`. At your DNS host for `hvtx.in`, add:
+   - **CNAME** `owncover` → `cname.vercel-dns.com` (Vercel shows the exact target)
+5. Verify **`hvtx.in`** in [Resend Domains](https://resend.com/domains), then set `RESEND_FROM_EMAIL=OwnCover <noreply@owncover.hvtx.in>`.
+6. If Google sign-in is enabled, add `https://owncover.hvtx.in/api/auth/callback/google` as an authorized redirect.
+7. Deploy. `GET https://owncover.hvtx.in/api/health` must return **HTTP 200** and `"ready": true`.
+8. In [Google Search Console](https://search.google.com/search-console), verify `owncover.hvtx.in` and submit `https://owncover.hvtx.in/sitemap.xml`.
+9. Smoke-test: register → add a product (or load the sample TV) → download a claim pack → open `/sample-pack` while signed out.
 
 `/api/health` lists which required env vars are present (not their values).
 
@@ -93,13 +97,14 @@ This app is set up for Vercel (cron + serverless). The build runs `prisma genera
 |----------|----------|--------|
 | `DATABASE_URL` | Yes | Neon **pooled** URL (`-pooler.`). The app adds `pgbouncer=true`. |
 | `DIRECT_URL` | Recommended | Neon **unpooled** URL for migrations. If omitted, build strips `-pooler` from `DATABASE_URL`. |
-| `NEXTAUTH_URL` | Yes | Public origin, e.g. `https://owncover.in` (no trailing slash) |
+| `NEXTAUTH_URL` | Yes | `https://owncover.hvtx.in` (no trailing slash) |
+| `NEXT_PUBLIC_BRAND_DOMAIN` | Yes | `owncover.hvtx.in` (client bundles + email defaults) |
 | `NEXTAUTH_SECRET` | Yes | `openssl rand -base64 32` |
 | `CRON_SECRET` | Yes | Vercel cron sends `Authorization: Bearer $CRON_SECRET` to `/api/cron/reminders` |
 | `UPLOADTHING_TOKEN` | Yes | File uploads |
 | `RESEND_API_KEY` | Yes | OTP + warranty emails |
-| `RESEND_FROM_EMAIL` | Yes | `OwnCover <noreply@owncover.in>` after domain verify |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional | Google sign-in; add prod redirect `https://YOUR_DOMAIN/api/auth/callback/google` |
+| `RESEND_FROM_EMAIL` | Yes | `OwnCover <noreply@owncover.hvtx.in>` after `hvtx.in` is verified in Resend |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional | Google sign-in; prod redirect above |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Optional | Browser push |
 
 Preview deployments need the same env vars. Use a **separate Neon branch** for Preview so `prisma migrate deploy` cannot change production. Google OAuth also needs each preview callback URL registered, or keep Google disabled on Preview.

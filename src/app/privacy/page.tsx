@@ -3,7 +3,12 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import LegalDocument from "@/components/legal-document";
-import { BRAND_CONTACT_EMAIL, BRAND_NAME } from "@/constants/brand";
+import {
+  BRAND_CONTACT_EMAIL,
+  BRAND_DOMAIN,
+  BRAND_INBOUND_DOMAIN,
+  BRAND_NAME,
+} from "@/constants/brand";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -50,7 +55,7 @@ export default function PrivacyPage() {
         <p className="text-sm leading-7 text-white/55">
           This Privacy Policy is the notice of how OwnCover
           (&quot;we,&quot; &quot;us,&quot; the Data Fiduciary) collects, uses,
-          stores, and shares personal data when you use owncover.in (the
+          stores, and shares personal data when you use {BRAND_DOMAIN} (the
           &quot;Service&quot;). It should be read with our{" "}
           <Link
             href="/terms"
@@ -194,7 +199,7 @@ export default function PrivacyPage() {
         <Section title="5. Email-forward inbox">
           <p>
             Settings can show a personal address such as
-            ab2dk4xq@inbound.owncover.in. Forward Amazon or Flipkart invoice
+            ab2dk4xq@{BRAND_INBOUND_DOMAIN}. Forward Amazon or Flipkart invoice
             PDFs there. We keep PDF/JPEG/PNG attachments (size-limited) and
             whatever fields the extractor can fill. The result is a draft you
             must review. Dismissing a draft removes it from your pending list;

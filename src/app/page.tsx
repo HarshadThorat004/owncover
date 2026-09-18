@@ -1,12 +1,35 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check, Minus } from "lucide-react";
 
 import FeatureCarousel from "@/components/feature-carousel";
 import FaqList from "@/components/faq-list";
 import HeroArtifact from "@/components/hero-artifact";
+import JsonLd from "@/components/json-ld";
 import MarketingShell from "@/components/marketing-shell";
-import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
+import {
+  BRAND_DESCRIPTION,
+  BRAND_INBOUND_DOMAIN,
+  BRAND_TITLE,
+} from "@/constants/brand";
 import { faqsForHome } from "@/constants/faqs";
+import { getAppBaseUrl } from "@/lib/app-url";
+import {
+  BRAND_KEYWORDS,
+  buildFaqPageJsonLd,
+  buildOrganizationJsonLd,
+  buildSoftwareApplicationJsonLd,
+  buildWebSiteJsonLd,
+} from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: BRAND_TITLE,
+  description: BRAND_DESCRIPTION,
+  keywords: [...BRAND_KEYWORDS],
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const FEATURE_SLIDES = [
   {
@@ -42,8 +65,20 @@ const FEATURE_SLIDES = [
 ];
 
 export default function HomePage() {
+  const baseUrl = getAppBaseUrl();
+  const homeFaqs = faqsForHome();
+
   return (
-    <MarketingShell>
+    <>
+      <JsonLd
+        data={[
+          buildOrganizationJsonLd(baseUrl),
+          buildWebSiteJsonLd(baseUrl),
+          buildSoftwareApplicationJsonLd(baseUrl),
+          buildFaqPageJsonLd(homeFaqs, baseUrl),
+        ]}
+      />
+      <MarketingShell>
       <section className="relative">
         <div className="relative mx-auto max-w-6xl px-5 py-16 text-center md:px-8 md:py-24">
           <p className="eyebrow-pill text-[11px] font-medium uppercase tracking-[0.2em] text-cyan-200/90">
@@ -286,7 +321,7 @@ export default function HomePage() {
           Straight answers
         </h2>
         <div className="mt-10">
-          <FaqList items={faqsForHome()} />
+          <FaqList items={homeFaqs} />
         </div>
         <p className="mt-6 text-center text-sm text-gray-500">
           Desk checklists and GST scan:{" "}
@@ -330,5 +365,6 @@ export default function HomePage() {
         </div>
       </section>
     </MarketingShell>
+    </>
   );
 }

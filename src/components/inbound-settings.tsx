@@ -5,6 +5,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Check, Copy, Inbox, Loader2 } from "lucide-react";
 
+import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
+
 type DraftRow = {
   id: string;
   fromEmail: string | null;
@@ -146,7 +148,7 @@ export default function InboundSettings() {
           )}
 
           <p className="mt-3 text-xs text-gray-600">
-            Receiving needs MX on inbound.owncover.in in Resend. Until
+            Receiving needs MX on {BRAND_INBOUND_DOMAIN} in Resend. Until
             that is live, this address is reserved for you.
           </p>
 

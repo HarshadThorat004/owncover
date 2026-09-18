@@ -9,6 +9,7 @@ import {
   BRAND_TITLE,
 } from "@/constants/brand";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { BRAND_KEYWORDS } from "@/lib/seo";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -29,7 +30,22 @@ export const metadata: Metadata = {
     template: `%s — ${BRAND_NAME}`,
   },
   description: BRAND_DESCRIPTION,
+  keywords: [...BRAND_KEYWORDS],
   applicationName: BRAND_NAME,
+  authors: [{ name: BRAND_NAME, url: appUrl }],
+  creator: BRAND_NAME,
+  publisher: BRAND_NAME,
+  category: "technology",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

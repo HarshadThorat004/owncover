@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
 import {
   draftExtractToFormValues,
   draftScanHints,
@@ -21,7 +22,7 @@ describe("extractEmailAddress", () => {
 describe("parseInboundSlug", () => {
   it("reads the local part on the inbound domain", () => {
     expect(
-      parseInboundSlug(["Name <ab2dk4xq@inbound.owncover.in>"])
+      parseInboundSlug([`Name <ab2dk4xq@${BRAND_INBOUND_DOMAIN}>`])
     ).toBe("ab2dk4xq");
   });
 
@@ -29,7 +30,7 @@ describe("parseInboundSlug", () => {
     expect(
       parseInboundSlug([
         "other@gmail.com",
-        "ab2dk4xq+amazon@inbound.owncover.in",
+        `ab2dk4xq+amazon@${BRAND_INBOUND_DOMAIN}`,
       ])
     ).toBe("ab2dk4xq");
   });

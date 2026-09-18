@@ -49,7 +49,7 @@ export const FAQS: FaqItem[] = [
   {
     id: "forward",
     q: "Can I forward Amazon or Flipkart invoices?",
-    a: "Yes. After you sign in, Settings shows a private address on inbound.owncover.in. Forward the invoice PDF. We start a draft — you confirm dates before it is saved.",
+    a: "Yes. After you sign in, Settings shows a private inbound address on your vault. Forward the invoice PDF. We start a draft — you confirm dates before it is saved.",
   },
   {
     id: "reminders",
