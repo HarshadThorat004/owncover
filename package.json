@@ -14,7 +14,7 @@
     "db:migrate": "node scripts/prisma-env.mjs migrate --force"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": "20.x"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

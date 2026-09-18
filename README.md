@@ -111,6 +111,15 @@ Preview deployments need the same env vars. Use a **separate Neon branch** for P
 
 Local `npm run build` skips migrations unless you run `npm run db:migrate`. Vercel sets `VERCEL=1` and applies migrations during production/preview builds.
 
+If a Vercel build fails on `prisma migrate deploy` with **P3018** (failed migration), fix the migration in git, then clear the failed state on Neon before redeploying:
+
+```bash
+# With DATABASE_URL + DIRECT_URL pointing at your Neon branch:
+npx prisma migrate resolve --rolled-back 20260804093500_premium_backend_foundation
+```
+
+Or reset the Neon branch (empty project only): Neon console → **Reset database**, then redeploy.
+
 ---
 
 # Prisma Setup
