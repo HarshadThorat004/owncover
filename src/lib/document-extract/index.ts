@@ -1,5 +1,4 @@
 import { extractFieldsFromText } from "@/lib/document-extract/field-extractors";
-import { isGeminiOcrEnabled, extractWithGemini } from "@/lib/document-extract/gemini-extract";
 import { decodeGstQrFromImage, parseGstQrPayload } from "@/lib/document-extract/gst-qr";
 import { mergeExtractedFields } from "@/lib/document-extract/merge";
 import {
@@ -58,18 +57,6 @@ export async function scanDocumentFromBuffer(
     } catch (error) {
       console.error("GST QR decode failed:", error);
     }
-  }
-
-  if (isGeminiOcrEnabled() && mimeType.startsWith("image/")) {
-    const base64 = buffer.toString("base64");
-    const vision = await extractWithGemini(base64, mimeType);
-    const merged = qrFields ? mergeExtractedFields(vision, qrFields) : vision;
-
-    if (countExtractedFields(merged) === 0) {
-      throw new Error(SCAN_FAILED_MESSAGE);
-    }
-
-    return merged;
   }
 
   const text = await extractTextFromDocument(buffer, mimeType);

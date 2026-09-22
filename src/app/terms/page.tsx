@@ -249,9 +249,8 @@ export default function TermsPage() {
             The Service depends on providers whose own terms also apply,
             including Google (sign-in), Resend (OTP, reminders, and inbound
             receiving), UploadThing (file storage), hosting such as Vercel,
-            PostgreSQL hosting, and — only if we turn it on for the Service —
-            an optional cloud AI extractor such as Google Gemini. We are not
-            responsible for those providers&apos; outages or policy changes.
+            and PostgreSQL hosting. We are not responsible for those
+            providers&apos; outages or policy changes.
           </p>
         </Section>
 
@@ -283,7 +282,7 @@ export default function TermsPage() {
             DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
             MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
             NON-INFRINGEMENT. We do not warrant uninterrupted access, error-free
-            operation, or accurate OCR, QR, or AI extraction.
+            operation, or accurate OCR or QR extraction.
           </p>
         </Section>
 

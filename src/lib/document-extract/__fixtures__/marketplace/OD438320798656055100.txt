@@ -5,21 +5,21 @@ Kha & 192 Ga, Gata no 157, Gata No 191, 25 Kanpur,
 Lucknow Expressway Village Rasulpur Tehsil Hasanganj
 Distt Unnao, Lucknow Uttarpradesh 209859, UTTAR
 PRADESH, IN-UP, India- 209859
-Harsh Thorat	Destination :
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, Maharashtra, IN-MH, IN- 411014
-HR55AT6576	Registration No. of Goods Carriage:
+Sample Buyer	Destination :
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, Maharashtra, IN-MH, IN- 411001
+MH12AB1234	Registration No. of Goods Carriage:
 (More than 1 goods carriage may be involved in
 transportation of goods to the shipping address. The
 Registration Number mentioned above pertains to the
 vehicle used at the stage of commencement of transport)
 Flipkart India Private Limited (on behalf	Consignor details:
-of Harsh Thorat )
-Harsh Thorat	Consignee details:
+of Sample Buyer )
+Sample Buyer	Consignee details:
 Shipped To
-Harsh Thorat
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, Maharashtra, IN-MH, IN- 411014
+Sample Buyer
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, Maharashtra, IN-MH, IN- 411001
 Shipped From
 Gata No 193 & 194, Gata no 198 & 195, Gata No 144, Gata
 no 197 & 198, Gata No 164,Gata No 158 Kha & 192 Ga,
@@ -28,9 +28,9 @@ Expressway Village Rasulpur Tehsil Hasanganj Distt
 Unnao, Lucknow Uttarpradesh 209859, UTTAR PRADESH,
 IN-UP, India- 209859
 Billed To
-Harsh Thorat
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, India - 411014
+Sample Buyer
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, India - 411001
 Maharashtra	State :
 IN-MH	State Code :
 UTTAR PRADESH	Place of Supply :
@@ -90,21 +90,21 @@ Kha & 192 Ga, Gata no 157, Gata No 191, 25 Kanpur,
 Lucknow Expressway Village Rasulpur Tehsil Hasanganj
 Distt Unnao, Lucknow Uttarpradesh 209859, UTTAR
 PRADESH, IN-UP, India- 209859
-Harsh Thorat	Destination :
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, Maharashtra, IN-MH, IN- 411014
-HR55AU2556	Registration No. of Goods Carriage:
+Sample Buyer	Destination :
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, Maharashtra, IN-MH, IN- 411001
+MH12AB5678	Registration No. of Goods Carriage:
 (More than 1 goods carriage may be involved in
 transportation of goods to the shipping address. The
 Registration Number mentioned above pertains to the
 vehicle used at the stage of commencement of transport)
 Flipkart India Private Limited (on behalf	Consignor details:
-of Harsh Thorat )
-Harsh Thorat	Consignee details:
+of Sample Buyer )
+Sample Buyer	Consignee details:
 Shipped To
-Harsh Thorat
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, Maharashtra, IN-MH, IN- 411014
+Sample Buyer
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, Maharashtra, IN-MH, IN- 411001
 Shipped From
 Gata No 193 & 194, Gata no 198 & 195, Gata No 144, Gata
 no 197 & 198, Gata No 164,Gata No 158 Kha & 192 Ga,
@@ -113,9 +113,9 @@ Expressway Village Rasulpur Tehsil Hasanganj Distt
 Unnao, Lucknow Uttarpradesh 209859, UTTAR PRADESH,
 IN-UP, India- 209859
 Billed To
-Harsh Thorat
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, India - 411014
+Sample Buyer
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, India - 411001
 Maharashtra	State :
 IN-MH	State Code :
 UTTAR PRADESH	Place of Supply :
@@ -170,10 +170,10 @@ E.& O.E.;
 
 E. & O.E. page 1 of 1
 Billing Address
-Harsh Thorat
-Flat no. 101, parvati building,
-somnath Nagar , wadgaonsheri,
-Pune 411014 Phone: xxxxxxxxxx
+Sample Buyer
+Flat no. 1, Sample Apartment,
+Sample Nagar , Sample Locality,
+Pune 411001 Phone: xxxxxxxxxx
 Maharashtra	State:
 Order ID: OD438320798656055100
 10-08-2026	Order Date:
@@ -209,9 +209,9 @@ Contact Flipkart: www.flipkart.com/helpcentre
 1 of 1
 Signature / Digital Signature:
 Billed To
-Harsh Thorat
-Flat no. 101, parvati building, somnath Nagar ,
-wadgaonsheri, India - 411014
+Sample Buyer
+Flat no. 1, Sample Apartment, Sample Nagar ,
+Sample Locality, India - 411001
 Maharashtra	State :
 IN-MH	State Code :
 UTTAR PRADESH	Place of Supply :
@@ -261,17 +261,17 @@ REDTAPE LIMITED,
 Unnao, Unnao, Unnao - 209801
 GST: 09AALCR5032R1ZN
 Billing Address
-Harsh Thorat,
-Flat no. 101, parvati building,
-somnath Nagar , wadgaonsheri,
+Sample Buyer,
+Flat no. 1, Sample Apartment,
+Sample Nagar , Sample Locality,
 Green win farms & mart,
-Pune - 411014, IN-MH
+Pune - 411001, IN-MH
 Shipping ADDRESS
-Harsh Thorat,
-Flat no. 101, parvati building,
-somnath Nagar , wadgaonsheri,
+Sample Buyer,
+Flat no. 1, Sample Apartment,
+Sample Nagar , Sample Locality,
 Green win farms & mart,
-Pune - 411014, IN-MH
+Pune - 411001, IN-MH
 FSSAI License number: null
 Seller Registered Address: REDTAPE LIMITED,
 GROUND FLOOR, PLOT NO-08, SECTOR-90, JANPATH ROAD, Noida, Gautam Buddha Nagar, GAUTAM BUDDHA NAGAR - 201301.
@@ -305,17 +305,17 @@ REDTAPE LIMITED,
 Unnao, Unnao, Unnao - 209801
 GST: 09AALCR5032R1ZN
 Billing Address
-Harsh Thorat,
-Flat no. 101, parvati building,
-somnath Nagar , wadgaonsheri,
+Sample Buyer,
+Flat no. 1, Sample Apartment,
+Sample Nagar , Sample Locality,
 Green win farms & mart,
-Pune - 411014, IN-MH
+Pune - 411001, IN-MH
 Shipping ADDRESS
-Harsh Thorat,
-Flat no. 101, parvati building,
-somnath Nagar , wadgaonsheri,
+Sample Buyer,
+Flat no. 1, Sample Apartment,
+Sample Nagar , Sample Locality,
 Green win farms & mart,
-Pune - 411014, IN-MH
+Pune - 411001, IN-MH
 FSSAI License number: null
 Seller Registered Address: REDTAPE LIMITED,
 GROUND FLOOR, PLOT NO-08, SECTOR-90, JANPATH ROAD, Noida, Gautam Buddha Nagar, GAUTAM BUDDHA NAGAR - 201301.

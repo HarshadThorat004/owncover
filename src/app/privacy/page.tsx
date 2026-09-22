@@ -182,11 +182,6 @@ export default function PrivacyPage() {
               PDF invoices are parsed on our servers because browsers cannot
               reliably extract that text.
             </li>
-            <li>
-              Optional cloud AI extraction (for example Google Gemini) is off
-              unless we enable it for the Service. When off, we do not send
-              document images to a third-party model.
-            </li>
           </ul>
           <p>
             An invoice may also show billing address, phone, and GSTIN. Those
@@ -241,10 +236,6 @@ export default function PrivacyPage() {
             <li>UploadThing — file uploads and storage</li>
             <li>Hosting and infrastructure (for example Vercel)</li>
             <li>Postgres / database hosting for application data</li>
-            <li>
-              Optional AI/OCR providers (for example Google Gemini) only if
-              cloud extraction is enabled for the Service
-            </li>
           </ul>
           <p>
             People you invite to the vault can see shared products as described

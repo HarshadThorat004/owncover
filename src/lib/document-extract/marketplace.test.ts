@@ -11,7 +11,7 @@ function loadInvoice(name: string) {
   );
 }
 
-describe("Amazon / Flipkart invoice training samples", () => {
+describe("Amazon / Flipkart invoice samples", () => {
   it("extracts Flipkart boAt Airdopes, not the platform-fee page", () => {
     const fields = extractFieldsFromText(loadInvoice("OD435754318223434200.txt"));
 

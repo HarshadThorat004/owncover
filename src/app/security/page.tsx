@@ -20,7 +20,7 @@ const PRACTICES = [
   },
   {
     title: "Not for sale. Not for public models",
-    body: "We do not sell personal data. We do not use your warranty documents to train public AI models. Optional cloud extraction stays off unless we enable it for the product — and we will say so.",
+    body: "We do not sell personal data. We do not use your warranty documents to train public AI models. Scan is QR first, then on-device or server OCR. Document images are not sent to a third-party model.",
   },
   {
     title: "Shared vault, not an enterprise workspace",

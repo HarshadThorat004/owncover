@@ -3,19 +3,19 @@ E. & O.E. page 1 of 1
 manufacturer box for
 warranty purposes.
 Ship To
-Harsh Thorat
-Flat no.8,Yugandhar nivas, kand-
-nagar, Near Ahura Warehouse,
-bakori road, Haveli Subdistrict.
-Pune District 412207
+Sample Buyer
+Flat no. 1, Sample Residency, sample-
+nagar, Near Sample Landmark,
+Sample Road, Sample District.
+Pune District 411001
 Maharashtra
 Phone: xxxxxxxxxx
 Bill To
-Harsh Thorat
-Flat no.8,Yugandhar nivas, kand-
-nagar, Near Ahura Warehouse,
-bakori road, Haveli Subdistrict.
-Pune District 412207
+Sample Buyer
+Flat no. 1, Sample Residency, sample-
+nagar, Near Sample Landmark,
+Sample Road, Sample District.
+Pune District 411001
 Maharashtra
 Phone: xxxxxxxxxx
 Order ID:
@@ -72,11 +72,11 @@ Contact Flipkart: 044-45614700 | 044-67415800 || www.flipkart.com/helpcentre
 
 E. & O.E. page 1 of 1
 Billing Address
-Harsh Thorat
-Flat no.8,Yugandhar nivas, kand-
-nagar, Near Ahura Warehouse,
-bakori road, Haveli Subdistrict,
-Pune District 412207 Maharashtra
+Sample Buyer
+Flat no. 1, Sample Residency, sample-
+nagar, Near Sample Landmark,
+Sample Road, Sample District,
+Pune District 411001 Maharashtra
 Phone: xxxxxxxxxx
 Order ID: OD435754318223434200
 17-10-2025	Order Date:
@@ -111,11 +111,11 @@ Contact Flipkart: 044-45614700|044-67415800 || www.flipkart.com/helpcentre
 
 E. & O.E. page 1 of 1
 Billing Address
-Harsh Thorat
-Flat no.8,Yugandhar nivas, kand-
-nagar, Near Ahura Warehouse,
-bakori road, Haveli Subdistrict,
-Pune District 412207
+Sample Buyer
+Flat no. 1, Sample Residency, sample-
+nagar, Near Sample Landmark,
+Sample Road, Sample District,
+Pune District 411001
 Maharashtra
 Phone: xxxxxxxxxx
 Order ID:

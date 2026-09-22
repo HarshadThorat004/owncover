@@ -11,7 +11,7 @@ export type ExtractedFieldKey =
   | "retailer"
   | "category";
 
-export type FieldSource = "qr" | "layout" | "regex" | "retailer" | "vision";
+export type FieldSource = "qr" | "layout" | "regex" | "retailer";
 
 export type FieldConfidence = "high" | "medium" | "low";
 

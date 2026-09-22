@@ -40,19 +40,19 @@ GST Registration No:29AAICA3918J1ZE
 CIN No:U51900KA2010PTC053234
 Dynamic QR Code:
 Billing Address :
-Thorat harshad
-Thorat harshad
-Aum apartment, Shiva palace-3, Bakori Road,
-Haveli subdistrict Pune
-PUNE, MAHARASHTRA, 412207
+Sample Buyer
+Sample Buyer
+Sample Apartment, Sample Road,
+Sample District
+PUNE, MAHARASHTRA, 411001
 IN
 State/UT Code:27
 Shipping Address :
-Thorat harshad
-Thorat harshad
-Aum apartment, Shiva palace-3, Bakori Road,
-Haveli subdistrict Pune
-PUNE, MAHARASHTRA, 412207
+Sample Buyer
+Sample Buyer
+Sample Apartment, Sample Road,
+Sample District
+PUNE, MAHARASHTRA, 411001
 IN
 State/UT Code:27
 Place of supply:MAHARASHTRA
@@ -103,18 +103,18 @@ PAN No:AAJCC8517E
 GST Registration No:19AAJCC8517E1ZI
 Dynamic QR Code:
 Billing Address :
-Thorat harshad
-Aum apartment, Shiva palace-3, Bakori Road,
-Haveli subdistrict Pune
-PUNE, MAHARASHTRA, 412207
+Sample Buyer
+Sample Apartment, Sample Road,
+Sample District
+PUNE, MAHARASHTRA, 411001
 IN
 State/UT Code:27
 Shipping Address :
-Thorat harshad
-Thorat harshad
-Aum apartment, Shiva palace-3, Bakori Road,
-Haveli subdistrict Pune
-PUNE, MAHARASHTRA, 412207
+Sample Buyer
+Sample Buyer
+Sample Apartment, Sample Road,
+Sample District
+PUNE, MAHARASHTRA, 411001
 IN
 State/UT Code:27
 Place of supply:MAHARASHTRA

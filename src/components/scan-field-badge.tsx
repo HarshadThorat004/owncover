@@ -12,7 +12,6 @@ const SOURCE_MEANING: Record<FieldSource, string> = {
   layout: "Read from a labelled line on the document.",
   regex: "Read from text on the document.",
   retailer: "Matched a known marketplace invoice layout.",
-  vision: "Read with extra vision extraction.",
 };
 
 export function scanTagCopy(hint: ScanHint) {
