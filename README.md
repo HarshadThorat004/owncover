@@ -88,7 +88,11 @@ Free stack: **Vercel** (app) + **Neon** (Postgres) + **UploadThing** (files) + *
 5. Verify **`hvtx.in`** in [Resend Domains](https://resend.com/domains), then set `RESEND_FROM_EMAIL=OwnCover <noreply@owncover.hvtx.in>`.
 6. If Google sign-in is enabled, add `https://owncover.hvtx.in/api/auth/callback/google` as an authorized redirect.
 7. Deploy. `GET https://owncover.hvtx.in/api/health` must return **HTTP 200** and `"ready": true`.
-8. In [Google Search Console](https://search.google.com/search-console), verify `owncover.hvtx.in` and submit `https://owncover.hvtx.in/sitemap.xml`.
+8. **Google Search Console** (use **URL prefix**, not “Domain” DNS, unless you control TXT on `hvtx.in`):
+   - Add property → **URL prefix** → `https://owncover.hvtx.in`
+   - Verification → **HTML tag** → copy the `content="..."` value into Vercel env `GOOGLE_SITE_VERIFICATION`, redeploy, then **Verify**
+   - Submit sitemap: `https://owncover.hvtx.in/sitemap.xml`
+   - If you use **Domain** verification instead, add a **TXT** record at the DNS host for `hvtx.in` (name `@`), wait for propagation, then verify.
 9. Smoke-test: register → add a product (or load the sample TV) → download a claim pack → open `/sample-pack` while signed out.
 
 `/api/health` lists which required env vars are present (not their values).
@@ -104,6 +108,7 @@ Free stack: **Vercel** (app) + **Neon** (Postgres) + **UploadThing** (files) + *
 | `UPLOADTHING_TOKEN` | Yes | File uploads |
 | `RESEND_API_KEY` | Yes | OTP + warranty emails |
 | `RESEND_FROM_EMAIL` | Yes | `OwnCover <noreply@owncover.hvtx.in>` after `hvtx.in` is verified in Resend |
+| `GOOGLE_SITE_VERIFICATION` | Optional | Search Console HTML-tag token for `https://owncover.hvtx.in` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional | Google sign-in; prod redirect above |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Optional | Browser push |
 

@@ -9,6 +9,7 @@ import {
   BRAND_TITLE,
 } from "@/constants/brand";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { getGoogleSiteVerificationToken } from "@/lib/google-site-verification";
 import { BRAND_KEYWORDS } from "@/lib/seo";
 
 const geist = Geist({
@@ -17,6 +18,8 @@ const geist = Geist({
 });
 
 const appUrl = getAppBaseUrl();
+
+const googleSiteVerification = getGoogleSiteVerificationToken();
 
 export const viewport: Viewport = {
   themeColor: "#030304",
@@ -72,6 +75,13 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/brand/logo-mark.svg" }],
   },
+  ...(googleSiteVerification
+    ? {
+        verification: {
+          google: googleSiteVerification,
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({
@@ -79,8 +89,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const googleVerification = getGoogleSiteVerificationToken();
+
   return (
     <html lang="en">
+      <head>
+        {googleVerification ? (
+          <meta
+            name="google-site-verification"
+            content={googleVerification}
+          />
+        ) : null}
+      </head>
       <body
         className={`${geist.variable} ${geist.className} antialiased bg-[#030304] text-white`}
       >
