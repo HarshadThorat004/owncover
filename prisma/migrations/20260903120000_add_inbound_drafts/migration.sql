@@ -1,10 +1,10 @@
 -- AlterTable
-ALTER TABLE "User" ADD COLUMN "inboundSlug" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "inboundSlug" TEXT;
 
-CREATE UNIQUE INDEX "User_inboundSlug_key" ON "User"("inboundSlug");
+CREATE UNIQUE INDEX IF NOT EXISTS "User_inboundSlug_key" ON "User"("inboundSlug");
 
 -- CreateTable
-CREATE TABLE "InboundDraft" (
+CREATE TABLE IF NOT EXISTS "InboundDraft" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "householdId" TEXT,
@@ -20,9 +20,20 @@ CREATE TABLE "InboundDraft" (
     CONSTRAINT "InboundDraft_pkey" PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX "InboundDraft_resendEmailId_key" ON "InboundDraft"("resendEmailId");
-CREATE INDEX "InboundDraft_userId_status_idx" ON "InboundDraft"("userId", "status");
-CREATE INDEX "InboundDraft_householdId_status_idx" ON "InboundDraft"("householdId", "status");
+CREATE UNIQUE INDEX IF NOT EXISTS "InboundDraft_resendEmailId_key" ON "InboundDraft"("resendEmailId");
+CREATE INDEX IF NOT EXISTS "InboundDraft_userId_status_idx" ON "InboundDraft"("userId", "status");
+CREATE INDEX IF NOT EXISTS "InboundDraft_householdId_status_idx" ON "InboundDraft"("householdId", "status");
 
-ALTER TABLE "InboundDraft" ADD CONSTRAINT "InboundDraft_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "InboundDraft" ADD CONSTRAINT "InboundDraft_householdId_fkey" FOREIGN KEY ("householdId") REFERENCES "Household"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "InboundDraft" ADD CONSTRAINT "InboundDraft_userId_fkey"
+        FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    ALTER TABLE "InboundDraft" ADD CONSTRAINT "InboundDraft_householdId_fkey"
+        FOREIGN KEY ("householdId") REFERENCES "Household"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;

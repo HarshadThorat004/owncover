@@ -1,5 +1,5 @@
 -- AlterTable
-ALTER TABLE "Product" ADD COLUMN "model" TEXT;
-ALTER TABLE "Product" ADD COLUMN "category" TEXT;
-ALTER TABLE "Product" ADD COLUMN "retailer" TEXT;
-ALTER TABLE "Product" ADD COLUMN "purchaseAmount" TEXT;
+ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "model" TEXT;
+ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "category" TEXT;
+ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "retailer" TEXT;
+ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "purchaseAmount" TEXT;
