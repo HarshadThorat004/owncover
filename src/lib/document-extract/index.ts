@@ -71,8 +71,11 @@ export async function scanDocumentFromBuffer(
 }
 
 export async function scanDocumentFromUrl(
-  url: string
+  url: string,
+  mimeTypeHint?: string | null
 ): Promise<ExtractedDocumentFields> {
-  const { buffer, mimeType } = await fetchDocumentBuffer(url);
+  const { buffer, mimeType } = await fetchDocumentBuffer(url, {
+    mimeTypeHint,
+  });
   return scanDocumentFromBuffer(buffer, mimeType);
 }

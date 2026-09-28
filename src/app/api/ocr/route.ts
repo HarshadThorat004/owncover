@@ -33,6 +33,8 @@ export async function POST(req: Request) {
     const text = typeof body.text === "string" ? body.text : "";
     const qrPayload = typeof body.qrPayload === "string" ? body.qrPayload : "";
     const imageUrl = typeof body.imageUrl === "string" ? body.imageUrl : "";
+    const mimeTypeHint =
+      typeof body.mimeType === "string" ? body.mimeType : null;
 
     let result;
 
@@ -40,7 +42,7 @@ export async function POST(req: Request) {
       result = scanDocumentFromText(text, qrPayload || null);
     } else if (imageUrl) {
       assertAllowedRemoteUrl(imageUrl);
-      result = await scanDocumentFromUrl(imageUrl);
+      result = await scanDocumentFromUrl(imageUrl, mimeTypeHint);
     } else {
       return jsonError("imageUrl or text is required", 400);
     }
@@ -66,6 +68,13 @@ export async function POST(req: Request) {
         error.message === "Uploaded image is too large for OCR"
       ) {
         return jsonError(error.message, 413);
+      }
+
+      if (error.message === "Failed to fetch document for scanning") {
+        return jsonError(
+          "Could not load the uploaded file for scanning. Try uploading again.",
+          502
+        );
       }
     }
 

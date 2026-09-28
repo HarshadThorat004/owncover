@@ -4,14 +4,71 @@ import sharp from "sharp";
 import { createOcrWorker } from "@/lib/document-extract/ocr-langs";
 
 const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
+const PDF_MAGIC = Buffer.from("%PDF");
 
-export function detectMimeType(url: string, contentType?: string | null) {
-  if (contentType === "application/pdf") {
+function normalizeContentType(contentType?: string | null) {
+  return contentType?.split(";")[0]?.trim().toLowerCase() || null;
+}
+
+export function detectMimeTypeFromBuffer(buffer: Buffer) {
+  if (buffer.length >= 4 && buffer.subarray(0, 4).equals(PDF_MAGIC)) {
     return "application/pdf";
   }
 
-  if (contentType?.startsWith("image/")) {
-    return contentType;
+  return null;
+}
+
+function normalizeMimeHint(hint?: string | null) {
+  const normalized = hint?.split(";")[0]?.trim().toLowerCase();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === "application/pdf" || normalized.startsWith("image/")) {
+    return normalized;
+  }
+
+  return null;
+}
+
+export function resolveDocumentMimeType(
+  url: string,
+  contentType: string | null | undefined,
+  buffer: Buffer,
+  mimeTypeHint?: string | null
+) {
+  const fromBuffer = detectMimeTypeFromBuffer(buffer);
+  if (fromBuffer) {
+    return fromBuffer;
+  }
+
+  const hint = normalizeMimeHint(mimeTypeHint);
+  if (hint) {
+    return hint;
+  }
+
+  const normalized = normalizeContentType(contentType);
+  if (normalized === "application/pdf") {
+    return "application/pdf";
+  }
+
+  if (normalized?.startsWith("image/")) {
+    return normalized;
+  }
+
+  return detectMimeType(url, contentType);
+}
+
+export function detectMimeType(url: string, contentType?: string | null) {
+  const normalized = normalizeContentType(contentType);
+
+  if (normalized === "application/pdf") {
+    return "application/pdf";
+  }
+
+  if (normalized?.startsWith("image/")) {
+    return normalized;
   }
 
   const lower = url.toLowerCase();
@@ -35,7 +92,10 @@ export function detectMimeType(url: string, contentType?: string | null) {
   return "image/png";
 }
 
-export async function fetchDocumentBuffer(url: string) {
+export async function fetchDocumentBuffer(
+  url: string,
+  options?: { mimeTypeHint?: string | null }
+) {
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -55,9 +115,16 @@ export async function fetchDocumentBuffer(url: string) {
     throw new Error("Document is too large for scanning");
   }
 
+  const buffer = Buffer.from(arrayBuffer);
+
   return {
-    buffer: Buffer.from(arrayBuffer),
-    mimeType: detectMimeType(url, contentType),
+    buffer,
+    mimeType: resolveDocumentMimeType(
+      url,
+      contentType,
+      buffer,
+      options?.mimeTypeHint
+    ),
   };
 }
 

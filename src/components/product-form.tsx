@@ -19,11 +19,12 @@ import PdfPlaceholder from "@/components/pdf-placeholder";
 import { PRODUCT_CATEGORIES, EXTENDED_COVER_TYPES } from "@/constants/catalog";
 import { canAutofillField, hasExtractedValue } from "@/lib/document-extract/apply-scan";
 import { mergeByDocumentType } from "@/lib/document-extract/merge-scan";
-import type {
-  ExtractedDocumentFields,
-  FieldConfidence,
-  FieldSource,
-  ScanHint,
+import {
+  SCAN_FAILED_MESSAGE,
+  type ExtractedDocumentFields,
+  type FieldConfidence,
+  type FieldSource,
+  type ScanHint,
 } from "@/lib/document-extract/types";
 import { computeExpiryFromPeriod } from "@/lib/warranty";
 
@@ -153,6 +154,26 @@ function nonEmpty(value?: string | null) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : null;
+}
+
+function ocrErrorMessage(status: number, error: unknown) {
+  if (status === 401) {
+    return "Sign in again to scan documents.";
+  }
+
+  if (status === 504 || status === 408) {
+    return "Scan timed out on the server — try a photo (JPG) or enter details manually.";
+  }
+
+  if (typeof error === "string" && error.trim()) {
+    if (error === SCAN_FAILED_MESSAGE) {
+      return "Could not read this document — try a clearer photo, a PDF with selectable text, or enter manually.";
+    }
+
+    return error;
+  }
+
+  return SCAN_FAILED_MESSAGE;
 }
 
 export default function ProductForm({
@@ -344,15 +365,26 @@ export default function ProductForm({
   async function runOcr(
     imageUrl: string,
     file?: File,
-    documentType: ScanDocType = scanDocType
+    documentType: ScanDocType = scanDocType,
+    uploadMimeType?: string
   ) {
     try {
       setScanning(true);
       setScanExtracted(false);
       toast.message("Extracting details from document…");
 
-      let payload: { imageUrl?: string; text?: string; qrPayload?: string } = {
+      const mimeTypeHint =
+        file?.type?.split(";")[0]?.trim() ||
+        uploadMimeType?.split(";")[0]?.trim();
+
+      let payload: {
+        imageUrl?: string;
+        text?: string;
+        qrPayload?: string;
+        mimeType?: string;
+      } = {
         imageUrl,
+        ...(mimeTypeHint ? { mimeType: mimeTypeHint } : {}),
       };
 
       if (file?.type.startsWith("image/")) {
@@ -373,7 +405,10 @@ export default function ProductForm({
         } catch (error) {
           console.error(error);
           toast.message("On-device read failed — trying server scan…");
-          payload = { imageUrl };
+          payload = {
+            imageUrl,
+            ...(mimeTypeHint ? { mimeType: mimeTypeHint } : {}),
+          };
         }
       }
 
@@ -386,11 +421,7 @@ export default function ProductForm({
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
-        toast.error(
-          typeof data.error === "string" && data.error
-            ? data.error
-            : "Sorry, unable to scan — enter manually."
-        );
+        toast.error(ocrErrorMessage(response.status, data.error));
         return;
       }
 
@@ -566,7 +597,7 @@ export default function ProductForm({
       setScanPreviewUrl(url);
       setScanPreviewType(fileType);
       setScanDocType(documentType);
-      void runOcr(url, file, documentType);
+      void runOcr(url, file, documentType, mimeType);
     }
   }
 
