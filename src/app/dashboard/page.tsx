@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import {
   Package,
   ShieldCheck,
@@ -16,31 +17,74 @@ import FirstRunOnboarding from "@/components/first-run-onboarding";
 import ProductSearch from "@/components/product-search";
 import DashboardShell from "@/components/dashboard-shell";
 
-import { getSessionUser } from "@/lib/product-access";
+import { getAuthSession } from "@/lib/auth";
 import {
   getCoverageStatus,
   getEffectiveCover,
 } from "@/lib/coverage";
-import { getMembership } from "@/lib/household";
-import { listPendingInboundDrafts } from "@/lib/inbound";
+import {
+  ensureInboundSlug,
+  inboundAddressForSlug,
+} from "@/lib/inbound";
 import { getDaysRemaining } from "@/lib/warranty";
-import { getDashboardCounts, listProductsForUser } from "@/lib/products-query";
+import { getDashboardHomeData } from "@/lib/products-query";
 import { isMissingSerial } from "@/lib/weekly-digest";
 
-export default async function DashboardPage() {
-  const user = await getSessionUser();
+function DashboardHomeFallback() {
+  return (
+    <div className="animate-pulse motion-reduce:animate-none">
+      <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div className="h-10 w-52 rounded-xl bg-neutral-800" />
+          <div className="mt-3 h-5 w-40 rounded-xl bg-neutral-800" />
+        </div>
+        <div className="h-12 w-40 rounded-xl bg-neutral-800" />
+      </div>
+      <div className="mb-10 grid gap-4 md:grid-cols-4">
+        {[1, 2, 3, 4].map((item) => (
+          <div
+            key={item}
+            className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5"
+          >
+            <div className="h-4 w-24 rounded bg-neutral-800" />
+            <div className="mt-4 h-10 w-16 rounded bg-neutral-800" />
+          </div>
+        ))}
+      </div>
+      <div className="h-14 rounded-2xl bg-neutral-900" />
+    </div>
+  );
+}
 
-  if (!user) {
+export default function DashboardPage() {
+  return (
+    <DashboardShell>
+      <Suspense fallback={<DashboardHomeFallback />}>
+        <DashboardHome />
+      </Suspense>
+    </DashboardShell>
+  );
+}
+
+async function DashboardHome() {
+  const session = await getAuthSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
     return null;
   }
 
-  const [{ items: products }, counts, membership, inboundDrafts] =
-    await Promise.all([
-      listProductsForUser(user.id, { limit: 50 }),
-      getDashboardCounts(user.id),
-      getMembership(user.id),
-      listPendingInboundDrafts(user.id),
-    ]);
+  const { items: products, counts, membership, inboundDrafts, inboundSlug } =
+    await getDashboardHomeData(userId);
+
+  const inboundAddress = inboundSlug
+    ? inboundAddressForSlug(inboundSlug)
+    : await ensureInboundSlug(userId)
+        .then(inboundAddressForSlug)
+        .catch((error) => {
+          console.error(error);
+          return null;
+        });
 
   const expiringProducts = products.filter(
     (product) => getCoverageStatus(product) === "expiring"
@@ -75,11 +119,10 @@ export default async function DashboardPage() {
 
   const needsYou = [...attentionItems.values()];
 
-  const firstName = user.name?.split(" ")[0] || "there";
+  const firstName = session.user?.name?.split(" ")[0] || "there";
   const emptyVault = products.length === 0;
 
   return (
-    <DashboardShell>
       <div className="flex flex-col gap-10">
         <section className="pb-2">
           <p className="text-sm text-gray-400">Welcome back, {firstName}</p>
@@ -145,7 +188,7 @@ export default async function DashboardPage() {
         )}
 
         {emptyVault ? (
-          <FirstRunOnboarding />
+          <FirstRunOnboarding inboundAddress={inboundAddress} />
         ) : (
           <>
         {/* Stats */}
@@ -272,6 +315,5 @@ export default async function DashboardPage() {
           </>
         )}
       </div>
-    </DashboardShell>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -44,17 +44,17 @@ export default function FeatureCarousel({
   const maxIndex = Math.max(0, items.length - visible);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const reduceMotion = useRef(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
-    reduceMotion.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
   }, []);
 
-  useEffect(() => {
-    setIndex((current) => Math.min(current, maxIndex));
-  }, [maxIndex]);
+  const slideIndex = Math.min(index, maxIndex);
 
   const goTo = useCallback(
     (next: number) => {
@@ -68,16 +68,16 @@ export default function FeatureCarousel({
     [maxIndex]
   );
 
-  const prev = useCallback(() => goTo(index - 1), [goTo, index]);
-  const next = useCallback(() => goTo(index + 1), [goTo, index]);
+  const prev = useCallback(() => goTo(slideIndex - 1), [goTo, slideIndex]);
+  const next = useCallback(() => goTo(slideIndex + 1), [goTo, slideIndex]);
 
   useEffect(() => {
-    if (paused || reduceMotion.current || maxIndex === 0) return;
+    if (paused || reduceMotion || maxIndex === 0) return;
     const id = window.setInterval(() => {
       setIndex((current) => (current >= maxIndex ? 0 : current + 1));
     }, 4500);
     return () => window.clearInterval(id);
-  }, [paused, maxIndex]);
+  }, [paused, maxIndex, reduceMotion]);
 
   const slidePercent = 100 / visible;
 
@@ -127,8 +127,8 @@ export default function FeatureCarousel({
         <div
           className="flex will-change-transform"
           style={{
-            transform: `translateX(-${index * slidePercent}%)`,
-            transition: reduceMotion.current
+            transform: `translateX(-${slideIndex * slidePercent}%)`,
+            transition: reduceMotion
               ? "none"
               : "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
           }}
@@ -173,7 +173,7 @@ export default function FeatureCarousel({
         aria-label="Feature slides"
       >
         {Array.from({ length: maxIndex + 1 }).map((_, i) => {
-          const active = i === index;
+          const active = i === slideIndex;
           return (
             <button
               key={i}

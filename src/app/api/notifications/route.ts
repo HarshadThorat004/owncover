@@ -1,18 +1,26 @@
 import { jsonError, jsonSuccess } from "@/lib/api";
+import { getAuthSession } from "@/lib/auth";
+import { syncInAppNotifications } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/product-access";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const user = await getSessionUser();
+    const session = await getAuthSession();
+    const userId = session?.user?.id;
 
-    if (!user) {
+    if (!userId) {
       return jsonError("Unauthorized", 401);
+    }
+
+    const shouldSync = new URL(request.url).searchParams.get("sync") === "1";
+    if (shouldSync) {
+      await syncInAppNotifications(userId);
     }
 
     const notifications = await prisma.notificationLog.findMany({
       where: {
-        userId: user.id,
+        userId,
         channel: "in_app",
         dismissedAt: null,
       },

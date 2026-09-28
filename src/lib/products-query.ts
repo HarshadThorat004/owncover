@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { getCoverageStatus, productStatusWhere } from "@/lib/coverage";
-import { getHouseholdIdForUser, vaultProductWhere } from "@/lib/household";
+import { getHouseholdIdForUser, getMembership, vaultProductWhere } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { getReminderWindowDates } from "@/lib/reminders";
 import { isMissingSerial } from "@/lib/weekly-digest";
@@ -193,6 +193,17 @@ export async function getDashboardCounts(userId: string) {
     },
   });
 
+  return summarizeDashboardCounts(rows);
+}
+
+type CoverageRow = {
+  warrantyExpiry: Date | null;
+  extendedExpiry: Date | null;
+  extendedType: string | null;
+  serialNumber: string | null;
+};
+
+export function summarizeDashboardCounts(rows: CoverageRow[]) {
   let activeProducts = 0;
   let expiringProducts = 0;
   let expiredProducts = 0;
@@ -217,5 +228,41 @@ export async function getDashboardCounts(userId: string) {
     expiredProducts,
     missingSerial,
     attentionProducts,
+  };
+}
+
+export async function getDashboardHomeData(userId: string) {
+  const householdId = await getHouseholdIdForUser(userId);
+  const vault = vaultProductWhere(userId, householdId);
+
+  const [items, membership, inboundDrafts, inbound] = await Promise.all([
+    prisma.product.findMany({
+      where: vault,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      select: productListSelect,
+    }),
+    getMembership(userId),
+    prisma.inboundDraft.findMany({
+      where: {
+        status: "pending",
+        ...(householdId
+          ? { householdId }
+          : { userId, householdId: null }),
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { inboundSlug: true },
+    }),
+  ]);
+
+  return {
+    items: items.slice(0, 50),
+    counts: summarizeDashboardCounts(items),
+    membership,
+    inboundDrafts,
+    inboundSlug: inbound?.inboundSlug ?? null,
   };
 }

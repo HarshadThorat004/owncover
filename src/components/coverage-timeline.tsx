@@ -1,13 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 import { formatUtcDay } from "@/lib/exports/format";
 
 type Point = {
   label: string;
   date: Date | null;
-  detail?: string;
 };
 
 type Props = {
@@ -17,9 +12,13 @@ type Props = {
   extendedLabel?: string;
 };
 
+function utcDay(date: Date) {
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
 function pointState(date: Date | null, now: Date) {
   if (!date) return "missing" as const;
-  if (date.getTime() < now.getTime()) return "done" as const;
+  if (utcDay(date) < utcDay(now)) return "done" as const;
   return "upcoming" as const;
 }
 
@@ -29,11 +28,7 @@ export default function CoverageTimeline({
   extendedExpiry,
   extendedLabel,
 }: Props) {
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setNow(new Date());
-  }, []);
+  const now = new Date();
   const points: Point[] = [
     { label: "Purchased", date: purchaseDate },
     { label: "Manufacturer cover ends", date: manufacturerExpiry },
@@ -46,12 +41,9 @@ export default function CoverageTimeline({
     });
   }
 
-  const upcomingIndex =
-    now == null
-      ? -1
-      : points.findIndex(
-          (point) => point.date && point.date.getTime() >= now.getTime()
-        );
+  const upcomingIndex = points.findIndex(
+    (point) => point.date && utcDay(point.date) >= utcDay(now)
+  );
 
   return (
     <section className="rounded-2xl border border-white/10 p-5 md:p-6">
@@ -62,11 +54,7 @@ export default function CoverageTimeline({
 
       <ol className="mt-6 space-y-0">
         {points.map((point, index) => {
-          const state = !point.date
-            ? "missing"
-            : now
-              ? pointState(point.date, now)
-              : "upcoming";
+          const state = pointState(point.date, now);
           const current = upcomingIndex === index;
           return (
             <li key={point.label} className="flex gap-4">

@@ -60,7 +60,7 @@ function AuthHeroPanel({ compact = false }: { compact?: boolean }) {
         alt=""
         fill
         priority
-        sizes={compact ? "100vw" : "55vw"}
+        sizes={compact ? "(max-width: 768px) 100vw, 1px" : "(min-width: 768px) 55vw, 1px"}
         className="object-cover object-center"
       />
       <div

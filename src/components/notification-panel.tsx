@@ -40,19 +40,25 @@ export default function NotificationPanel({ initialItems = [] }: Props) {
 
   const unreadCount = items.filter((item) => !item.readAt).length;
 
-  const loadNotifications = useCallback(async () => {
+  const loadNotifications = useCallback(async (showSpinner = false) => {
     try {
-      setLoading(true);
-      const response = await fetch("/api/notifications");
+      if (showSpinner) setLoading(true);
+      const response = await fetch(
+        showSpinner ? "/api/notifications?sync=1" : "/api/notifications"
+      );
       if (!response.ok) return;
       const data = await response.json();
       setItems(data.notifications ?? []);
     } catch {
       // silent
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    void loadNotifications();
+  }, [loadNotifications]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -157,7 +163,7 @@ export default function NotificationPanel({ initialItems = [] }: Props) {
     const next = !open;
     setOpen(next);
     if (next) {
-      await loadNotifications();
+      await loadNotifications(true);
     }
   }
 

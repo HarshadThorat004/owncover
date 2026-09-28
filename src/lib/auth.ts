@@ -1,5 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import type { JWT } from "next-auth/jwt";
+import { getServerSession } from "next-auth";
+import { cache } from "react";
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -214,6 +216,8 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 };
+
+export const getAuthSession = cache(() => getServerSession(authOptions));
 
 export function getEnabledOAuthProviders() {
   return {

@@ -20,7 +20,7 @@ type Props = {
 
 export default async function AddProductPage({ searchParams }: Props) {
   const { draft: draftId } = await searchParams;
-  const user = await getSessionUser();
+  const user = draftId ? await getSessionUser() : null;
 
   let inboundDraftId: string | undefined;
   let inboundScanHints: ReturnType<typeof draftScanHints> | undefined;

@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 
 import BrandLogo from "@/components/brand-logo";
+import { useHasAuthSession } from "@/components/use-has-auth-session";
 import { BRAND_CONTACT_EMAIL, BRAND_NAME, BRAND_TAGLINE } from "@/constants/brand";
 
 const CONTACT_EMAIL = BRAND_CONTACT_EMAIL;
@@ -29,7 +32,16 @@ const LEGAL_LINKS = [
 ] as const;
 
 export default function SiteFooter() {
+  const signedIn = useHasAuthSession();
   const year = new Date().getFullYear();
+  const productLinks = signedIn
+    ? [
+        ...PRODUCT_LINKS.filter(
+          (item) => item.href !== "/login" && item.href !== "/register"
+        ),
+        { href: "/dashboard", label: "Dashboard" } as const,
+      ]
+    : PRODUCT_LINKS;
 
   return (
     <footer className="relative border-t border-white/10 bg-[#030304]/80">
@@ -48,7 +60,7 @@ export default function SiteFooter() {
               Product
             </p>
             <ul className="mt-3 space-y-2.5 text-sm text-gray-400">
-              {PRODUCT_LINKS.map((item) => (
+              {productLinks.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="transition hover:text-white">
                     {item.label}

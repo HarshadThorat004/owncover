@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { CalendarDays, FileDown, Inbox, Plus, ScanLine } from "lucide-react";
 
+import CopyInboundAddressButton from "@/components/copy-inbound-address-button";
 import LoadSampleProductButton from "@/components/load-sample-product-button";
 import { BRAND_INBOUND_DOMAIN } from "@/constants/brand";
 import { SAMPLE_PRODUCT_SERIAL } from "@/constants/sample-claim-pack";
 
-export default function FirstRunOnboarding() {
+type Props = {
+  inboundAddress?: string | null;
+};
+
+export default function FirstRunOnboarding({ inboundAddress }: Props) {
   return (
     <section className="space-y-4">
       <div className="rounded-2xl border border-dashed border-white/10 bg-neutral-950/50 p-6 md:p-8">
@@ -83,12 +88,7 @@ export default function FirstRunOnboarding() {
             Forward it to your private address on {BRAND_INBOUND_DOMAIN}. We
             start a draft. You confirm dates before it is saved.
           </p>
-          <Link
-            href="/dashboard/settings"
-            className="mt-2 inline-block text-sm text-cyan-300/90 underline-offset-2 hover:underline"
-          >
-            Copy inbound address
-          </Link>
+          <CopyInboundAddressButton address={inboundAddress} />
         </div>
       </div>
     </section>

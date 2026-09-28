@@ -1,14 +1,14 @@
-import { getServerSession } from "next-auth";
+import { cache } from "react";
 
-import { authOptions } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth";
 import {
   getHouseholdIdForUser,
   vaultProductWhere,
 } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 
-export async function getSessionUser() {
-  const session = await getServerSession(authOptions);
+export const getSessionUser = cache(async () => {
+  const session = await getAuthSession();
 
   const userId = session?.user?.id;
   const email = session?.user?.email;
@@ -26,7 +26,7 @@ export async function getSessionUser() {
       });
 
   return user;
-}
+});
 
 export async function assertProductAccess(productId: string) {
   const user = await getSessionUser();

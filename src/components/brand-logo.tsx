@@ -28,8 +28,9 @@ export default function BrandLogo({
 }: BrandLogoProps) {
   const px = SIZE_MAP[size];
 
+  // Local SVG — plain img avoids next/image hydration mismatches on the mark.
   const mark = (
-    // Local SVG — plain img avoids next/image hydration mismatches on the mark.
+    // eslint-disable-next-line @next/next/no-img-element -- static SVG mark
     <img
       src="/brand/logo-mark.svg"
       alt="OwnCover"

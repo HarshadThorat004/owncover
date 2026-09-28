@@ -124,8 +124,6 @@ export default function ProductSearch({ products }: Props) {
             const expiry = getEffectiveExpiry(product);
             const daysRemaining = expiry ? getDaysRemaining(expiry) : null;
             const status = getCoverageStatus(product);
-            const expired = status === "expired";
-            const expiring = status === "expiring";
 
             return (
               <Link

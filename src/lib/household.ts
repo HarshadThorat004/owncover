@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import { addDays } from "date-fns";
 import type { Prisma } from "@prisma/client";
+import { cache } from "react";
 
 import { normalizeEmail } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
@@ -76,14 +77,14 @@ export function reminderRecipients<T extends { id: string }>(
   return [owner];
 }
 
-export async function getHouseholdIdForUser(userId: string) {
+export const getHouseholdIdForUser = cache(async (userId: string) => {
   const membership = await prisma.householdMember.findUnique({
     where: { userId },
     select: { householdId: true },
   });
 
   return membership?.householdId ?? null;
-}
+});
 
 export async function getMembership(userId: string) {
   return prisma.householdMember.findUnique({

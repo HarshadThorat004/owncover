@@ -92,7 +92,7 @@ export default function RootLayout({
   const googleVerification = getGoogleSiteVerificationToken();
 
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         {googleVerification ? (
           <meta
