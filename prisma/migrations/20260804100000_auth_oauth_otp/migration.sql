@@ -2,7 +2,7 @@
 ALTER TABLE "User" ALTER COLUMN "password" DROP NOT NULL;
 
 -- CreateTable
-CREATE TABLE "EmailOtp" (
+CREATE TABLE IF NOT EXISTS "EmailOtp" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "codeHash" TEXT NOT NULL,
@@ -14,11 +14,12 @@ CREATE TABLE "EmailOtp" (
     CONSTRAINT "EmailOtp_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE INDEX "EmailOtp_email_expiresAt_idx" ON "EmailOtp"("email", "expiresAt");
+CREATE INDEX IF NOT EXISTS "EmailOtp_email_expiresAt_idx" ON "EmailOtp"("email", "expiresAt");
+CREATE INDEX IF NOT EXISTS "EmailOtp_email_idx" ON "EmailOtp"("email");
 
--- CreateIndex
-CREATE INDEX "EmailOtp_email_idx" ON "EmailOtp"("email");
-
--- AddForeignKey
-ALTER TABLE "EmailOtp" ADD CONSTRAINT "EmailOtp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "EmailOtp" ADD CONSTRAINT "EmailOtp_userId_fkey"
+        FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;

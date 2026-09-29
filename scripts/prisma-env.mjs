@@ -45,6 +45,25 @@ const prismaCommands = {
   migrate: "prisma migrate deploy",
 };
 
+/** Failed on Neon 2026-09-18; SQL is now idempotent and must be retried. */
+const KNOWN_FAILED_MIGRATIONS = ["20260804093500_premium_backend_foundation"];
+
+function clearKnownFailedMigrations() {
+  for (const name of KNOWN_FAILED_MIGRATIONS) {
+    try {
+      execSync(`npx prisma migrate resolve --rolled-back "${name}"`, {
+        stdio: ["ignore", "pipe", "pipe"],
+        env: process.env,
+      });
+      console.info(
+        `Marked failed Prisma migration ${name} as rolled back so it can be retried.`
+      );
+    } catch {
+      // Already applied, never recorded, or already rolled back.
+    }
+  }
+}
+
 if (command === "generate" && !process.env.DATABASE_URL) {
   process.env.DATABASE_URL =
     "postgresql://postgres:postgres@127.0.0.1:5432/postgres";
@@ -69,6 +88,10 @@ if (command === "migrate") {
       "Skipping prisma migrate deploy (not on Vercel). Use `npm run db:migrate` locally."
     );
     process.exit(0);
+  }
+
+  if (onVercel) {
+    clearKnownFailedMigrations();
   }
 }
 
