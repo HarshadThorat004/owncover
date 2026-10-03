@@ -6,7 +6,7 @@ export type ServiceChecklist = {
 };
 
 const PHONES: ServiceChecklist = {
-  title: "Take to the brand or retailer service centre",
+  title: "What to carry for a phone warranty request",
   items: [
     "Printed GST tax invoice (SMS or order page is often not enough)",
     "Warranty card, or a screenshot of brand registration",
@@ -18,7 +18,7 @@ const PHONES: ServiceChecklist = {
 };
 
 const APPLIANCES: ServiceChecklist = {
-  title: "Take to the brand, dealer, or AMC desk",
+  title: "What to carry for appliance warranty",
   items: [
     "Printed invoice with model and serial",
     "Warranty card (product vs compressor / PCB if they differ)",
@@ -29,7 +29,7 @@ const APPLIANCES: ServiceChecklist = {
 };
 
 const COMPUTERS: ServiceChecklist = {
-  title: "Take to the brand service centre",
+  title: "What to carry for computer warranty",
   items: [
     "Printed invoice with serial / service tag",
     "Warranty card or on-site AMC papers",
@@ -40,7 +40,7 @@ const COMPUTERS: ServiceChecklist = {
 };
 
 const TV_AUDIO: ServiceChecklist = {
-  title: "Take to the brand or retailer service centre",
+  title: "What to carry for TV or audio warranty",
   items: [
     "Printed invoice with model number",
     "Warranty card",

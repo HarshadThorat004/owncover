@@ -44,7 +44,7 @@ export default function OpenGraphImage() {
               maxWidth: 900,
             }}
           >
-            Walk in with facts. Not a photo roll.
+            Every bill. Every cover date.
           </div>
           <div style={{ fontSize: 28, color: "#9ca3af" }}>{BRAND_TAGLINE}</div>
         </div>

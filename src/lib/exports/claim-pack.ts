@@ -124,7 +124,7 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
   page.drawText(
     isSample
       ? "Fictional product for demonstration. OwnCover does not file claims."
-      : `Generated ${isoDate(new Date())}  ·  For service centre, manufacturer, or insurer`,
+      : `Generated ${isoDate(new Date())}  ·  OwnCover claim pack`,
     {
       x: left,
       y,
@@ -289,7 +289,7 @@ export async function buildClaimPackPdf(product: ClaimPackProduct) {
     color: ink,
   });
   listY -= 18;
-  listPage.drawText("Tick these off at the service centre. Do not leave originals behind.", {
+  listPage.drawText("Check each item before you raise a warranty request. Keep originals with you.", {
     x: left,
     y: listY,
     size: 9,

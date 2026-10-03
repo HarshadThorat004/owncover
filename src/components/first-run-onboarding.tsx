@@ -15,13 +15,14 @@ export default function FirstRunOnboarding({ inboundAddress }: Props) {
     <section className="space-y-4">
       <div className="rounded-2xl border border-dashed border-white/10 bg-neutral-950/50 p-6 md:p-8">
         <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
-          First 10 minutes
+          Get started
         </p>
         <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-          Scan once. Walk in prepared.
+          Add your first invoice.
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-7 text-gray-500">
-          Three steps. You confirm the dates. We do not file claims.
+          Scan a GST bill, confirm the dates, and OwnCover keeps the record and
+          the reminders.
         </p>
 
         <ol className="mt-8 grid gap-4 md:grid-cols-3">
@@ -32,19 +33,21 @@ export default function FirstRunOnboarding({ inboundAddress }: Props) {
               <h3 className="text-sm font-medium text-white">Scan a GST bill</h3>
             </div>
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Photo or PDF. QR first, then on-device OCR. Empty is better than a
-              wrong expiry.
+              Photo or PDF. QR first, then English and Hindi OCR. Empty is
+              better than a wrong date.
             </p>
           </li>
           <li className="rounded-2xl border border-white/10 bg-black/30 p-5">
             <p className="font-display text-sm text-white/30">02</p>
             <div className="mt-3 flex items-center gap-2 text-cyan-300">
               <FileDown size={16} />
-              <h3 className="text-sm font-medium text-white">Download a pack</h3>
+              <h3 className="text-sm font-medium text-white">
+                Download a claim pack
+              </h3>
             </div>
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Invoice facts, serial, and a desk checklist in one PDF. Print it.
-              Keep originals.
+              Invoice facts, serial, and cover dates in one PDF. Share or print
+              when you raise a request.
             </p>
           </li>
           <li className="rounded-2xl border border-white/10 bg-black/30 p-5">
@@ -52,12 +55,12 @@ export default function FirstRunOnboarding({ inboundAddress }: Props) {
             <div className="mt-3 flex items-center gap-2 text-cyan-300">
               <CalendarDays size={16} />
               <h3 className="text-sm font-medium text-white">
-                Add expiry to calendar
+                Turn on reminders
               </h3>
             </div>
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Email and browser at 30 / 7 / 1 days. Download .ics for Google or
-              Apple Calendar.
+              Email and browser at 30, 7, and 1 day before cover ends. Add .ics
+              to Google or Apple Calendar.
             </p>
           </li>
         </ol>
@@ -73,8 +76,8 @@ export default function FirstRunOnboarding({ inboundAddress }: Props) {
           <LoadSampleProductButton />
         </div>
         <p className="mt-4 text-xs leading-6 text-gray-600">
-          Sample TV is fictional (serial {SAMPLE_PRODUCT_SERIAL}). Same pack layout
-          as yours. Delete it after you try the download.
+          Sample TV is fictional (serial {SAMPLE_PRODUCT_SERIAL}). Same pack
+          layout as yours. Delete it after you try the download.
         </p>
       </div>
 
@@ -85,8 +88,8 @@ export default function FirstRunOnboarding({ inboundAddress }: Props) {
             Amazon or Flipkart PDF in your inbox?
           </p>
           <p className="mt-1 text-sm leading-6 text-gray-500">
-            Forward it to your private address on {BRAND_INBOUND_DOMAIN}. We
-            start a draft. You confirm dates before it is saved.
+            Forward it to your private address on {BRAND_INBOUND_DOMAIN}. A
+            draft is created. You confirm dates before it is saved.
           </p>
           <CopyInboundAddressButton address={inboundAddress} />
         </div>

@@ -8,7 +8,7 @@ import {
 } from "@/constants/help-guides";
 
 describe("help guides", () => {
-  it("publishes TV, fridge, phone, and AC desk guides", () => {
+  it("publishes TV, fridge, phone, and AC category guides", () => {
     expect(HELP_GUIDES.map((guide) => guide.slug).sort()).toEqual([
       "ac",
       "fridge",
@@ -31,7 +31,7 @@ describe("faqs", () => {
   it("expands beyond a five-item marketing FAQ", () => {
     expect(FAQS.length).toBeGreaterThanOrEqual(12);
     expect(faqsForHome().length).toBeGreaterThanOrEqual(8);
-    expect(FAQS.some((item) => /file the claim/i.test(item.q))).toBe(true);
+    expect(FAQS.some((item) => /file warranty claims/i.test(item.q))).toBe(true);
     expect(FAQS.some((item) => /scan is wrong/i.test(item.q))).toBe(true);
     expect(FAQS.some((item) => /Hindi/i.test(item.q))).toBe(true);
   });

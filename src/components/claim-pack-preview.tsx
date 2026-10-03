@@ -38,7 +38,7 @@ export default function ClaimPackPreview({ product }: Props) {
       <p className="mt-1 text-xs leading-5 text-neutral-500">
         {isSample
           ? "Fictional product. OwnCover does not file claims."
-          : "Take this to the desk with the printed tax invoice."}
+          : "Print with the GST tax invoice when you raise a request."}
       </p>
       <p className="mt-5 text-sm font-medium">{product.name}</p>
       <p className="mt-1 text-xs text-neutral-500">

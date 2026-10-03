@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { Package, Search, ArrowUpRight } from "lucide-react";
 
 import type { Product } from "@/types/product";
@@ -12,6 +13,7 @@ import {
   productUsesPdfCover,
 } from "@/lib/warranty";
 import { getCoverageStatus, getEffectiveExpiry, coverageStatusLabel } from "@/lib/coverage";
+import { formatDateIN } from "@/lib/format-date";
 import PdfPlaceholder from "@/components/pdf-placeholder";
 
 type Props = {
@@ -23,6 +25,7 @@ type FilterType = "all" | "active" | "expiring" | "expired";
 export default function ProductSearch({ products }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
+  const reduce = useReducedMotion();
 
   const filteredProducts = useMemo(() => {
     const list = products.filter((product) => {
@@ -118,7 +121,7 @@ export default function ProductSearch({ products }: Props) {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredProducts.map((product) => {
+          {filteredProducts.map((product, index) => {
             const thumbnail = getProductThumbnail(product);
             const pdfCover = productUsesPdfCover(product);
             const expiry = getEffectiveExpiry(product);
@@ -126,10 +129,19 @@ export default function ProductSearch({ products }: Props) {
             const status = getCoverageStatus(product);
 
             return (
-              <Link
+              <motion.div
                 key={product.id}
+                initial={reduce ? false : { opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: Math.min(index, 8) * 0.05,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+              <Link
                 href={`/dashboard/products/${product.id}`}
-                className="premium-card group rounded-2xl border border-white/10 bg-neutral-950/80"
+                className="premium-card group block h-full rounded-2xl border border-white/10 bg-neutral-950/80"
               >
                 <div className="premium-media relative overflow-hidden rounded-t-2xl border-b border-white/5">
                   {thumbnail ? (
@@ -185,23 +197,20 @@ export default function ProductSearch({ products }: Props) {
                       <span>Purchase</span>
                       <span className="text-gray-300">
                         {product.purchaseDate
-                          ? new Date(product.purchaseDate).toLocaleDateString(
-                              "en-US"
-                            )
+                          ? formatDateIN(product.purchaseDate)
                           : "—"}
                       </span>
                     </div>
                     <div className="flex justify-between text-gray-500">
                       <span>Expiry</span>
                       <span className="text-gray-300">
-                        {expiry
-                          ? new Date(expiry).toLocaleDateString("en-US")
-                          : "—"}
+                        {expiry ? formatDateIN(expiry) : "—"}
                       </span>
                     </div>
                   </div>
                 </div>
               </Link>
+              </motion.div>
             );
           })}
         </div>

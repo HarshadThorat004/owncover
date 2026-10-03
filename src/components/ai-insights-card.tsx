@@ -30,7 +30,7 @@ export default function AIInsightsCard({
           title: `${cover} ends in ${daysRemaining} days`,
           description:
             nextAction ||
-            "Print the claim pack and confirm serial / IMEI before you visit a service centre.",
+            "Download the claim pack and confirm the serial or IMEI before you raise a request.",
           className: "border-amber-500/20 bg-amber-500/[0.06]",
           icon: <Clock size={18} className="text-amber-400" />,
         }

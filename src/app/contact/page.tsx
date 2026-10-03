@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import MarketingPage from "@/components/marketing-page";
+import Reveal from "@/components/reveal";
 import { BRAND_CONTACT_EMAIL, BRAND_NAME } from "@/constants/brand";
 
 export const metadata: Metadata = {
@@ -17,11 +18,11 @@ const TOPICS = [
   },
   {
     title: "Privacy or deletion",
-    body: "Access, correction, or deletion under Indian DPDP rules. We treat these as the same inbox — say so in the subject.",
+    body: "Access, correction, or deletion under Indian DPDP rules. Say so in the subject line.",
   },
   {
-    title: "Not a claims desk",
-    body: `${BRAND_NAME} does not file manufacturer or retailer claims. We cannot call the service centre for you. For a desk visit, print your pack and the original invoice.`,
+    title: "Warranty claims",
+    body: `${BRAND_NAME} does not file manufacturer or retailer claims. For product support, contact the brand or retailer directly.`,
   },
 ];
 
@@ -29,8 +30,8 @@ export default function ContactPage() {
   return (
     <MarketingPage
       eyebrow="Contact"
-      title="Write to a person. Not a bot."
-      lede={`${BRAND_NAME} is a small product. Mail goes to ${BRAND_CONTACT_EMAIL}. We aim to reply within one business day. We do not staff live chat.`}
+      title="Write to us."
+      lede={`${BRAND_NAME} is a small product. Mail goes to ${BRAND_CONTACT_EMAIL}. We aim to reply within one business day.`}
     >
       <div className="space-y-10">
         <a
@@ -42,27 +43,26 @@ export default function ContactPage() {
         </a>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          {TOPICS.map((item) => (
-            <section
-              key={item.title}
-              className="rounded-2xl border border-white/10 p-5"
-            >
-              <h2 className="text-sm font-medium text-white">{item.title}</h2>
-              <p className="mt-2 text-sm leading-7 text-gray-500">{item.body}</p>
-            </section>
+          {TOPICS.map((item, index) => (
+            <Reveal key={item.title} delay={index * 0.08}>
+              <section className="premium-card h-full rounded-2xl border border-white/10 p-5">
+                <h2 className="text-sm font-medium text-white">{item.title}</h2>
+                <p className="mt-2 text-sm leading-7 text-gray-500">{item.body}</p>
+              </section>
+            </Reveal>
           ))}
         </div>
 
         <p className="text-sm leading-7 text-gray-500">
-          Desk checklists and GST scan:{" "}
+          GST scan and category guides:{" "}
           <Link
             href="/help"
             className="text-cyan-300/90 underline-offset-2 hover:underline"
           >
             Help
           </Link>
-          . Do not forward invoices to this address. Use the inbound address in
-          Settings, or upload in the vault. Legal:{" "}
+          . Do not forward invoices to this address — use the inbound address in
+          Settings. Legal:{" "}
           <Link
             href="/privacy"
             className="text-cyan-300/90 underline-offset-2 hover:underline"

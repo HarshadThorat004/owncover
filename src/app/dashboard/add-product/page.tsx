@@ -81,7 +81,7 @@ export default async function AddProductPage({ searchParams }: Props) {
           <p className="mt-2 text-sm leading-7 text-gray-500">
             {inboundDraftId
               ? "Check the filled fields, complete anything missing, then save. Empty is better than a wrong expiry date."
-              : "Scan → check four facts → save. Then download a pack from the product page."}
+              : "Scan a GST invoice or enter the details. Confirm the dates, then save."}
           </p>
 
           <div className="mt-8">

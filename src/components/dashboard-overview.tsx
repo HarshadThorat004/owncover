@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Plus,
   ShieldCheck,
@@ -21,6 +24,7 @@ export default function DashboardOverview({
   expiringProducts,
   missingSerial,
 }: Props) {
+  const reduce = useReducedMotion();
   const healthPercent =
     totalProducts > 0
       ? Math.round((activeProducts / totalProducts) * 100)
@@ -35,9 +39,9 @@ export default function DashboardOverview({
         <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400 text-black icon-well">
           <Plus size={22} strokeWidth={2.5} />
         </div>
-        <h3 className="text-lg font-medium text-white">Add to vault</h3>
+        <h3 className="text-lg font-medium text-white">Add a product</h3>
         <p className="mt-2 text-sm leading-6 text-gray-500">
-          Scan a GST invoice or enter warranty details manually.
+          Scan a GST invoice or enter the cover dates yourself.
         </p>
         <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-cyan-300 transition group-hover:gap-2">
           Open
@@ -59,9 +63,12 @@ export default function DashboardOverview({
           </span>
         </div>
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
-          <div
-            className="h-full rounded-full bg-emerald-400 transition-all"
-            style={{ width: `${healthPercent}%` }}
+          <motion.div
+            className="h-full rounded-full bg-emerald-400"
+            initial={reduce ? false : { width: 0 }}
+            animate={{ width: `${healthPercent}%` }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            style={reduce ? { width: `${healthPercent}%` } : undefined}
           />
         </div>
       </div>

@@ -111,6 +111,6 @@ describe("coverageStatusLabel", () => {
     expect(coverageStatusLabel("active")).toBe("Active cover");
     expect(coverageStatusLabel("expired")).toBe("Cover ended");
     expect(coverageStatusLabel("unknown")).toBe("Needs a date");
-    expect(coverageStatusLabel("expiring", 12)).toBe("12d to desk");
+    expect(coverageStatusLabel("expiring", 12)).toBe("12d left");
   });
 });

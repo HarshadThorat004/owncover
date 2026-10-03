@@ -3,6 +3,8 @@ import { Geist } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "sonner";
+
+import SupportChatRoot from "@/components/support-chat-root";
 import {
   BRAND_DESCRIPTION,
   BRAND_NAME,
@@ -104,7 +106,7 @@ export default function RootLayout({
       <body
         className={`${geist.variable} ${geist.className} antialiased bg-[#030304] text-white`}
       >
-        {children}
+        <SupportChatRoot>{children}</SupportChatRoot>
         <Toaster
           position="top-right"
           richColors

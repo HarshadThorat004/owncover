@@ -8,10 +8,10 @@ export const BRAND_FROM_EMAIL = `${BRAND_NAME} <noreply@${BRAND_DOMAIN}>`;
 export const BRAND_INBOUND_DOMAIN = getInboundDomain();
 
 /** Single line used on header, footer, SEO, PWA, and emails. */
-export const BRAND_TAGLINE = "Desk-ready, not desk-side.";
+export const BRAND_TAGLINE = "Invoices and cover dates, in one vault.";
 
 export const BRAND_DESCRIPTION =
-  "OwnCover is a warranty tracker for India. Scan GST invoices, track manufacturer vs store cover, and download a claim pack before you visit the service desk.";
+  "Scan GST invoices, track brand, store and AMC cover, and get reminders before a warranty ends.";
 
 export const BRAND_TITLE = `${BRAND_NAME} — ${BRAND_TAGLINE.replace(/\.$/, "")}`;
 

@@ -92,12 +92,11 @@ function AuthHeroPanel({ compact = false }: { compact?: boolean }) {
             compact ? "text-lg" : "text-3xl leading-tight md:text-4xl"
           }`}
         >
-          Walk in with facts.
+          Every bill. Every cover date.
         </p>
         {!compact && (
           <p className="mt-3 text-sm leading-7 text-white/55">
-            GST invoices, cover dates, and a claim pack — ready before you reach
-            the service desk.
+            GST invoices, serials, and reminders before cover ends.
           </p>
         )}
       </div>

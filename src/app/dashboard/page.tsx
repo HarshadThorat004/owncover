@@ -16,6 +16,7 @@ import DashboardOverview from "@/components/dashboard-overview";
 import FirstRunOnboarding from "@/components/first-run-onboarding";
 import ProductSearch from "@/components/product-search";
 import DashboardShell from "@/components/dashboard-shell";
+import Reveal from "@/components/reveal";
 
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -112,7 +113,7 @@ async function DashboardHome() {
 
   for (const product of missingSerialProducts) {
     const existing = attentionItems.get(product.id);
-    const reason = "Serial missing — the desk will ask";
+    const reason = "Serial missing";
     if (existing) existing.reasons.push(reason);
     else attentionItems.set(product.id, { product, reasons: [reason] });
   }
@@ -131,16 +132,14 @@ async function DashboardHome() {
               <h1 className="font-display text-3xl text-white md:text-5xl">
                 {membership && membership.household.members.length > 1
                   ? membership.household.name
-                  : emptyVault
-                    ? "Start your vault"
-                    : "Coverage snapshot"}
+                  : "Your vault"}
               </h1>
               <p className="mt-3 text-sm leading-7 text-gray-500 md:text-base">
                 {membership && membership.household.members.length > 1
-                  ? `Shared vault · ${membership.household.members.length} people. Products, documents, and expiry dates together.`
+                  ? `Shared with ${membership.household.members.length} people. Same products, documents, and dates.`
                   : emptyVault
-                    ? "Scan a GST bill, or load a sample TV and download a pack in one minute."
-                    : "Active cover, missing serials, dates that need a desk visit, and invoices still in draft."}
+                    ? "Scan a GST invoice or enter the dates. Reminders start once you save."
+                    : "What is covered, what is ending soon, and what still needs a serial."}
               </p>
               {membership && membership.household.members.length > 1 && (
                 <Link
@@ -169,11 +168,11 @@ async function DashboardHome() {
                 <Inbox size={18} className="mt-0.5 text-cyan-300" />
                 <div>
                   <h2 className="text-base font-medium text-white">
-                    Work queue · {inboundDrafts.length}{" "}
+                    {inboundDrafts.length}{" "}
                     {inboundDrafts.length === 1 ? "invoice" : "invoices"} to confirm
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
-                    Forwarded attachments stay drafts until you confirm the dates.
+                    Forwarded bills stay drafts until you check the dates.
                   </p>
                 </div>
               </div>
@@ -191,7 +190,7 @@ async function DashboardHome() {
           <FirstRunOnboarding inboundAddress={inboundAddress} />
         ) : (
           <>
-        {/* Stats */}
+        <Reveal>
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-5">
             <div className="flex items-center justify-between">
@@ -233,8 +232,9 @@ async function DashboardHome() {
             </p>
           </div>
         </section>
+        </Reveal>
 
-        {/* Quick insights */}
+        <Reveal delay={0.06}>
         <DashboardOverview
           totalProducts={counts.totalProducts}
           activeProducts={counts.activeProducts}
@@ -242,14 +242,16 @@ async function DashboardHome() {
           expiringProducts={counts.expiringProducts}
           missingSerial={counts.missingSerial}
         />
+        </Reveal>
 
         {needsYou.length > 0 && (
+          <Reveal delay={0.1}>
           <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 md:p-6">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-white">Needs you</h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Cover ending within 30 days, or a serial the desk will ask for
+                  Cover ending within 30 days, or a missing serial
                 </p>
               </div>
               <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
@@ -281,8 +283,10 @@ async function DashboardHome() {
               ))}
             </div>
           </section>
+          </Reveal>
         )}
 
+        <Reveal delay={0.12}>
         <section id="products" className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -290,7 +294,7 @@ async function DashboardHome() {
                   Your products
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Filter by active cover, needs attention, or cover ended
+                  Search and filter by active cover, ending soon, or ended
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -312,6 +316,7 @@ async function DashboardHome() {
             </div>
             <ProductSearch products={products} />
           </section>
+        </Reveal>
           </>
         )}
       </div>

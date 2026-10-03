@@ -30,7 +30,7 @@ export default function MarketingPage({
         <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
           {eyebrow}
         </p>
-        <h1 className="font-display mt-4 text-4xl leading-[1.1] md:text-5xl">
+        <h1 className="hero-enter font-display mt-4 text-4xl leading-[1.1] md:text-5xl">
           {title}
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-8 text-gray-400">

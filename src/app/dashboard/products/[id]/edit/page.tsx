@@ -52,7 +52,7 @@ export default async function EditPage({ params }: Props) {
             Update details
           </h1>
           <p className="mt-2 text-sm leading-7 text-gray-500">
-            Adjust warranty info, documents, notes, and renewal options.
+            Update invoice facts, cover dates, documents, and notes.
           </p>
 
           <div className="mt-6 flex items-center gap-4 rounded-xl border border-white/10 bg-black/30 p-4">

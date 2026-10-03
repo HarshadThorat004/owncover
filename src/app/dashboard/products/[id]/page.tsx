@@ -20,6 +20,7 @@ import {
 import { categoryLabel, extendedCoverLabel } from "@/constants/catalog";
 import { getServiceChecklist } from "@/constants/service-checklist";
 import { getCoverageStatus, getEffectiveCover, coverageStatusLabel } from "@/lib/coverage";
+import { formatDateIN } from "@/lib/format-date";
 import CoverageTimeline from "@/components/coverage-timeline";
 import ReminderSchedule from "@/components/reminder-schedule";
 
@@ -134,8 +135,8 @@ export default async function ProductPage({ params }: Props) {
                 <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">
                   <p className="font-medium">Sample TV — not a real claim</p>
                   <p className="mt-1 text-cyan-100/70">
-                    Download the pack, then delete this product and add your own
-                    GST bill.
+                    Download the pack, then delete this product and add your
+                    own GST invoice.
                   </p>
                 </div>
               )}
@@ -184,7 +185,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="text-xs text-gray-500">Purchase date</p>
             <p className="mt-2 text-lg font-semibold text-white">
               {purchaseDate
-                ? purchaseDate.toLocaleDateString("en-US")
+                ? formatDateIN(purchaseDate)
                 : "Not set"}
             </p>
           </div>
@@ -192,7 +193,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="text-xs text-gray-500">Manufacturer warranty</p>
             <p className="mt-2 text-lg font-semibold text-white">
               {manufacturerExpiry
-                ? manufacturerExpiry.toLocaleDateString("en-US")
+                ? formatDateIN(manufacturerExpiry)
                 : "Not set"}
             </p>
           </div>
@@ -202,14 +203,14 @@ export default async function ProductPage({ params }: Props) {
                 {extendedCoverLabel(product.extendedType)}
               </p>
               <p className="mt-2 text-lg font-semibold text-white">
-                {extendedExpiry.toLocaleDateString("en-US")}
+                {formatDateIN(extendedExpiry)}
               </p>
             </div>
           )}
           <div className="rounded-2xl border border-white/10 bg-neutral-950/80 p-5">
             <p className="text-xs text-gray-500">Added on</p>
             <p className="mt-2 text-lg font-semibold text-white">
-              {new Date(product.createdAt).toLocaleDateString("en-US")}
+              {formatDateIN(product.createdAt)}
             </p>
           </div>
           {product.purchaseAmount && (
@@ -265,7 +266,8 @@ export default async function ProductPage({ params }: Props) {
           <div className="mb-4">
             <h2 className="text-sm font-medium text-white">What to carry</h2>
             <p className="mt-1 text-xs leading-6 text-gray-500">
-              {checklist.title}. Print the pack. Do not leave originals behind.
+              {checklist.title}. Print the pack. Keep the original invoice with
+              you.
             </p>
           </div>
           <ul className="space-y-2.5">

@@ -10,9 +10,9 @@ import { BRAND_TAGLINE } from "@/constants/brand";
 
 const NAV = [
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#features", label: "Features" },
   { href: "/help", label: "Help" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
 ] as const;
 
 export default function MarketingHeader() {

@@ -87,7 +87,7 @@ export function coverageStatusLabel(
   if (status === "expired") return "Cover ended";
   if (status === "expiring") {
     if (daysRemaining == null) return "Needs attention";
-    return `${daysRemaining}d to desk`;
+    return `${daysRemaining}d left`;
   }
   if (status === "active") return "Active cover";
   return "Needs a date";

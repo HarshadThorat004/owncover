@@ -12,7 +12,7 @@ export default function CarryListActions({ productName, items }: Props) {
   const text = [
     `What to carry — ${productName}`,
     ...items.map((item) => `• ${item}`),
-    "Do not leave originals at the desk. OwnCover does not file claims.",
+    "Keep the original invoice with you.",
   ].join("\n");
 
   async function copyList() {
@@ -60,10 +60,10 @@ export default function CarryListActions({ productName, items }: Props) {
         p { color: #555; }
         li { margin: 8px 0; }
       </style></head><body>
-      <p>OwnCover · desk list</p>
+      <p>OwnCover · carry list</p>
       <h1>${escapeHtml(productName)}</h1>
       <ul>${rows}</ul>
-      <p>Print the GST invoice and this pack. Do not leave originals at the desk.</p>
+      <p>Print the GST invoice and this pack. Keep the original invoice with you.</p>
       </body></html>`);
     page.document.close();
     page.focus();

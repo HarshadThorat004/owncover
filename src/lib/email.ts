@@ -389,8 +389,8 @@ function buildDigestBody(input: {
     <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
       ${brandEmailHeader()}
       <p>Hi ${name},</p>
-      <p>A short look at the vault — what expires soon, what is missing a serial, and invoices still in draft. We do not file claims.</p>
-      ${digestList("Needs a desk visit (30 days)", input.digest.expiring)}
+      <p>A short look at the vault — what expires soon, what is missing a serial, and invoices still in draft.</p>
+      ${digestList("Cover ending in 30 days", input.digest.expiring)}
       ${digestList("Missing serial", input.digest.missingSerial)}
       ${drafts}
       <p style="margin: 24px 0;">

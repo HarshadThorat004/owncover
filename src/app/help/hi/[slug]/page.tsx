@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${guide.title} — मदद`,
-    description: `${guide.lede} ${BRAND_NAME} दावा दर्ज नहीं करता।`,
+    description: `${guide.lede} ${BRAND_NAME}.`,
     alternates: {
       languages: {
         en: `/help/${slug}`,
@@ -65,7 +65,7 @@ export default async function HindiHelpGuidePage({ params }: Props) {
           {copy.categoryPrefix}: {categoryLabel(guide.category)}. {copy.noClaim}
         </p>
 
-        <section className="rounded-2xl border border-white/10 p-5 md:p-6">
+        <section className="premium-card rounded-2xl border border-white/10 p-5 md:p-6">
           <h2 className="text-sm font-medium text-white">
             {guide.checklistTitle}
           </h2>

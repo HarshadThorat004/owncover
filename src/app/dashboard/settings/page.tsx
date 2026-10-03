@@ -58,7 +58,7 @@ export default async function SettingsPage() {
             Settings
           </h1>
           <p className="mt-2 text-sm leading-7 text-gray-500">
-            Your vault, what we keep, and how to take it with you or delete it.
+            Household sharing, reminders, exports, and how to delete the account.
           </p>
 
           <dl className="mt-8 grid gap-4 sm:grid-cols-2">

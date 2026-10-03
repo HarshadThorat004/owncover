@@ -31,9 +31,8 @@ export default function ReminderSchedule({
       <h2 className="text-sm font-medium text-white">Reminder schedule</h2>
       <p className="mt-1 text-xs leading-6 text-gray-500">
         {coverLabel
-          ? `Alerts fire against ${coverLabel.toLowerCase()} — the cover that still matters.`
-          : "Email and browser alerts on this cover."}{" "}
-        We do not run the service centre. We get you desk-ready.
+          ? `Alerts fire against ${coverLabel.toLowerCase()} — the cover that is still running.`
+          : "Email and browser alerts on this cover."}
       </p>
 
       <ul className="mt-5 space-y-2">

@@ -20,10 +20,10 @@ export default function Error({ error, reset }: Props) {
       <BackgroundGlow />
       <MarketingHeader />
       <section className="relative mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-5 py-24 text-center">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
+        <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
           Error
         </p>
-        <h1 className="font-display mt-4 text-4xl md:text-5xl">
+        <h1 className="hero-enter font-display mt-4 text-4xl md:text-5xl">
           Something broke on our side.
         </h1>
         <p className="mt-4 text-sm leading-7 text-gray-400">

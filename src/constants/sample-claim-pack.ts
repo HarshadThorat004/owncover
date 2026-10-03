@@ -18,7 +18,7 @@ export const SAMPLE_CLAIM_PACK_PRODUCT: ClaimPackProduct = {
   extendedExpiry: new Date("2027-11-12T00:00:00.000Z"),
   extendedType: "store",
   notes:
-    "Sample only — fictional serial and invoice. Print a pack like this for your own product. Do not leave originals at the desk.",
+    "Sample only — fictional serial and invoice. Your own products get the same pack layout.",
   renewalAvailable: false,
   renewalNotes: null,
   invoiceImage: null,

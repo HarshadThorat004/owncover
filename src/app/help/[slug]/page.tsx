@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${guide.title} — Help`,
-    description: `${guide.lede} ${BRAND_NAME} does not file claims.`,
+    description: `${guide.lede} ${BRAND_NAME}.`,
     alternates: {
       languages: {
         en: `/help/${slug}`,
@@ -65,7 +65,7 @@ export default async function HelpGuidePage({ params }: Props) {
           {BRAND_NAME} does not file this claim.
         </p>
 
-        <section className="rounded-2xl border border-white/10 p-5 md:p-6">
+        <section className="premium-card rounded-2xl border border-white/10 p-5 md:p-6">
           <h2 className="text-sm font-medium text-white">
             {checklist.title}
           </h2>
@@ -83,7 +83,7 @@ export default async function HelpGuidePage({ params }: Props) {
         </section>
 
         <section>
-          <h2 className="text-base font-medium text-white">Before you leave</h2>
+          <h2 className="text-base font-medium text-white">Good to know</h2>
           <ul className="mt-4 space-y-3">
             {guide.notes.map((note) => (
               <li key={note} className="text-sm leading-7 text-gray-400">
@@ -95,7 +95,7 @@ export default async function HelpGuidePage({ params }: Props) {
 
         <p className="text-sm leading-7 text-gray-500">
           Scan the GST bill, confirm the dates, download the pack. Print the
-          invoice too. Do not leave originals at the desk.
+          invoice too. Keep the original invoice with you.
         </p>
 
         <div className="flex flex-wrap gap-3">

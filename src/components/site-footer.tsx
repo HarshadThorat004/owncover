@@ -10,9 +10,9 @@ const CONTACT_EMAIL = BRAND_CONTACT_EMAIL;
 
 const PRODUCT_LINKS = [
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#features", label: "Features" },
   { href: "/help", label: "Help" },
   { href: "/help/hi", label: "मदद" },
-  { href: "/#compare", label: "Compare" },
   { href: "/sample-pack", label: "Sample pack" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
@@ -49,8 +49,8 @@ export default function SiteFooter() {
         <div className="max-w-sm">
           <BrandLogo variant="full" size="sm" tagline={BRAND_TAGLINE} />
           <p className="mt-4 text-sm leading-6 text-gray-500">
-            Scan GST invoices, track manufacturer and store cover, and walk into
-            a service centre with a claim pack. We do not run the desk.
+            GST invoices, serials, and cover dates in one vault — with reminders
+            before a warranty ends.
           </p>
         </div>
 

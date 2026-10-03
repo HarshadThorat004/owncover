@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, Minus } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Inbox,
+  Languages,
+  ScanLine,
+  ShieldCheck,
+} from "lucide-react";
 
-import FeatureCarousel from "@/components/feature-carousel";
 import FaqList from "@/components/faq-list";
-import HeroArtifact from "@/components/hero-artifact";
 import JsonLd from "@/components/json-ld";
 import MarketingShell from "@/components/marketing-shell";
+import ProductFilm from "@/components/product-film";
+import Reveal from "@/components/reveal";
+import VaultPreview from "@/components/vault-preview";
+import VaultStage from "@/components/vault-stage";
 import {
   BRAND_DESCRIPTION,
   BRAND_INBOUND_DOMAIN,
@@ -31,36 +40,65 @@ export const metadata: Metadata = {
   },
 };
 
+const HERO_STATS = [
+  { value: "GST QR", label: "Invoice scan" },
+  { value: "30 · 7 · 1", label: "Expiry alerts" },
+  { value: "Family", label: "Shared vault" },
+];
+
 const FEATURE_SLIDES = [
   {
-    title: "Desk-ready claim pack",
-    desc: "Invoice facts, serial, and a service-centre checklist in one PDF — print it before you go to the desk.",
-    image: "/brand/features/claim-pack.png",
-    imageAlt: "Claim pack document with cyan glow",
-  },
-  {
-    title: "Reminders that land",
-    desc: "Email and browser alerts at 30 days, 7 days, and the day before — plus a calendar file for Google or Apple Calendar.",
-    image: "/brand/features/reminders.png",
-    imageAlt: "Reminder notifications and calendar markers",
-  },
-  {
-    title: "GST-aware scan",
-    desc: "QR first, then on-device OCR — English and Hindi labels, empty if unsure. You confirm dates before save.",
+    title: "GST invoice scan",
+    desc: "Reads the GST QR first. If that fails, on-device OCR picks up English and Hindi. You confirm every field before it is saved.",
     image: "/brand/features/gst-scan.png",
     imageAlt: "GST invoice scan with holographic beam",
   },
   {
-    title: "Shared vault",
-    desc: "Share one vault with family or staff — home, shop, gym, or office. Same products, documents, and expiry reminders. Each person still has their own sign-in.",
-    image: "/brand/features/household.png",
-    imageAlt: "Shared vault network",
-  },
-  {
-    title: "Coverage timeline",
-    desc: "See purchase through manufacturer cover, then store or AMC — so you know which date still matters at the desk.",
+    title: "Cover timeline",
+    desc: "Brand warranty, store warranty, and AMC on one timeline — so you know which cover is still running.",
     image: "/brand/features/timeline.png",
     imageAlt: "Warranty coverage timeline nodes",
+  },
+  {
+    title: "Expiry reminders",
+    desc: "Email and optional browser alerts at 30 days, 7 days, and 1 day before a cover ends.",
+    image: "/brand/features/reminders.png",
+    imageAlt: "Reminder notifications and calendar markers",
+  },
+  {
+    title: "Claim pack",
+    desc: "One PDF with invoice facts, serial number, and cover dates. Share or print when you raise a warranty request.",
+    image: "/brand/features/claim-pack.png",
+    imageAlt: "Claim pack document with cyan glow",
+  },
+  {
+    title: "Household vault",
+    desc: "Invite family into one vault. Same products, documents, and reminders — each person keeps their own sign-in.",
+    image: "/brand/features/household.png",
+    imageAlt: "Shared household vault network",
+  },
+];
+
+const WHY = [
+  {
+    icon: ScanLine,
+    title: "GST invoices first",
+    desc: "The QR on an Indian tax invoice is read before anything else. OCR is only the backup.",
+  },
+  {
+    icon: Languages,
+    title: "English and Hindi",
+    desc: "Labels in both languages are read. Unclear fields stay empty for you to fill.",
+  },
+  {
+    icon: Inbox,
+    title: "Forward a marketplace bill",
+    desc: "Send an Amazon or Flipkart invoice PDF to your private OwnCover address, then review it in the vault.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "You approve every save",
+    desc: "Scans never write themselves in. Review the record, then keep or discard it.",
   },
 ];
 
@@ -80,21 +118,20 @@ export default function HomePage() {
       />
       <MarketingShell>
       <section className="relative">
-        <div className="relative mx-auto max-w-6xl px-5 py-16 text-center md:px-8 md:py-24">
+        <div className="hero-enter relative mx-auto max-w-6xl px-5 py-16 text-center md:px-8 md:py-24">
           <p className="eyebrow-pill text-[11px] font-medium uppercase tracking-[0.2em] text-cyan-200/90">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
-            For homes, shops, gyms, and offices that use the service desk
+            Warranty records for Indian homes
           </p>
-          <h1 className="font-display mx-auto mt-8 max-w-4xl text-[2.5rem] leading-[1.08] md:text-7xl">
-            Walk in with facts.
+          <h1 className="font-display mx-auto mt-8 max-w-4xl text-[2.5rem] leading-[1.08] md:text-6xl lg:text-7xl">
+            Every bill.
             <br />
-            Not a photo roll.
+            <span className="text-gradient">Every cover date.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-gray-400">
-            Scan GST invoices, track manufacturer vs store cover, and download a
-            claim pack before you visit the desk. Same vault for a house, a shop
-            floor, a gym, an office — OwnCover still does not run the service
-            centre.
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-400">
+            Scan a GST invoice or forward an Amazon or Flipkart PDF. OwnCover
+            keeps the product, the documents, and the dates — and reminds you
+            before cover ends.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -125,65 +162,29 @@ export default function HomePage() {
               href="#how-it-works"
               className="text-gray-400 underline-offset-4 hover:text-white hover:underline"
             >
-              First 10 minutes
+              See how it works
             </a>
           </p>
-
-          <div className="mx-auto mt-14 max-w-5xl text-left">
-            <HeroArtifact />
-          </div>
-
-          <p className="mx-auto mt-6 max-w-2xl text-[12px] leading-6 tracking-wide text-gray-600">
-            GST QR first · On-device scan when we can · You confirm dates ·
-            Delete anytime
-          </p>
         </div>
-      </section>
 
-      <section className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 p-7 md:p-8">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
-              Without OwnCover
-            </p>
-            <h2 className="font-display mt-3 text-2xl md:text-3xl">
-              A folder of bills and a calendar you forget.
-            </h2>
-            <ul className="mt-6 space-y-3 text-sm leading-7 text-gray-400">
-              {[
-                "GST invoices buried in email, SMS, and WhatsApp",
-                "Serial that does not match the box at the desk",
-                "Store cover ends and nobody flagged it",
-                "You arrive with a screenshot. They want a printed tax invoice.",
-              ].map((line) => (
-                <li key={line} className="flex gap-3">
-                  <Minus size={16} className="mt-1 shrink-0 text-red-400/80" />
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-7 md:p-8">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
-              With OwnCover
-            </p>
-            <h2 className="font-display mt-3 text-2xl md:text-3xl">
-              One vault. A pack the desk can use.
-            </h2>
-            <ul className="mt-6 space-y-3 text-sm leading-7 text-gray-300">
-              {[
-                "Invoice facts, serial, and dates in one place",
-                "Manufacturer and store cover tracked separately",
-                "Reminders at 30 days, 7 days, and the day before",
-                "Claim pack + desk checklist, printed before you leave",
-              ].map((line) => (
-                <li key={line} className="flex gap-3">
-                  <Check size={16} className="mt-1 shrink-0 text-cyan-300" />
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="relative mx-auto mt-12 max-w-5xl px-5 md:mt-16 md:px-8">
+          <VaultStage />
+        </div>
+
+        <div className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3 px-5 pb-20 md:px-8 md:pb-28">
+          {HERO_STATS.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border border-white/10 px-3 py-5 text-center"
+            >
+              <p className="font-display text-lg text-white sm:text-xl md:text-2xl">
+                {item.value}
+              </p>
+              <p className="mt-1 text-[11px] tracking-wide text-gray-500">
+                {item.label}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -191,45 +192,44 @@ export default function HomePage() {
         id="how-it-works"
         className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8"
       >
-        <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
-          The first 10 minutes
+        <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
+          How it works
         </p>
         <h2 className="font-display mt-3 max-w-2xl text-3xl md:text-4xl">
-          Scan once. Walk in prepared.
+          Add a bill. The record stays organised.
         </h2>
         <div className="mt-10 grid gap-4 md:grid-cols-4">
           {[
             {
               n: "01",
-              title: "Scan the GST bill",
-              desc: "QR first, then OCR. Amazon, Flipkart, Croma — empty if unsure.",
+              title: "Add the invoice",
+              desc: "Scan the GST QR, forward an Amazon or Flipkart PDF, or type the details in.",
             },
             {
               n: "02",
               title: "Confirm the dates",
-              desc: "Purchase, manufacturer cover, store or AMC if you have it.",
+              desc: "Check purchase date, brand warranty, and any store or AMC cover.",
             },
             {
               n: "03",
-              title: "Reminders go live",
-              desc: "30 days, 7 days, and the day before — email, browser, and a calendar file.",
+              title: "Get reminded",
+              desc: "Alerts at 30, 7, and 1 day before cover ends — email, browser, and calendar.",
             },
             {
               n: "04",
               title: "Download the pack",
-              desc: "Invoice facts, serial, and a desk checklist in one PDF.",
+              desc: "Invoice facts, serial, and cover dates in one PDF when you need them.",
             },
-          ].map((step) => (
-            <div
-              key={step.n}
-              className="rounded-2xl border border-white/10 p-5 md:p-6"
-            >
-              <p className="font-display text-sm text-white/30">{step.n}</p>
-              <h3 className="mt-3 text-base font-medium text-white">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-gray-500">{step.desc}</p>
-            </div>
+          ].map((step, index) => (
+            <Reveal key={step.n} className="h-full" delay={index * 0.08}>
+              <div className="premium-card h-full rounded-2xl border border-white/10 p-5 md:p-6">
+                <p className="font-display text-sm text-cyan-200/60">{step.n}</p>
+                <h3 className="mt-3 text-base font-medium text-white">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-gray-500">{step.desc}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -272,59 +272,85 @@ export default function HomePage() {
         </div>
       </section>
 
-      <FeatureCarousel items={FEATURE_SLIDES} />
+      <ProductFilm
+        items={FEATURE_SLIDES}
+        eyebrow="Features"
+        heading="What stays in the vault."
+      />
+
+      <section className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8">
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
+          <Reveal>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
+              Your vault
+            </p>
+            <h2 className="font-display mt-3 max-w-md text-3xl md:text-4xl">
+              See what is still covered.
+            </h2>
+            <p className="mt-4 max-w-md text-sm leading-7 text-gray-400">
+              Each product shows its active cover, days left, and the invoice
+              attached to it.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm leading-7 text-gray-300">
+              {[
+                "Brand, store, and AMC cover tracked separately",
+                "Active, ending soon, and expired — in one list",
+                "Invoice and documents attached to each product",
+              ].map((line) => (
+                <li key={line} className="flex gap-3">
+                  <Check size={16} className="mt-1 shrink-0 text-cyan-300" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <VaultPreview />
+          </Reveal>
+        </div>
+      </section>
 
       <section
-        id="compare"
+        id="why"
         className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8"
       >
-        <p className="text-[11px] uppercase tracking-[0.16em] text-gray-500">
-          OwnCover vs a PDF folder
+        <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
+          Why OwnCover
         </p>
         <h2 className="font-display mt-3 max-w-2xl text-3xl md:text-4xl">
-          Same invoices. A different morning at the desk.
+          Built around Indian invoices.
         </h2>
-        <div className="mt-10 overflow-x-auto rounded-2xl border border-white/10">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 text-gray-500">
-              <tr>
-                <th className="px-5 py-3.5 font-medium">Capability</th>
-                <th className="px-5 py-3.5 font-medium text-white">OwnCover</th>
-                <th className="px-5 py-3.5 font-medium">Folder / WhatsApp</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-400">
-              {[
-                ["GST invoice facts", "Extracted and stored", "Scattered photos"],
-                ["Manufacturer vs store cover", "Tracked separately", "One date, if any"],
-                ["Email-forward invoices", "Draft in your vault", "Search the thread"],
-                ["Reminders", "30 / 7 / 1 days + calendar file", "A calendar you forget"],
-                ["Desk checklist", "In the claim pack", "You remember at the counter"],
-                ["Shared vault", "Family or staff, one vault", "Forward the thread"],
-              ].map(([cap, ours, theirs]) => (
-                <tr key={cap} className="border-t border-white/5">
-                  <td className="px-5 py-3.5 text-gray-300">{cap}</td>
-                  <td className="px-5 py-3.5 text-cyan-200/90">{ours}</td>
-                  <td className="px-5 py-3.5">{theirs}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {WHY.map((item, index) => (
+            <Reveal key={item.title} className="h-full" delay={index * 0.08}>
+              <div className="premium-card h-full rounded-2xl border border-white/10 p-6">
+                <div className="icon-well flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+                  <item.icon size={20} />
+                </div>
+                <h3 className="mt-5 text-base font-medium text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-gray-500">
+                  {item.desc}
+                </p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </section>
 
       <section id="faq" className="relative mx-auto max-w-3xl px-5 pb-24 md:px-8">
-        <p className="text-center text-[11px] uppercase tracking-[0.16em] text-gray-500">
+        <p className="text-center text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
           FAQ
         </p>
         <h2 className="font-display mt-3 text-center text-3xl md:text-4xl">
-          Straight answers
+          Common questions
         </h2>
         <div className="mt-10">
           <FaqList items={homeFaqs} />
         </div>
         <p className="mt-6 text-center text-sm text-gray-500">
-          Desk checklists and GST scan:{" "}
+          Category guides and more answers in{" "}
           <Link
             href="/help"
             className="text-cyan-300/90 underline-offset-2 hover:underline"
@@ -336,15 +362,14 @@ export default function HomePage() {
       </section>
 
       <section className="relative mx-auto max-w-6xl px-5 pb-24 md:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 px-6 py-12 text-center md:px-12 md:py-16">
+        <div className="beam-card relative overflow-hidden rounded-3xl border border-white/10 px-6 py-12 text-center md:px-12 md:py-16">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.12),transparent_55%)]" />
           <div className="relative">
             <h2 className="font-display text-3xl md:text-5xl">
-              Walk in prepared.
+              Add your first invoice.
             </h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-gray-400">
-              We don’t run the service centre. We get the invoice, serial, and
-              dates onto one page before you go to the desk.
+              Free to start. Scan a GST bill or enter the dates yourself.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link

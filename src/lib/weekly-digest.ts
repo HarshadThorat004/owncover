@@ -68,7 +68,7 @@ export function buildWeeklyDigest(
       missingSerial.push({
         id: product.id,
         name: productLabel(product),
-        detail: "Serial missing — the desk will ask",
+        detail: "Serial missing",
       });
     }
   }

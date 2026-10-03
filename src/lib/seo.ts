@@ -18,7 +18,7 @@ export const BRAND_KEYWORDS = [
   "claim pack PDF",
   "manufacturer warranty",
   "store warranty",
-  "service centre checklist",
+  "AMC warranty",
   "warranty app India",
   "invoice warranty tracker",
 ] as const;
