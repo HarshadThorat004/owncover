@@ -640,6 +640,26 @@ export default function ProductForm({
       const result = await response.json();
 
       if (!response.ok) {
+        if (result.code === "DUPLICATE_PRODUCT") {
+          const duplicateOfId =
+            result.details &&
+            typeof result.details === "object" &&
+            "duplicateOfId" in result.details &&
+            typeof result.details.duplicateOfId === "string"
+              ? result.details.duplicateOfId
+              : null;
+
+          toast.error(
+            result.error ||
+              "This product is already in your vault with the same details."
+          );
+
+          if (duplicateOfId) {
+            router.push(`/dashboard/products/${duplicateOfId}`);
+          }
+          return;
+        }
+
         const firstError = result.details
           ? Object.values(result.details).flat()[0]
           : null;

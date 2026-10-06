@@ -4,6 +4,7 @@ import { getCoverageStatus, productStatusWhere } from "@/lib/coverage";
 import { getHouseholdIdForUser, getMembership, vaultProductWhere } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { getReminderWindowDates } from "@/lib/reminders";
+import { countNeedsYouProducts } from "@/lib/product-attention";
 import { isMissingSerial } from "@/lib/weekly-digest";
 
 export type ProductListStatus = "all" | "active" | "expiring" | "expired";
@@ -185,30 +186,49 @@ export async function getDashboardCounts(userId: string) {
 
   const rows = await prisma.product.findMany({
     where: vault,
-    select: {
-      warrantyExpiry: true,
-      extendedExpiry: true,
-      extendedType: true,
-      serialNumber: true,
-    },
+    select: dashboardCountSelect,
   });
 
   return summarizeDashboardCounts(rows);
 }
 
-type CoverageRow = {
+const dashboardCountSelect = {
+  id: true,
+  name: true,
+  brand: true,
+  model: true,
+  category: true,
+  retailer: true,
+  serialNumber: true,
+  invoiceNumber: true,
+  purchaseAmount: true,
+  purchaseDate: true,
+  warrantyExpiry: true,
+  extendedExpiry: true,
+  extendedType: true,
+} as const;
+
+type DashboardCountRow = {
+  id: string;
+  name: string;
+  brand: string | null;
+  model: string | null;
+  category: string | null;
+  retailer: string | null;
+  serialNumber: string | null;
+  invoiceNumber: string | null;
+  purchaseAmount: string | null;
+  purchaseDate: Date | null;
   warrantyExpiry: Date | null;
   extendedExpiry: Date | null;
   extendedType: string | null;
-  serialNumber: string | null;
 };
 
-export function summarizeDashboardCounts(rows: CoverageRow[]) {
+export function summarizeDashboardCounts(rows: DashboardCountRow[]) {
   let activeProducts = 0;
   let expiringProducts = 0;
   let expiredProducts = 0;
   let missingSerial = 0;
-  let attentionProducts = 0;
 
   for (const row of rows) {
     const status = getCoverageStatus(row);
@@ -216,9 +236,7 @@ export function summarizeDashboardCounts(rows: CoverageRow[]) {
     else if (status === "expiring") expiringProducts += 1;
     else if (status === "expired") expiredProducts += 1;
 
-    const serialMissing = isMissingSerial(row.serialNumber);
-    if (serialMissing) missingSerial += 1;
-    if (status === "expiring" || serialMissing) attentionProducts += 1;
+    if (isMissingSerial(row.serialNumber)) missingSerial += 1;
   }
 
   return {
@@ -227,7 +245,7 @@ export function summarizeDashboardCounts(rows: CoverageRow[]) {
     expiringProducts,
     expiredProducts,
     missingSerial,
-    attentionProducts,
+    attentionProducts: countNeedsYouProducts(rows),
   };
 }
 

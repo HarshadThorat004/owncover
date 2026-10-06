@@ -20,16 +20,14 @@ import Reveal from "@/components/reveal";
 
 import { getAuthSession } from "@/lib/auth";
 import {
-  getCoverageStatus,
-  getEffectiveCover,
-} from "@/lib/coverage";
+  buildNeedsYouItems,
+  needsYouSectionSubtitle,
+} from "@/lib/product-attention";
 import {
   ensureInboundSlug,
   inboundAddressForSlug,
 } from "@/lib/inbound";
-import { getDaysRemaining } from "@/lib/warranty";
 import { getDashboardHomeData } from "@/lib/products-query";
-import { isMissingSerial } from "@/lib/weekly-digest";
 
 function DashboardHomeFallback() {
   return (
@@ -87,38 +85,8 @@ async function DashboardHome() {
           return null;
         });
 
-  const expiringProducts = products.filter(
-    (product) => getCoverageStatus(product) === "expiring"
-  );
-  const missingSerialProducts = products.filter((product) =>
-    isMissingSerial(product.serialNumber)
-  );
-  const attentionItems = new Map<
-    string,
-    { product: (typeof products)[number]; reasons: string[] }
-  >();
-
-  for (const product of expiringProducts) {
-    const cover = getEffectiveCover(product);
-    const daysRemaining = cover ? getDaysRemaining(cover.date) : null;
-    attentionItems.set(product.id, {
-      product,
-      reasons: [
-        daysRemaining != null
-          ? `${daysRemaining}d left · ${cover?.label ?? "cover"}`
-          : "Cover ending within 30 days",
-      ],
-    });
-  }
-
-  for (const product of missingSerialProducts) {
-    const existing = attentionItems.get(product.id);
-    const reason = "Serial missing";
-    if (existing) existing.reasons.push(reason);
-    else attentionItems.set(product.id, { product, reasons: [reason] });
-  }
-
-  const needsYou = [...attentionItems.values()];
+  const needsYou = buildNeedsYouItems(products);
+  const needsYouSubtitle = needsYouSectionSubtitle(needsYou);
 
   const firstName = session.user?.name?.split(" ")[0] || "there";
   const emptyVault = products.length === 0;
@@ -251,7 +219,7 @@ async function DashboardHome() {
               <div>
                 <h2 className="text-base font-medium text-white">Needs you</h2>
                 <p className="mt-1 text-sm text-gray-500">
-                  Cover ending within 30 days, or a missing serial
+                  {needsYouSubtitle}
                 </p>
               </div>
               <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
@@ -260,7 +228,7 @@ async function DashboardHome() {
             </div>
 
             <div className="space-y-2">
-              {needsYou.map(({ product, reasons }) => (
+              {needsYou.map(({ product, reason }) => (
                 <Link
                   key={product.id}
                   href={`/dashboard/products/${product.id}`}
@@ -271,7 +239,7 @@ async function DashboardHome() {
                       {product.name}
                     </p>
                     <p className="mt-0.5 text-xs text-gray-500">
-                      {[product.brand || "Unknown brand", ...reasons]
+                      {[product.brand || "Unknown brand", reason.label]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>

@@ -4,6 +4,8 @@ import { jsonError, jsonSuccess } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { assertProductOwner } from "@/lib/product-access";
 import { deleteUploadedFiles } from "@/lib/uploadthing-server";
+import { getHouseholdIdForUser } from "@/lib/household";
+import { findVaultDuplicateProduct } from "@/lib/product-duplicate-guard";
 import { productUpdateSchema } from "@/lib/validations/product";
 
 type Params = {
@@ -54,6 +56,47 @@ export async function PUT(
     }
 
     const data = parsed.data;
+
+    const householdId = await getHouseholdIdForUser(access.product.userId);
+    const duplicate = await findVaultDuplicateProduct(
+      access.product.userId,
+      householdId,
+      {
+        name: data.name,
+        brand: data.brand ?? null,
+        model: data.model ?? null,
+        category: data.category ?? null,
+        retailer: data.retailer ?? null,
+        serialNumber: data.serialNumber ?? null,
+        invoiceNumber: data.invoiceNumber ?? null,
+        purchaseAmount: data.purchaseAmount?.replace(/,/g, "").trim() || null,
+        purchaseDate: data.purchaseDate
+          ? new Date(data.purchaseDate)
+          : access.product.purchaseDate,
+        warrantyExpiry: data.warrantyExpiry
+          ? new Date(data.warrantyExpiry)
+          : access.product.warrantyExpiry,
+        extendedExpiry: data.extendedExpiry
+          ? new Date(data.extendedExpiry)
+          : null,
+        extendedType: data.extendedExpiry
+          ? data.extendedType?.trim() || "store"
+          : null,
+      },
+      id
+    );
+
+    if (duplicate) {
+      return jsonError(
+        "Another product in your vault already has these same details.",
+        409,
+        {
+          code: "DUPLICATE_PRODUCT",
+          details: { duplicateOfId: duplicate.id },
+        }
+      );
+    }
+
     const previousUrls = [
       access.product.invoiceImage,
       ...access.product.documents.map((doc) => doc.fileUrl),

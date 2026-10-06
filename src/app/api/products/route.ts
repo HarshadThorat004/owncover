@@ -3,6 +3,7 @@ import { listProductsForUser, parseProductListParams } from "@/lib/products-quer
 import { getHouseholdIdForUser } from "@/lib/household";
 import { getSessionUser } from "@/lib/product-access";
 import { prisma } from "@/lib/prisma";
+import { findVaultDuplicateProduct } from "@/lib/product-duplicate-guard";
 import { productCreateSchema } from "@/lib/validations/product";
 
 export async function GET(req: Request) {
@@ -46,6 +47,40 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
+
+    const duplicate = await findVaultDuplicateProduct(
+      user.id,
+      householdId,
+      {
+        name: data.name,
+        brand: data.brand || null,
+        model: data.model || null,
+        category: data.category || null,
+        retailer: data.retailer || null,
+        serialNumber: data.serialNumber || null,
+        invoiceNumber: data.invoiceNumber || null,
+        purchaseAmount: data.purchaseAmount?.replace(/,/g, "").trim() || null,
+        purchaseDate: new Date(data.purchaseDate),
+        warrantyExpiry: new Date(data.warrantyExpiry),
+        extendedExpiry: data.extendedExpiry
+          ? new Date(data.extendedExpiry)
+          : null,
+        extendedType: data.extendedExpiry
+          ? data.extendedType?.trim() || "store"
+          : null,
+      }
+    );
+
+    if (duplicate) {
+      return jsonError(
+        "This product is already in your vault with the same details.",
+        409,
+        {
+          code: "DUPLICATE_PRODUCT",
+          details: { duplicateOfId: duplicate.id },
+        }
+      );
+    }
 
     const product = await prisma.product.create({
       data: {
