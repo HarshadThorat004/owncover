@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildNeedsYouItems,
+  matchesProductListFilter,
   needsYouSectionSubtitle,
   primaryProductAttentionReason,
 } from "@/lib/product-attention";
+import { findDuplicateProductIds } from "@/lib/product-duplicates";
 import { EXPIRING_SOON_DAYS } from "@/constants/warranty";
 
 const today = startOfDay(new Date("2026-10-04T12:00:00.000Z"));
@@ -80,6 +82,38 @@ describe("buildNeedsYouItems", () => {
     const items = buildNeedsYouItems([base, twin]);
     expect(items).toHaveLength(2);
     expect(items.every((item) => item.reason.kind === "duplicate")).toBe(true);
+  });
+});
+
+describe("matchesProductListFilter", () => {
+  it("includes missing serial under Needs attention even when cover is active", () => {
+    const row = product({
+      id: "watch",
+      name: "Watch",
+      serialNumber: "",
+      warrantyExpiry: addDays(today, 200),
+    });
+    const duplicateIds = findDuplicateProductIds([]);
+
+    expect(matchesProductListFilter(row, "attention", duplicateIds)).toBe(
+      true
+    );
+    expect(matchesProductListFilter(row, "active", duplicateIds)).toBe(true);
+    expect(matchesProductListFilter(row, "expired", duplicateIds)).toBe(false);
+  });
+
+  it("excludes expiring cover from Active cover filter", () => {
+    const row = product({
+      id: "ac",
+      name: "AC",
+      warrantyExpiry: addDays(today, 5),
+    });
+    const duplicateIds = findDuplicateProductIds([]);
+
+    expect(matchesProductListFilter(row, "active", duplicateIds)).toBe(false);
+    expect(matchesProductListFilter(row, "attention", duplicateIds)).toBe(
+      true
+    );
   });
 });
 

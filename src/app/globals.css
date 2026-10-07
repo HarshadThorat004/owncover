@@ -35,6 +35,41 @@ body {
   letter-spacing: -0.04em;
 }
 
+/* Hindi / Devanagari — readable body copy on dark backgrounds */
+.font-hindi {
+  font-family: var(--font-devanagari), var(--font-geist), system-ui, sans-serif;
+  font-feature-settings: "kern" 1;
+}
+
+.font-hindi .font-display,
+.font-hindi h1,
+.font-hindi h2,
+.font-hindi h3 {
+  font-family: var(--font-devanagari), var(--font-geist), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+.font-hindi p,
+.font-hindi li,
+.font-hindi button,
+.font-hindi a {
+  font-family: inherit;
+}
+
+.font-hindi .text-gray-500 {
+  color: rgb(212 212 212);
+}
+
+.font-hindi .text-gray-400 {
+  color: rgb(229 229 229);
+}
+
+.font-hindi .text-gray-600 {
+  color: rgb(163 163 163);
+}
+
 ::selection {
   background: rgba(34, 211, 238, 0.28);
   color: #fff;
@@ -120,6 +155,23 @@ body::after {
   to {
     transform: translateY(520%);
   }
+}
+
+.film-stage-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 40%, #000 20%, transparent 72%);
+}
+
+.film-rail-card {
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.film-snap-card {
+  scroll-snap-stop: always;
 }
 
 .beam-card {
@@ -288,6 +340,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: transparent;
 }
 
+.brand-wordmark {
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.brand-wordmark-accent {
+  background: linear-gradient(
+    120deg,
+    #ecfeff 0%,
+    #22d3ee 42%,
+    #67e8f9 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .site-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(3, 3, 4, 0.62);
@@ -398,8 +467,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .ambient-orb,
   .beam-card::after,
   .film-ken,
-  .film-scanline {
+  .film-scanline,
+  .film-rail-card {
     animation: none !important;
+  }
+
+  .film-rail-card {
+    transform: none !important;
   }
 }
 

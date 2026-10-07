@@ -1,9 +1,15 @@
 import { jsonError, jsonSuccess } from "@/lib/api";
-import { listProductsForUser, parseProductListParams } from "@/lib/products-query";
-import { getHouseholdIdForUser } from "@/lib/household";
+import {
+  listDashboardProductsForUser,
+  listProductsForUser,
+  parseDashboardProductListParams,
+  parseProductListParams,
+} from "@/lib/products-query";
+import { getHouseholdIdForUser, vaultProductWhere } from "@/lib/household";
 import { getSessionUser } from "@/lib/product-access";
 import { prisma } from "@/lib/prisma";
 import { findVaultDuplicateProduct } from "@/lib/product-duplicate-guard";
+import { SAMPLE_PRODUCT_SERIAL } from "@/lib/sample-vault-product";
 import { productCreateSchema } from "@/lib/validations/product";
 
 export async function GET(req: Request) {
@@ -15,6 +21,15 @@ export async function GET(req: Request) {
     }
 
     const url = new URL(req.url);
+
+    if (url.searchParams.get("scope") === "dashboard") {
+      const page = await listDashboardProductsForUser(
+        user.id,
+        parseDashboardProductListParams(url.searchParams)
+      );
+      return jsonSuccess(page);
+    }
+
     const products = await listProductsForUser(
       user.id,
       parseProductListParams(url.searchParams)
@@ -82,6 +97,20 @@ export async function POST(req: Request) {
       );
     }
 
+    const existingRealProducts = await prisma.product.count({
+      where: {
+        AND: [
+          vaultProductWhere(user.id, householdId),
+          {
+            OR: [
+              { serialNumber: null },
+              { serialNumber: { not: SAMPLE_PRODUCT_SERIAL } },
+            ],
+          },
+        ],
+      },
+    });
+
     const product = await prisma.product.create({
       data: {
         name: data.name,
@@ -122,7 +151,12 @@ export async function POST(req: Request) {
       },
     });
 
-    return jsonSuccess(product, 201);
+    const firstProduct = existingRealProducts === 0;
+    if (firstProduct) {
+      console.info("activation:first_product", { userId: user.id });
+    }
+
+    return jsonSuccess({ ...product, firstProduct }, 201);
   } catch (error) {
     console.error("PRODUCT_CREATE_ERROR", error);
     return jsonError("Something went wrong");

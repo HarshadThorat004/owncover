@@ -13,6 +13,7 @@ import {
   HELP_HI_EXPLAINERS,
   HELP_HI_HUB,
 } from "@/constants/help-hi";
+export const revalidate = 86_400;
 
 export const metadata: Metadata = {
   title: "मदद",
@@ -51,7 +52,7 @@ export default function HindiHelpPage() {
               <Reveal key={guide.slug} delay={index * 0.06}>
               <Link
                 href={`/help/hi/${guide.slug}`}
-                className="premium-card group flex h-full flex-col rounded-2xl border border-white/10 p-5 transition hover:border-white/20"
+                className="premium-card group flex h-full flex-col rounded-xl border border-white/10 p-4 transition hover:border-white/20"
               >
                 <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
                   {guide.navLabel}
@@ -59,7 +60,7 @@ export default function HindiHelpPage() {
                 <h3 className="mt-2 text-base font-medium text-white">
                   {guide.title}
                 </h3>
-                <p className="mt-2 flex-1 text-sm leading-6 text-gray-500">
+                <p className="mt-2 flex-1 text-sm leading-[1.65] text-gray-500">
                   {guide.lede}
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm text-cyan-300/90 group-hover:gap-2">
@@ -81,7 +82,7 @@ export default function HindiHelpPage() {
               <Reveal key={item.id} delay={index * 0.05}>
               <article
                 id={item.id}
-                className="premium-card h-full rounded-2xl border border-white/10 p-5 md:p-6"
+                className="premium-card h-full rounded-xl border border-white/10 p-4 md:p-5"
               >
                 <h3 className="text-base font-medium text-white">
                   {item.title}

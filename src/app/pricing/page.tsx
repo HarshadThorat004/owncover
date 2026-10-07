@@ -5,6 +5,7 @@ import { ArrowRight, Check, Minus } from "lucide-react";
 import MarketingPage from "@/components/marketing-page";
 import Reveal from "@/components/reveal";
 import { BRAND_NAME } from "@/constants/brand";
+export const revalidate = 86_400;
 
 export const metadata: Metadata = {
   title: "Pricing",

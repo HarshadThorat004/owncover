@@ -6,8 +6,8 @@ const SIZE_MAP = {
 
 const WORDMARK_CLASS = {
   sm: "text-sm",
-  md: "text-[15px]",
-  lg: "text-base",
+  md: "text-base",
+  lg: "text-lg",
 } as const;
 
 type BrandLogoProps = {
@@ -69,9 +69,10 @@ export default function BrandLogo({
       </span>
       <span className="min-w-0 text-left">
         <span
-          className={`font-display block font-medium tracking-tight text-white ${WORDMARK_CLASS[size]}`}
+          className={`brand-wordmark font-display block font-semibold ${WORDMARK_CLASS[size]}`}
         >
-          OwnCover
+          <span className="text-white">Own</span>
+          <span className="brand-wordmark-accent">Cover</span>
         </span>
         {resolvedTagline ? (
           <span className="mt-0.5 block truncate text-[11px] text-gray-500">

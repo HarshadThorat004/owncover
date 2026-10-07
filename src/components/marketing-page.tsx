@@ -25,7 +25,7 @@ export default function MarketingPage({
         lang={lang}
         className={`relative mx-auto px-5 py-16 md:px-8 md:py-20 ${
           wide ? "max-w-5xl" : "max-w-3xl"
-        }`}
+        } ${lang === "hi" ? "font-hindi" : ""}`}
       >
         <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
           {eyebrow}

@@ -57,8 +57,23 @@ export default function NotificationPanel({ initialItems = [] }: Props) {
   }, []);
 
   useEffect(() => {
-    void loadNotifications();
+    if (typeof window === "undefined") return;
+
+    const schedule = () => void loadNotifications(false);
+
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(schedule, { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+
+    const id = globalThis.setTimeout(schedule, 400);
+    return () => globalThis.clearTimeout(id);
   }, [loadNotifications]);
+
+  useEffect(() => {
+    if (!open) return;
+    void loadNotifications(true);
+  }, [open, loadNotifications]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

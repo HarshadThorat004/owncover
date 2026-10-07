@@ -9,6 +9,7 @@ import Reveal from "@/components/reveal";
 import { BRAND_INBOUND_DOMAIN, BRAND_NAME } from "@/constants/brand";
 import { FAQS } from "@/constants/faqs";
 import { HELP_EXPLAINERS, HELP_GUIDES } from "@/constants/help-guides";
+export const revalidate = 86_400;
 
 export const metadata: Metadata = {
   title: "Help",
@@ -43,7 +44,7 @@ export default function HelpPage() {
               <Reveal key={guide.slug} delay={index * 0.06}>
                 <Link
                   href={`/help/${guide.slug}`}
-                  className="premium-card group flex h-full flex-col rounded-2xl border border-white/10 p-5 transition hover:border-white/20"
+                  className="premium-card group flex h-full flex-col rounded-xl border border-white/10 p-4 transition hover:border-white/20"
                 >
                   <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-300/80">
                     {guide.navLabel}

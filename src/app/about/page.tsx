@@ -9,6 +9,7 @@ import {
   BRAND_FOUNDER,
   BRAND_NAME,
 } from "@/constants/brand";
+export const revalidate = 86_400;
 
 export const metadata: Metadata = {
   title: "About",

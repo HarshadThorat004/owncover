@@ -12,6 +12,7 @@ import {
   HELP_GUIDES_HI,
   HELP_HI_HUB,
 } from "@/constants/help-hi";
+export const revalidate = 86_400;
 
 type Props = {
   params: Promise<{ slug: string }>;

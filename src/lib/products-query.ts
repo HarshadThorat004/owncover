@@ -1,11 +1,20 @@
 import type { Prisma } from "@prisma/client";
+import { cache } from "react";
 
 import { getCoverageStatus, productStatusWhere } from "@/lib/coverage";
 import { getHouseholdIdForUser, getMembership, vaultProductWhere } from "@/lib/household";
 import { prisma } from "@/lib/prisma";
 import { getReminderWindowDates } from "@/lib/reminders";
-import { countNeedsYouProducts } from "@/lib/product-attention";
+import {
+  countNeedsYouProducts,
+  productNeedsAttention,
+  type ProductListFilter,
+} from "@/lib/product-attention";
+import { findDuplicateProductIds } from "@/lib/product-duplicates";
+import { withDbRetry } from "@/lib/db";
 import { isMissingSerial } from "@/lib/weekly-digest";
+
+export const DASHBOARD_PRODUCTS_PAGE_SIZE = 24;
 
 export type ProductListStatus = "all" | "active" | "expiring" | "expired";
 
@@ -74,7 +83,8 @@ export function buildProductWhere(
       };
 }
 
-const productListSelect = {
+/** Dashboard grid — no document join (cover track UI does not use files). */
+const productDashboardSelect = {
   id: true,
   name: true,
   brand: true,
@@ -88,11 +98,15 @@ const productListSelect = {
   warrantyExpiry: true,
   extendedExpiry: true,
   extendedType: true,
+  createdAt: true,
+} satisfies Prisma.ProductSelect;
+
+const productListSelect = {
+  ...productDashboardSelect,
   invoiceImage: true,
   notes: true,
   renewalAvailable: true,
   renewalNotes: true,
-  createdAt: true,
   userId: true,
   documents: {
     select: {
@@ -107,6 +121,120 @@ const productListSelect = {
     take: 3,
   },
 } satisfies Prisma.ProductSelect;
+
+export function parseDashboardProductListParams(searchParams: URLSearchParams) {
+  const rawLimit = Number(
+    searchParams.get("limit") ?? DASHBOARD_PRODUCTS_PAGE_SIZE
+  );
+  const limit = Number.isFinite(rawLimit)
+    ? Math.min(Math.max(1, rawLimit), MAX_LIMIT)
+    : DASHBOARD_PRODUCTS_PAGE_SIZE;
+  const cursor = searchParams.get("cursor") || undefined;
+  const q = searchParams.get("q")?.trim() || undefined;
+  const rawFilter = searchParams.get("filter");
+  const filter: ProductListFilter =
+    rawFilter === "active" ||
+    rawFilter === "attention" ||
+    rawFilter === "expired" ||
+    rawFilter === "all"
+      ? rawFilter
+      : "all";
+
+  return { cursor, limit, q, filter };
+}
+
+const getAttentionProductIds = cache(async (userId: string) => {
+  const householdId = await getHouseholdIdForUser(userId);
+  const vault = vaultProductWhere(userId, householdId);
+
+  const rows = await withDbRetry(() =>
+    prisma.product.findMany({
+      where: vault,
+      select: dashboardCountSelect,
+    })
+  );
+
+  const duplicateIds = findDuplicateProductIds(rows);
+  return rows
+    .filter((row) => productNeedsAttention(row, duplicateIds))
+    .map((row) => row.id);
+});
+
+export async function listDashboardProductsForUser(
+  userId: string,
+  params: {
+    cursor?: string;
+    limit?: number;
+    q?: string;
+    filter?: ProductListFilter;
+  }
+) {
+  const take = Math.min(
+    Math.max(1, params.limit ?? DASHBOARD_PRODUCTS_PAGE_SIZE),
+    MAX_LIMIT
+  );
+  const filter = params.filter ?? "all";
+  const householdId = await getHouseholdIdForUser(userId);
+  const { today, in30 } = getReminderWindowDates();
+
+  const clauses: Prisma.ProductWhereInput[] = [
+    vaultProductWhere(userId, householdId),
+  ];
+
+  if (params.q) {
+    clauses.push({
+      OR: [
+        { name: { contains: params.q, mode: "insensitive" } },
+        { brand: { contains: params.q, mode: "insensitive" } },
+        { model: { contains: params.q, mode: "insensitive" } },
+        { retailer: { contains: params.q, mode: "insensitive" } },
+        { serialNumber: { contains: params.q, mode: "insensitive" } },
+        { invoiceNumber: { contains: params.q, mode: "insensitive" } },
+      ],
+    });
+  }
+
+  if (filter === "active") {
+    const activeWhere = productStatusWhere("active", today, in30);
+    if (activeWhere) clauses.push(activeWhere);
+  } else if (filter === "expired") {
+    const expiredWhere = productStatusWhere("expired", today, in30);
+    if (expiredWhere) clauses.push(expiredWhere);
+  } else if (filter === "attention") {
+    const attentionIds = await getAttentionProductIds(userId);
+    if (attentionIds.length === 0) {
+      return { items: [], nextCursor: null, hasMore: false };
+    }
+    clauses.push({ id: { in: attentionIds } });
+  }
+
+  const where: Prisma.ProductWhereInput =
+    clauses.length === 1 ? clauses[0]! : { AND: clauses };
+
+  const products = await withDbRetry(() =>
+    prisma.product.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      ...(params.cursor
+        ? {
+            cursor: { id: params.cursor },
+            skip: 1,
+          }
+        : {}),
+      take: take + 1,
+      select: productDashboardSelect,
+    })
+  );
+
+  const hasMore = products.length > take;
+  const items = hasMore ? products.slice(0, take) : products;
+
+  return {
+    items,
+    nextCursor: hasMore ? items.at(-1)?.id ?? null : null,
+    hasMore,
+  };
+}
 
 export async function listProductsForUser(
   userId: string,
@@ -249,38 +377,53 @@ export function summarizeDashboardCounts(rows: DashboardCountRow[]) {
   };
 }
 
-export async function getDashboardHomeData(userId: string) {
+const getVaultStatsRows = cache(async (userId: string) => {
   const householdId = await getHouseholdIdForUser(userId);
   const vault = vaultProductWhere(userId, householdId);
 
-  const [items, membership, inboundDrafts, inbound] = await Promise.all([
+  return withDbRetry(() =>
     prisma.product.findMany({
       where: vault,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      select: productListSelect,
-    }),
-    getMembership(userId),
-    prisma.inboundDraft.findMany({
-      where: {
-        status: "pending",
-        ...(householdId
-          ? { householdId }
-          : { userId, householdId: null }),
-      },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    }),
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { inboundSlug: true },
-    }),
-  ]);
+      select: dashboardCountSelect,
+    })
+  );
+});
+
+export const getDashboardHomeData = cache(async (userId: string) => {
+  const householdId = await getHouseholdIdForUser(userId);
+
+  const [statsRows, membership, inboundDrafts, inbound, productPage] =
+    await Promise.all([
+      getVaultStatsRows(userId),
+      getMembership(userId),
+      prisma.inboundDraft.findMany({
+        where: {
+          status: "pending",
+          ...(householdId
+            ? { householdId }
+            : { userId, householdId: null }),
+        },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { inboundSlug: true },
+      }),
+      listDashboardProductsForUser(userId, {
+        limit: DASHBOARD_PRODUCTS_PAGE_SIZE,
+        filter: "all",
+      }),
+    ]);
 
   return {
-    items: items.slice(0, 50),
-    counts: summarizeDashboardCounts(items),
+    items: productPage.items,
+    productsNextCursor: productPage.nextCursor,
+    productsHasMore: productPage.hasMore,
+    statsRows,
+    counts: summarizeDashboardCounts(statsRows),
     membership,
     inboundDrafts,
     inboundSlug: inbound?.inboundSlug ?? null,
   };
-}
+});

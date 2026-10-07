@@ -5,6 +5,7 @@ import { ArrowRight, FileText } from "lucide-react";
 import MarketingShell from "@/components/marketing-shell";
 import Reveal from "@/components/reveal";
 import VaultStage from "@/components/vault-stage";
+export const revalidate = 86_400;
 
 export const metadata: Metadata = {
   title: "Sample claim pack",
