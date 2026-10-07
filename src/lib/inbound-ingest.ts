@@ -8,6 +8,7 @@ import {
   mergeByDocumentType,
   scanDocumentFromBuffer,
 } from "@/lib/document-extract";
+import { sendInboundDraftEmail } from "@/lib/email";
 import { getHouseholdIdForUser } from "@/lib/household";
 import {
   extractEmailAddress,
@@ -141,7 +142,7 @@ export async function ingestReceivedEmail(event: ReceivedEmailEvent) {
 
   const user = await prisma.user.findUnique({
     where: { inboundSlug: slug },
-    select: { id: true },
+    select: { id: true, email: true, name: true },
   });
 
   if (!user) {
@@ -247,6 +248,14 @@ export async function ingestReceivedEmail(event: ReceivedEmailEvent) {
       files: files as unknown as Prisma.InputJsonValue,
     },
   });
+
+  await sendInboundDraftEmail({
+    to: user.email,
+    userName: user.name,
+    subject: draft.subject,
+    fileCount: files.length,
+    draftId: draft.id,
+  }).catch((error) => console.error("INBOUND_DRAFT_EMAIL_ERROR", error));
 
   return { skipped: false as const, draftId: draft.id, files: files.length };
 }

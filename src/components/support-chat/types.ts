@@ -5,6 +5,7 @@ export type SupportChatMessage = {
   role: SupportChatRole;
   content: string;
   createdAt?: number;
+  links?: { title: string; href: string }[];
 };
 
 export type SupportChatStatus = "idle" | "loading" | "error";

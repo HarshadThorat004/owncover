@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Noto_Sans_Devanagari } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -17,6 +17,13 @@ import { BRAND_KEYWORDS } from "@/lib/seo";
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
+});
+
+const notoDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-devanagari",
+  display: "swap",
 });
 
 const appUrl = getAppBaseUrl();
@@ -75,7 +82,7 @@ export const metadata: Metadata = {
       { url: "/brand/favicon.svg", type: "image/svg+xml" },
       { url: "/brand/logo-mark.svg", type: "image/svg+xml", sizes: "any" },
     ],
-    apple: [{ url: "/brand/logo-mark.svg" }],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180" }],
   },
   ...(googleSiteVerification
     ? {
@@ -104,7 +111,7 @@ export default function RootLayout({
         ) : null}
       </head>
       <body
-        className={`${geist.variable} ${geist.className} antialiased bg-[#030304] text-white`}
+        className={`${geist.variable} ${notoDevanagari.variable} ${geist.className} antialiased bg-[#030304] text-white`}
       >
         <SupportChatRoot>{children}</SupportChatRoot>
         <Toaster

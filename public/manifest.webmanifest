@@ -3,15 +3,42 @@
   "short_name": "OwnCover",
   "description": "Scan GST invoices, track cover, and walk in with a claim pack.",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#030304",
   "theme_color": "#030304",
   "icons": [
+    {
+      "src": "/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/brand/logo-mark.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Scan a GST bill",
+      "url": "/dashboard/add-product?focus=scan",
+      "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

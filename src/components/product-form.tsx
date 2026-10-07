@@ -142,6 +142,7 @@ type ProductFormProps = {
     invoiceImage?: string | null;
   };
   initialScanHints?: Partial<Record<ScanField, ScanHint>>;
+  focusScan?: boolean;
 };
 
 type ScanDocType = "Invoice" | "Warranty Card";
@@ -182,8 +183,10 @@ export default function ProductForm({
   inboundDraftId,
   defaultValues,
   initialScanHints,
+  focusScan = false,
 }: ProductFormProps) {
   const router = useRouter();
+  const scanSectionRef = useRef<HTMLElement>(null);
   const [documents, setDocuments] = useState<DocumentType[]>(
     defaultValues?.documents ?? []
   );
@@ -274,6 +277,12 @@ export default function ProductForm({
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [isFormDirty, loading]);
+
+  useEffect(() => {
+    if (focusScan) {
+      scanSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [focusScan]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -651,12 +660,21 @@ export default function ProductForm({
 
           toast.error(
             result.error ||
-              "This product is already in your vault with the same details."
+              "This product is already in your vault with the same details.",
+            {
+              duration: 10000,
+              description: "Change a detail if this really is a second unit.",
+              ...(duplicateOfId
+                ? {
+                    action: {
+                      label: "Open existing",
+                      onClick: () =>
+                        router.push(`/dashboard/products/${duplicateOfId}`),
+                    },
+                  }
+                : {}),
+            }
           );
-
-          if (duplicateOfId) {
-            router.push(`/dashboard/products/${duplicateOfId}`);
-          }
           return;
         }
 
@@ -682,11 +700,22 @@ export default function ProductForm({
         }).catch(() => undefined);
       }
 
-      toast.success(
-        mode === "create"
-          ? "Saved. Download a claim pack from this page."
-          : "Product updated successfully"
-      );
+      if (mode === "create" && result.firstProduct) {
+        toast.success("Saved. Reminders go out 30, 7, and 1 day before cover ends.", {
+          description: "Turn on browser alerts so you also get them on this device.",
+          duration: 10000,
+          action: {
+            label: "Settings",
+            onClick: () => router.push("/dashboard/settings"),
+          },
+        });
+      } else {
+        toast.success(
+          mode === "create"
+            ? "Saved. Download a claim pack from this page."
+            : "Product updated successfully"
+        );
+      }
 
       router.push(
         mode === "create"
@@ -719,7 +748,7 @@ export default function ProductForm({
       )}
 
       {/* SECTION 1 — Smart scan */}
-      <section className="space-y-4">
+      <section ref={scanSectionRef} className="scroll-mt-24 space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-white">Scan document</h2>
           <p className="mt-1 text-sm text-gray-500">
@@ -747,6 +776,7 @@ export default function ProductForm({
 
         <DocumentCapture
           size="lg"
+          openCameraOnMobile={focusScan}
           label={
             scanDocType === "Invoice"
               ? "Upload invoice to auto-fill"

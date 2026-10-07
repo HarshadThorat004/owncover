@@ -10,6 +10,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   MessageCircle,
@@ -179,6 +180,20 @@ export default function SupportChatWidget() {
                       }`}
                     >
                       {message.content}
+                      {message.links && message.links.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {message.links.map((link) => (
+                            <Link
+                              key={`${link.href}-${link.title}`}
+                              href={link.href}
+                              onClick={() => setOpen(false)}
+                              className="rounded-full border border-cyan-400/25 bg-cyan-500/10 px-2.5 py-1 text-xs text-cyan-200 transition hover:border-cyan-400/50 hover:text-white"
+                            >
+                              {link.title}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 );

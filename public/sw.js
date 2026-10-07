@@ -6,8 +6,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "OwnCover", {
       body: data.body || "",
-      icon: "/brand/logo-mark.svg",
-      badge: "/brand/logo-mark.svg",
+      icon: "/brand/icon-192.png",
+      badge: "/brand/icon-192.png",
       data: { url: data.url || "/dashboard" },
     })
   );

@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { getAttachedSupportChat } from "./attach";
-import { useStubSupportChatAdapter } from "./stub-adapter";
+import { useRagSupportChatAdapter } from "./rag-adapter";
 import SupportChatWidget from "./widget";
 import type { SupportChatAdapter } from "./types";
 
@@ -24,7 +24,7 @@ export function useSupportChat() {
 
 type Props = {
   children: ReactNode;
-  /** Pass your merged chat engine here. Falls back to stub, then `attachSupportChat`. */
+  /** Pass a custom chat engine here. Falls back to `attachSupportChat`, then the help-search adapter. */
   adapter?: SupportChatAdapter;
   /** Set false to hide the floating launcher (e.g. in tests). Default true. */
   showWidget?: boolean;
@@ -35,12 +35,12 @@ export function SupportChatProvider({
   adapter,
   showWidget = true,
 }: Props) {
-  const stub = useStubSupportChatAdapter();
+  const help = useRagSupportChatAdapter();
   const attached = getAttachedSupportChat();
 
   const value = useMemo(
-    () => adapter ?? attached ?? stub,
-    [adapter, attached, stub]
+    () => adapter ?? attached ?? help,
+    [adapter, attached, help]
   );
 
   return (

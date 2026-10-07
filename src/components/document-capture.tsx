@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Camera, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,15 +12,30 @@ type Props = {
   description?: string;
   size?: "md" | "lg";
   onUploaded: (url: string, fileType?: string, file?: File) => void;
+  openCameraOnMobile?: boolean;
 };
+
+const MOBILE_QUERY = "(max-width: 768px)";
+
+function subscribeToMobileQuery(onChange: () => void) {
+  const media = window.matchMedia(MOBILE_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
 
 export default function DocumentCapture({
   label,
   description,
   size = "lg",
   onUploaded,
+  openCameraOnMobile = false,
 }: Props) {
   const [cameraOpen, setCameraOpen] = useState(false);
+  const isMobile = useSyncExternalStore(
+    subscribeToMobileQuery,
+    () => window.matchMedia(MOBILE_QUERY).matches,
+    () => false
+  );
   const [cameraReady, setCameraReady] = useState(false);
   const [capturing, setCapturing] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -42,6 +57,19 @@ export default function DocumentCapture({
       toast.error(error.message || "Upload failed");
     },
   });
+
+  useEffect(() => {
+    if (
+      !openCameraOnMobile ||
+      !window.matchMedia(MOBILE_QUERY).matches ||
+      !("mediaDevices" in navigator)
+    ) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => setCameraOpen(true));
+    return () => cancelAnimationFrame(frame);
+  }, [openCameraOnMobile]);
 
   useEffect(() => {
     if (!cameraOpen) return;
@@ -122,7 +150,7 @@ export default function DocumentCapture({
   }
 
   return (
-    <div className="space-y-3">
+    <div className={`flex gap-3 ${isMobile ? "flex-col-reverse" : "flex-col"}`}>
       <UploadButtonComponent
         size={size}
         label={label}
@@ -134,7 +162,11 @@ export default function DocumentCapture({
         type="button"
         onClick={() => setCameraOpen(true)}
         disabled={isUploading || capturing}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${
+          isMobile
+            ? "bg-white font-semibold text-black"
+            : "border border-white/10 bg-black/40 font-medium text-gray-300 hover:border-white/20 hover:text-white"
+        }`}
       >
         <Camera size={16} />
         {capturing || isUploading ? "Uploading photo…" : "Take photo"}

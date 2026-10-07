@@ -15,11 +15,11 @@ import {
 import type { ExtractedDocumentFields } from "@/lib/document-extract/types";
 
 type Props = {
-  searchParams: Promise<{ draft?: string }>;
+  searchParams: Promise<{ draft?: string; focus?: string }>;
 };
 
 export default async function AddProductPage({ searchParams }: Props) {
-  const { draft: draftId } = await searchParams;
+  const { draft: draftId, focus } = await searchParams;
   const user = draftId ? await getSessionUser() : null;
 
   let inboundDraftId: string | undefined;
@@ -90,6 +90,7 @@ export default async function AddProductPage({ searchParams }: Props) {
               inboundDraftId={inboundDraftId}
               defaultValues={defaultValues}
               initialScanHints={inboundScanHints}
+              focusScan={focus === "scan" && !inboundDraftId}
             />
           </div>
         </div>
