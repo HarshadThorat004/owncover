@@ -6,6 +6,8 @@ export async function proxy(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
+    // Must match authOptions.useSecureCookies or the cookie name differs on http://localhost.
+    secureCookie: process.env.NODE_ENV === "production",
   });
 
   if (token) {
