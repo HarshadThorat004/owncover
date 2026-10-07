@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { jsonError } from "@/lib/api";
+import { logDocumentAccess } from "@/lib/document-access-log";
 import { buildClaimPackPdf } from "@/lib/exports/claim-pack";
 import { attachmentFilename, slugifyFilename } from "@/lib/exports/format";
 import { assertProductOwner } from "@/lib/product-access";
@@ -51,6 +52,12 @@ export async function GET(_req: NextRequest, { params }: Params) {
     });
 
     const filename = `${slugifyFilename(product.name)}-claim-pack.pdf`;
+
+    await logDocumentAccess({
+      userId: access.user.id,
+      productId: product.id,
+      kind: "claim_pack",
+    });
 
     return new NextResponse(Buffer.from(bytes), {
       headers: attachmentFilename(filename, "application/pdf"),

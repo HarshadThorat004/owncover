@@ -14,14 +14,32 @@ const securityHeaders = [
   },
 ];
 
+// Baseline CSP: blocks framing, plugins, and <base> hijacking. Script/connect
+// sources stay open because Google sign-in, UploadThing, and Tesseract's CDN
+// assets all load from third-party origins.
+const contentSecurityPolicy = [
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "object-src 'none'",
+];
+
 if (process.env.NODE_ENV === "production") {
+  contentSecurityPolicy.push("upgrade-insecure-requests");
   securityHeaders.push({
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   });
 }
 
+securityHeaders.push({
+  key: "Content-Security-Policy",
+  value: contentSecurityPolicy.join("; "),
+});
+
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ["lucide-react", "date-fns", "framer-motion"],
+  },
   // Pin the workspace root so Turbopack does not infer `src/app` and fail
   // HMR with "Next.js package not found".
   turbopack: {

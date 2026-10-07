@@ -20,6 +20,14 @@ function getJwtUserId(token: JWT) {
   return typeof token.id === "string" ? token.id : token.sub;
 }
 
+function authRequestIp(req: { headers?: Record<string, unknown> }) {
+  const forwarded = req.headers?.["x-forwarded-for"];
+  const value = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  return typeof value === "string"
+    ? value.split(",")[0]?.trim() || "unknown"
+    : "unknown";
+}
+
 function buildProviders(): NextAuthOptions["providers"] {
   const providers: NextAuthOptions["providers"] = [];
 
@@ -41,7 +49,7 @@ function buildProviders(): NextAuthOptions["providers"] {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
@@ -52,8 +60,13 @@ function buildProviders(): NextAuthOptions["providers"] {
           limit: 10,
           windowMs: 15 * 60 * 1000,
         });
+        const ipLimit = consumeRateLimit({
+          key: `auth:credentials-ip:${authRequestIp(req)}`,
+          limit: 50,
+          windowMs: 15 * 60 * 1000,
+        });
 
-        if (!loginLimit.success) {
+        if (!loginLimit.success || !ipLimit.success) {
           throw new Error("Too many login attempts. Please try again later.");
         }
 

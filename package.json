@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "db:migrate": "node scripts/prisma-env.mjs migrate --force"
   },
   "engines": {
@@ -19,6 +20,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.19.3",
+    "@prisma/extension-accelerate": "^3.0.1",
     "@react-three/fiber": "^9.8.1",
     "@uploadthing/react": "^7.3.3",
     "bcryptjs": "^3.0.3",
@@ -45,6 +47,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

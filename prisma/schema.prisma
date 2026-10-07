@@ -15,6 +15,7 @@ model User {
   email             String             @unique
   password          String?
   image             String?
+  locale            String             @default("en")
   createdAt         DateTime           @default(now())
   products          Product[]
   notificationLogs  NotificationLog[]
@@ -24,6 +25,7 @@ model User {
   householdInvitesSent HouseholdInvite[]
   inboundSlug         String?            @unique
   inboundDrafts       InboundDraft[]
+  documentAccessLogs  DocumentAccessLog[]
 }
 
 model EmailOtp {
@@ -63,6 +65,7 @@ model Product {
   householdId        String?
   documents          Document[]
   notificationLogs   NotificationLog[]
+  documentAccessLogs DocumentAccessLog[]
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   household          Household?         @relation(fields: [householdId], references: [id], onDelete: SetNull)
 
@@ -70,6 +73,12 @@ model Product {
   @@index([householdId])
   @@index([warrantyExpiry])
   @@index([userId, warrantyExpiry])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_name_trgm_idx")
+  @@index([brand(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_brand_trgm_idx")
+  @@index([model(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_model_trgm_idx")
+  @@index([retailer(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_retailer_trgm_idx")
+  @@index([serialNumber(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_serialNumber_trgm_idx")
+  @@index([invoiceNumber(ops: raw("gin_trgm_ops"))], type: Gin, map: "Product_invoiceNumber_trgm_idx")
 }
 
 model InboundDraft {
@@ -156,6 +165,20 @@ model NotificationLog {
 
   @@index([userId, channel, sentAt])
   @@unique([userId, productId, type, channel, periodKey])
+}
+
+model DocumentAccessLog {
+  id         String   @id @default(cuid())
+  userId     String
+  productId  String
+  documentId String?
+  kind       String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([userId, createdAt])
 }
 
 model PushSubscription {

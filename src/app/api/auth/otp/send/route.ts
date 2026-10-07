@@ -34,13 +34,18 @@ export async function POST(req: Request) {
     const requestIp = getRequestIp(req);
     const status = getEmailProviderStatus();
 
-    const rateLimit = consumeRateLimit({
-      key: `auth:otp-send:${requestIp}:${email}`,
+    const emailLimit = consumeRateLimit({
+      key: `auth:otp-send:${email}`,
       limit: 5,
       windowMs: 15 * 60 * 1000,
     });
+    const ipLimit = consumeRateLimit({
+      key: `auth:otp-send-ip:${requestIp}`,
+      limit: 20,
+      windowMs: 15 * 60 * 1000,
+    });
 
-    if (!rateLimit.success) {
+    if (!emailLimit.success || !ipLimit.success) {
       return jsonError("Too many codes requested. Please try again later.", 429);
     }
 

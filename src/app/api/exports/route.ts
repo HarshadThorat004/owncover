@@ -20,14 +20,33 @@ export async function GET(req: Request) {
     const format = url.searchParams.get("format");
     const productId = url.searchParams.get("productId") || undefined;
 
-    if (format !== "csv" && format !== "ics") {
-      return jsonError("Use format=csv or format=ics", 400);
+    if (format !== "csv" && format !== "ics" && format !== "json") {
+      return jsonError("Use format=csv, format=ics, or format=json", 400);
     }
 
     const products = await listProductsForExport(user.id, productId);
 
     if (productId && products.length === 0) {
       return jsonError("Product not found", 404);
+    }
+
+    if (format === "json") {
+      const body = JSON.stringify(
+        {
+          exportedAt: new Date().toISOString(),
+          account: { email: user.email, name: user.name },
+          products,
+        },
+        null,
+        2
+      );
+
+      return new NextResponse(body, {
+        headers: attachmentFilename(
+          "owncover-export.json",
+          "application/json; charset=utf-8"
+        ),
+      });
     }
 
     if (format === "csv") {
