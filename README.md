@@ -1,6 +1,6 @@
 # OwnCover
 
-Desk-ready, not desk-side. OwnCover is an India-first warranty vault: scan GST invoices, track manufacturer vs store cover, and download a claim pack before you visit the desk. It is not an insurer and does not file claims.
+Every bill. Every cover date. OwnCover is an India-first warranty vault: scan a GST invoice, see which cover is still running, get reminded before it ends, and download a claim pack when you need it. It is not an insurer and does not file claims.
 
 Stack: Next.js 16, Prisma, PostgreSQL, UploadThing, Tailwind CSS, Resend.
 
@@ -10,11 +10,14 @@ Stack: Next.js 16, Prisma, PostgreSQL, UploadThing, Tailwind CSS, Resend.
 
 - GST QR-first scan, then on-device OCR — you confirm dates before save
 - Vault for homes, shops, gyms, and offices (shared, up to five people)
-- Manufacturer vs store/AMC cover, reminders at 30 / 7 / 1 days
+- Manufacturer vs store/AMC cover, reminders at 30 / 7 / 1 days by email, browser push, and calendar
 - Claim pack PDF plus a what-to-carry list
-- Email-forward drafts (`inbound.owncover.in`)
-- CSV and calendar export, weekly digest when something needs you
-- Public sample pack, help in English and Hindi
+- Email-forward drafts (`inbound.owncover.in`) with an inbox on the dashboard
+- Duplicate and missing-serial checks, with a "Needs you" list
+- CSV, calendar, and full JSON export; weekly digest when something needs you
+- Installable PWA with a camera-first scan on mobile
+- Support chat that answers from the help docs (no LLM) and knows your vault counts when signed in
+- Public sample pack, help in English and Hindi, and Hindi reminder emails (Settings → Language)
 
 ---
 
@@ -95,12 +98,14 @@ Free stack: **Vercel** (app) + **Neon** (Postgres) + **UploadThing** (files) + *
    - If you use **Domain** verification instead, add a **TXT** record at the DNS host for `hvtx.in` (name `@`), wait for propagation, then verify.
 9. Smoke-test: register → add a product (or load the sample TV) → download a claim pack → open `/sample-pack` while signed out.
 
-`/api/health` lists which required env vars are present (not their values).
+`/api/health` lists which required env vars are present (not their values) and pings the database with a 5-second timeout. Point an uptime monitor at it.
 
 | Variable | Required | Notes |
 |----------|----------|--------|
 | `DATABASE_URL` | Yes | Neon **pooled** URL (`-pooler.`). The app adds `pgbouncer=true`. |
 | `DIRECT_URL` | Recommended | Neon **unpooled** URL for migrations. If omitted, build strips `-pooler` from `DATABASE_URL`. |
+| `PRISMA_ACCELERATE` | Optional | Set to `1` with a `prisma://` `DATABASE_URL` to route queries through Prisma Accelerate. Keep `DIRECT_URL` on the unpooled Neon URL. |
+| `OPS_ALERT_WEBHOOK_URL` | Optional | Slack-compatible webhook. Receives uncaught server errors and cron failures (including partial email failures). |
 | `NEXTAUTH_URL` | Yes | `https://owncover.hvtx.in` (no trailing slash) |
 | `NEXT_PUBLIC_BRAND_DOMAIN` | Yes | `owncover.hvtx.in` (client bundles + email defaults) |
 | `NEXTAUTH_SECRET` | Yes | `openssl rand -base64 32` |
@@ -148,6 +153,29 @@ Open:
 ```bash
 http://localhost:3000
 ```
+
+---
+
+# Tests
+
+```bash
+npm run typecheck
+npm test            # Vitest unit tests
+npm run test:e2e    # Playwright smoke test (register → sample product → claim pack PDF)
+```
+
+`test:e2e` starts its own server on port 3100 against your `.env` database and deletes the test account afterwards. Set `E2E_BASE_URL=http://localhost:3000` to reuse a running dev server. Install the browser once with `npx playwright install chromium`.
+
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs typecheck, unit tests, and build on every push and PR, and the Playwright smoke test against a throwaway Postgres on pushes.
+
+---
+
+# Contributor notes
+
+- Route segment config must be a static literal. Write `export const revalidate = 86_400` in each page; importing the number from a shared constant fails the build with "Invalid segment configuration export".
+- Product search uses `ILIKE`, served by `pg_trgm` GIN indexes (migration `20261007100000_product_search_trgm`). Keep new text filters on indexed columns.
+- Hindi strings live in [`src/constants/email-hi.ts`](src/constants/email-hi.ts) (emails, push) and [`src/lib/dashboard-i18n.ts`](src/lib/dashboard-i18n.ts) (dashboard). The `oc_lang` cookie picks the dashboard language; `User.locale` picks the email language.
+- This repo pins a recent Next.js. Read `node_modules/next/dist/docs/` before using a Next API you have not touched here.
 
 ---
 
@@ -285,7 +313,7 @@ If Google env vars are missing, that button stays hidden automatically. Password
 2. **Real desk stories** — three short accounts from real users (name, city, product, what the desk asked). Do not invent them.
 3. **Production email** — Verify `owncover.in` in Resend so OTP, reminders, and the Monday digest reach real inboxes.
 
-Paid extras and a full Hindi UI stay later, after the free product is in real use.
+Paid extras and a full Hindi dashboard stay later, after the free product is in real use.
 
 ---
 

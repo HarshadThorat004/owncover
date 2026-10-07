@@ -7,7 +7,9 @@ import {
   BRAND_NAME,
   BRAND_TAGLINE,
 } from "@/constants/brand";
+import { EMAIL_HI } from "@/constants/email-hi";
 import { getAppBaseUrl } from "@/lib/app-url";
+import type { Locale } from "@/lib/locale";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import type { WeeklyDigest } from "@/lib/weekly-digest";
 
@@ -56,6 +58,7 @@ type ReminderEmailInput = {
   expiryDate: Date | null;
   renewalNotes?: string | null;
   coverLabel?: string | null;
+  locale?: Locale;
 };
 
 function escapeHtml(value: string) {
@@ -225,12 +228,33 @@ function buildBody(input: ReminderEmailInput) {
   const name = input.userName || "there";
   const brand = input.brand ? ` (${input.brand})` : "";
   const expiry = input.expiryDate
-    ? input.expiryDate.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+    ? input.expiryDate.toLocaleDateString(
+        input.locale === "hi" ? "hi-IN" : "en-US",
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }
+      )
     : "N/A";
+
+  if (input.locale === "hi") {
+    return `
+    <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
+      ${brandEmailHeader()}
+      <p>${EMAIL_HI.greeting(input.userName)}</p>
+      <p>${EMAIL_HI.reminderMessage({
+        type: input.type,
+        product: `<strong>${input.productName}${brand}</strong>`,
+        expiry,
+        coverLabel: input.coverLabel,
+        renewalNotes: input.renewalNotes,
+      })}</p>
+      <p>${EMAIL_HI.reminderAction}</p>
+      <p style="color:#666;font-size:12px;margin-top:24px;">${EMAIL_HI.reminderFooter}</p>
+    </div>
+  `;
+  }
 
   const cover = input.coverLabel || "warranty";
   const messages: Record<string, string> = {
@@ -321,7 +345,10 @@ export async function sendReminderEmail(input: ReminderEmailInput) {
   try {
     await sendViaResend({
       to: input.to,
-      subject: reminderSubject(input.type, input.coverLabel),
+      subject:
+        input.locale === "hi"
+          ? EMAIL_HI.reminderSubject(input.type, input.coverLabel)
+          : reminderSubject(input.type, input.coverLabel),
       html: buildBody(input),
     });
     return { skipped: false as const };
@@ -337,6 +364,7 @@ export async function sendWeeklyDigestEmail(input: {
   to: string;
   userName: string | null;
   digest: WeeklyDigest;
+  locale?: Locale;
 }) {
   if (!resend) {
     console.warn("RESEND_API_KEY missing — skipping digest send");
@@ -346,7 +374,10 @@ export async function sendWeeklyDigestEmail(input: {
   try {
     await sendViaResend({
       to: input.to,
-      subject: `${BRAND_NAME} — this week in your vault`,
+      subject:
+        input.locale === "hi"
+          ? EMAIL_HI.digestSubject
+          : `${BRAND_NAME} — this week in your vault`,
       html: buildDigestBody(input),
     });
     return { skipped: false as const };
@@ -375,9 +406,30 @@ function digestList(title: string, lines: { name: string; detail: string }[]) {
 function buildDigestBody(input: {
   userName: string | null;
   digest: WeeklyDigest;
+  locale?: Locale;
 }) {
   const name = escapeHtml(input.userName?.trim() || "there");
   const dashboard = `${getAppBaseUrl()}/dashboard`;
+
+  if (input.locale === "hi") {
+    const userName = input.userName?.trim();
+    return `
+    <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
+      ${brandEmailHeader()}
+      <p>${EMAIL_HI.greeting(userName ? escapeHtml(userName) : null)}</p>
+      <p>${EMAIL_HI.digestIntro}</p>
+      ${digestList(EMAIL_HI.digestExpiring, input.digest.expiring)}
+      ${digestList(EMAIL_HI.digestMissingSerial, input.digest.missingSerial)}
+      ${input.digest.inboundDrafts > 0 ? `<p>${EMAIL_HI.digestDrafts(input.digest.inboundDrafts)}</p>` : ""}
+      <p style="margin: 24px 0;">
+        <a href="${dashboard}" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600;">
+          ${EMAIL_HI.digestCta}
+        </a>
+      </p>
+      <p style="color:#666;font-size:12px;margin-top:24px;">${EMAIL_HI.digestFooter}</p>
+    </div>
+  `;
+  }
   const drafts =
     input.digest.inboundDrafts > 0
       ? `<p>${input.digest.inboundDrafts} forwarded invoice${
@@ -401,6 +453,55 @@ function buildDigestBody(input: {
       <p style="color:#666;font-size:12px;margin-top:24px;">Monday vault mail. Quiet weeks stay quiet — we only send when there is something to do.</p>
     </div>
   `;
+}
+
+export async function sendInboundDraftEmail(input: {
+  to: string;
+  userName: string | null;
+  subject: string | null;
+  fileCount: number;
+  draftId: string;
+}) {
+  if (!resend) {
+    console.warn("RESEND_API_KEY missing — skipping inbound draft email");
+    return { skipped: true as const, reason: "config" as const };
+  }
+
+  const name = escapeHtml(input.userName?.trim() || "there");
+  const reviewUrl = `${getAppBaseUrl()}/dashboard/add-product?draft=${input.draftId}`;
+  const what = input.subject
+    ? `<strong>${escapeHtml(input.subject)}</strong>`
+    : "your forwarded invoice";
+  const files =
+    input.fileCount > 0
+      ? `We read ${input.fileCount} attachment${input.fileCount === 1 ? "" : "s"} and filled what we could.`
+      : "We did not find a usable attachment, so you may need to upload the bill.";
+
+  try {
+    await sendViaResend({
+      to: input.to,
+      subject: `${BRAND_NAME} — invoice waiting to confirm`,
+      html: `
+        <div style="font-family: Inter, system-ui, sans-serif; color: #111; line-height: 1.6;">
+          ${brandEmailHeader()}
+          <p>Hi ${name},</p>
+          <p>${what} landed in your vault as a draft. ${files}</p>
+          <p>Check the dates and save it so reminders can start.</p>
+          <p style="margin: 24px 0;">
+            <a href="${reviewUrl}" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 10px; font-weight: 600;">
+              Review invoice
+            </a>
+          </p>
+        </div>
+      `,
+    });
+    return { skipped: false as const };
+  } catch (error) {
+    if (error instanceof EmailSendError && error.kind === "quota") {
+      return { skipped: true as const, reason: "quota" as const };
+    }
+    throw error;
+  }
 }
 
 export async function sendTestEmail(to: string) {

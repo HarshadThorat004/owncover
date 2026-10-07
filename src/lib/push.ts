@@ -1,5 +1,7 @@
 import type { ReminderType } from "@/lib/reminders";
 import { BRAND_CONTACT_EMAIL } from "@/constants/brand";
+import { EMAIL_HI } from "@/constants/email-hi";
+import type { Locale } from "@/lib/locale";
 
 export function getVapidPublicKey() {
   return process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() || "";
@@ -24,7 +26,16 @@ export function reminderPushPayload(input: {
   productName: string;
   productId: string;
   coverLabel?: string | null;
+  locale?: Locale;
 }) {
+  if (input.locale === "hi") {
+    return {
+      title: EMAIL_HI.pushTitle(input.type, input.coverLabel),
+      body: input.productName,
+      url: `/dashboard/products/${input.productId}`,
+    };
+  }
+
   const cover = input.coverLabel || "Warranty";
   const titles: Record<string, string> = {
     expiring_30: `${cover} expires in 30 days`,

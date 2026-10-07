@@ -223,6 +223,14 @@ export default function HouseholdSettings({ currentUserId }: Props) {
             and reminders. Home, shop, gym, office. Invitees must be 18+. Up to{" "}
             {data.seats.max} people.
           </p>
+          <ul className="mt-3 space-y-1 text-xs leading-6 text-gray-500">
+            <li>
+              Everyone in the vault can add, edit, and delete products and
+              download claim packs.
+            </li>
+            <li>Only the owner can invite people, rename the vault, and remove members.</li>
+            <li>Members can leave at any time. Products stay with the vault.</li>
+          </ul>
 
           {data.household && isOwner && (
             <form onSubmit={rename} className="mt-5 flex flex-col gap-2 sm:flex-row">

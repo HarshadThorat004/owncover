@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import AcceptInviteButton from "@/components/accept-invite-button";
 import AuthShell from "@/components/auth/auth-shell";
+import SwitchAccountButton from "@/components/switch-account-button";
 import { getInviteByToken } from "@/lib/household";
 import { getSessionUser } from "@/lib/product-access";
 import { emailsMatch } from "@/lib/account";
@@ -63,6 +64,12 @@ export default async function InvitePage({ params }: Props) {
             Ask {result.invite.invitedBy.name || result.invite.invitedBy.email}{" "}
             to send a new invite to {result.invite.email}.
           </p>
+          <Link
+            href={user ? "/dashboard" : "/login"}
+            className="mt-8 inline-block text-sm text-white underline decoration-white/30 underline-offset-2"
+          >
+            {user ? "Go to dashboard" : "Go to login"}
+          </Link>
         </div>
       </AuthShell>
     );
@@ -110,10 +117,13 @@ export default async function InvitePage({ params }: Props) {
         )}
 
         {user && !signedInAsInvitee && (
-          <p className="rounded-[10px] border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-            You are signed in as {user.email}. Sign out and sign in as{" "}
-            {invite.email} to accept this invite.
-          </p>
+          <>
+            <p className="rounded-[10px] border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+              You are signed in as {user.email}. Sign out and sign in as{" "}
+              {invite.email} to accept this invite.
+            </p>
+            <SwitchAccountButton callbackUrl={callback} />
+          </>
         )}
 
         {signedInAsInvitee && <AcceptInviteButton token={token} />}

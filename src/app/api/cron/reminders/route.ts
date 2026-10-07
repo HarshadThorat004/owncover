@@ -11,6 +11,8 @@ import {
   sendReminderEmail,
 } from "@/lib/email";
 import { reminderRecipients } from "@/lib/household";
+import { parseLocale } from "@/lib/locale";
+import { errorMessage, sendOpsAlert } from "@/lib/ops-alert";
 import { sendReminderPushes } from "@/lib/push-send";
 import { isPushConfigured } from "@/lib/push";
 import {
@@ -120,6 +122,7 @@ export async function GET(req: NextRequest) {
               id: true,
               email: true,
               name: true,
+              locale: true,
             },
           },
           household: {
@@ -131,6 +134,7 @@ export async function GET(req: NextRequest) {
                       id: true,
                       email: true,
                       name: true,
+                      locale: true,
                     },
                   },
                 },
@@ -204,6 +208,7 @@ export async function GET(req: NextRequest) {
                   productName: product.name,
                   type,
                   coverLabel: hit.coverLabel,
+                  locale: parseLocale(recipient.locale),
                 });
 
                 if (pushResult.sent > 0) {
@@ -243,6 +248,7 @@ export async function GET(req: NextRequest) {
                 expiryDate: hit.expiry,
                 renewalNotes: product.renewalNotes,
                 coverLabel: hit.coverLabel,
+                locale: parseLocale(recipient.locale),
               });
 
               if (result.skipped) {
@@ -296,6 +302,16 @@ export async function GET(req: NextRequest) {
       cursor = products.at(-1)?.id;
     }
 
+    if (emailErrors > 0 || quotaStopped) {
+      await sendOpsAlert("cron_reminders_partial", {
+        processed,
+        emailsSent,
+        emailErrors,
+        quotaStopped,
+        lastEmailError,
+      });
+    }
+
     return jsonSuccess({
       success: true,
       processed,
@@ -315,6 +331,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("CRON_REMINDERS_ERROR", error);
+    await sendOpsAlert("cron_reminders_failed", { message: errorMessage(error) });
     return jsonError(friendlyEmailError(error));
   }
 }

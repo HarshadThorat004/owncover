@@ -7,6 +7,7 @@ import {
   detachUserFromHouseholdForDeletion,
 } from "@/lib/household";
 import { collectInboundDraftFiles } from "@/lib/inbound";
+import { LOCALE_COOKIE } from "@/lib/locale";
 import { getSessionUser } from "@/lib/product-access";
 import { prisma } from "@/lib/prisma";
 import { consumeRateLimit } from "@/lib/rate-limit";
@@ -15,6 +16,42 @@ import { deleteUploadedFiles } from "@/lib/uploadthing-server";
 const deleteAccountSchema = z.object({
   email: z.string().email(),
 });
+
+const updateAccountSchema = z.object({
+  locale: z.enum(["en", "hi"]),
+});
+
+export async function PATCH(req: Request) {
+  try {
+    const user = await getSessionUser();
+
+    if (!user) {
+      return jsonError("Unauthorized", 401);
+    }
+
+    const parsed = updateAccountSchema.safeParse(await req.json());
+
+    if (!parsed.success) {
+      return jsonError("Choose English or Hindi", 400);
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { locale: parsed.data.locale },
+    });
+
+    const response = jsonSuccess({ locale: parsed.data.locale });
+    response.cookies.set(LOCALE_COOKIE, parsed.data.locale, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    return response;
+  } catch (error) {
+    console.error("ACCOUNT_UPDATE_ERROR", error);
+    return jsonError("Failed to update account");
+  }
+}
 
 export async function DELETE(req: Request) {
   try {

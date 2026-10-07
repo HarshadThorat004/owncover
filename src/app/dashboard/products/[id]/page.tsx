@@ -11,6 +11,7 @@ import ProductDocuments from "@/components/product-documents";
 import ProductHeroMedia from "@/components/product-hero-media";
 
 import { assertProductOwner } from "@/lib/product-access";
+import { findVaultDuplicateProduct } from "@/lib/product-duplicate-guard";
 import { isSampleVaultProduct } from "@/lib/sample-vault-product";
 import {
   getDaysRemaining,
@@ -37,6 +38,12 @@ export default async function ProductPage({ params }: Props) {
   }
 
   const product = access.product;
+  const duplicateOf = await findVaultDuplicateProduct(
+    access.user.id,
+    access.householdId,
+    product,
+    product.id
+  );
 
   const purchaseDate = product.purchaseDate
     ? new Date(product.purchaseDate)
@@ -137,6 +144,22 @@ export default async function ProductPage({ params }: Props) {
                   <p className="mt-1 text-cyan-100/70">
                     Download the pack, then delete this product and add your
                     own GST invoice.
+                  </p>
+                </div>
+              )}
+
+              {duplicateOf && (
+                <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                  <p className="font-medium">Possible duplicate</p>
+                  <p className="mt-1 text-amber-100/70">
+                    <Link
+                      href={`/dashboard/products/${duplicateOf.id}`}
+                      className="underline underline-offset-2"
+                    >
+                      {duplicateOf.name}
+                    </Link>{" "}
+                    has the same details. If this is the same unit, delete one
+                    copy. If it is a second unit, edit the serial number.
                   </p>
                 </div>
               )}
@@ -310,6 +333,8 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           <ProductDocuments
+            productId={product.id}
+            invoiceImage={product.invoiceImage}
             documents={product.documents.map((doc) => ({
               id: doc.id,
               fileUrl: doc.fileUrl,

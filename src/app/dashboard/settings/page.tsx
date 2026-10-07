@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Download, Shield, Bell } from "lucide-react";
+import { CalendarDays, Download, FileJson, Shield, Bell, Languages } from "lucide-react";
 
 import Breadcrumbs from "@/components/breadcrumbs";
 import DashboardShell from "@/components/dashboard-shell";
 import DeleteAccountButton from "@/components/delete-account-button";
 import HouseholdSettings from "@/components/household-settings";
 import InboundSettings from "@/components/inbound-settings";
+import LanguageSettings from "@/components/language-settings";
 import PushToggle from "@/components/push-toggle";
 import { getHouseholdIdForUser, vaultProductWhere } from "@/lib/household";
+import { parseLocale } from "@/lib/locale";
 import { getSessionUser } from "@/lib/product-access";
 import { prisma } from "@/lib/prisma";
 
@@ -36,9 +38,12 @@ export default async function SettingsPage() {
           ? "owner-with-others"
           : "solo";
 
-  const productCount = await prisma.product.count({
-    where: vaultProductWhere(user.id, householdId),
-  });
+  const [productCount, account] = await Promise.all([
+    prisma.product.count({
+      where: vaultProductWhere(user.id, householdId),
+    }),
+    prisma.user.findUnique({ where: { id: user.id }, select: { locale: true } }),
+  ]);
 
   return (
     <DashboardShell className="max-w-3xl">
@@ -144,6 +149,22 @@ export default async function SettingsPage() {
         </section>
 
         <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
+          <div className="flex items-start gap-3">
+            <Languages size={18} className="mt-0.5 text-cyan-300" />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base font-semibold text-white">Language</h2>
+              <p className="mt-2 text-sm leading-7 text-gray-500">
+                Reminder emails, the Monday digest, browser alerts, and the
+                getting-started screen follow this choice.
+              </p>
+              <div className="mt-5">
+                <LanguageSettings initialLocale={parseLocale(account?.locale)} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-6 md:p-8">
           <h2 className="text-base font-semibold text-white">Your data</h2>
           <p className="mt-2 text-sm leading-7 text-gray-500">
             Download a spreadsheet of every product, or add expiry dates to your
@@ -163,6 +184,13 @@ export default async function SettingsPage() {
             >
               <CalendarDays size={14} />
               Calendar
+            </a>
+            <a
+              href="/api/exports?format=json"
+              className="premium-ghost inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-300"
+            >
+              <FileJson size={14} />
+              Full data (JSON)
             </a>
           </div>
         </section>

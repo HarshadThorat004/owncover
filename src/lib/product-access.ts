@@ -51,7 +51,7 @@ export async function assertProductAccess(productId: string) {
     return { error: "Product not found" as const, status: 404 as const, user, product: null };
   }
 
-  return { error: null, status: 200 as const, user, product };
+  return { error: null, status: 200 as const, user, householdId, product };
 }
 
 /** @deprecated Use assertProductAccess — household members share the vault. */

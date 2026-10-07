@@ -10,6 +10,8 @@ import {
   sendWeeklyDigestEmail,
 } from "@/lib/email";
 import { listPendingInboundDrafts } from "@/lib/inbound";
+import { parseLocale } from "@/lib/locale";
+import { errorMessage, sendOpsAlert } from "@/lib/ops-alert";
 import { prisma } from "@/lib/prisma";
 import { listProductsForUser } from "@/lib/products-query";
 import {
@@ -50,7 +52,7 @@ export async function GET(req: NextRequest) {
             { householdMembership: { isNot: null } },
           ],
         },
-        select: { id: true, email: true, name: true },
+        select: { id: true, email: true, name: true, locale: true },
         orderBy: { id: "asc" },
         take: BATCH_SIZE,
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
@@ -101,6 +103,7 @@ export async function GET(req: NextRequest) {
             to: user.email,
             userName: user.name,
             digest,
+            locale: parseLocale(user.locale),
           });
 
           if (result.skipped) {
@@ -151,6 +154,17 @@ export async function GET(req: NextRequest) {
       cursor = users.at(-1)?.id;
     }
 
+    if (emailErrors > 0 || quotaStopped) {
+      await sendOpsAlert("cron_digest_partial", {
+        weekKey,
+        processed,
+        emailsSent,
+        emailErrors,
+        quotaStopped,
+        lastEmailError,
+      });
+    }
+
     return jsonSuccess({
       success: true,
       weekKey,
@@ -169,6 +183,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("CRON_DIGEST_ERROR", error);
+    await sendOpsAlert("cron_digest_failed", { message: errorMessage(error) });
     return jsonError(friendlyEmailError(error));
   }
 }

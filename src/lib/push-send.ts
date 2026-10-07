@@ -7,6 +7,7 @@ import {
   isPushConfigured,
   reminderPushPayload,
 } from "@/lib/push";
+import type { Locale } from "@/lib/locale";
 import { prisma } from "@/lib/prisma";
 import type { ReminderType } from "@/lib/reminders";
 
@@ -26,6 +27,7 @@ export async function sendReminderPushes(input: {
   productName: string;
   type: ReminderType;
   coverLabel: string;
+  locale?: Locale;
 }) {
   if (!configureWebPush()) {
     return { sent: 0, skipped: true as const };
@@ -45,6 +47,7 @@ export async function sendReminderPushes(input: {
       productName: input.productName,
       productId: input.productId,
       coverLabel: input.coverLabel,
+      locale: input.locale,
     })
   );
 

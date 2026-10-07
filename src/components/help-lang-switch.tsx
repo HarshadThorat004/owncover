@@ -1,7 +1,15 @@
+"use client";
+
+import { LOCALE_COOKIE, type Locale } from "@/lib/locale";
+
 type Props = {
-  locale: "en" | "hi";
+  locale: Locale;
   slug?: string;
 };
+
+function rememberLocale(locale: Locale) {
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`;
+}
 
 export default function HelpLangSwitch({ locale, slug }: Props) {
   const enHref = slug ? `/help/${slug}` : "/help";
@@ -16,6 +24,7 @@ export default function HelpLangSwitch({ locale, slug }: Props) {
         hrefLang="en"
         lang="en"
         aria-current={locale === "en" ? "page" : undefined}
+        onClick={() => rememberLocale("en")}
         className={locale === "en" ? active : idle}
       >
         English
@@ -26,6 +35,7 @@ export default function HelpLangSwitch({ locale, slug }: Props) {
         hrefLang="hi"
         lang="hi"
         aria-current={locale === "hi" ? "page" : undefined}
+        onClick={() => rememberLocale("hi")}
         className={locale === "hi" ? active : idle}
       >
         हिन्दी

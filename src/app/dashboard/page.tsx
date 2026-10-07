@@ -1,3 +1,5 @@
+import dynamic from "next/dynamic";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import {
@@ -8,25 +10,41 @@ import {
   Plus,
   Download,
   CalendarDays,
-  Inbox,
 } from "lucide-react";
 
 import AnimatedCounter from "@/components/animated-counter";
 import DashboardOverview from "@/components/dashboard-overview";
 import FirstRunOnboarding from "@/components/first-run-onboarding";
-import ProductSearch from "@/components/product-search";
+import InboundInbox from "@/components/inbound-inbox";
+import InstallAppHint from "@/components/install-app-hint";
+const ProductSearch = dynamic(() => import("@/components/product-search"), {
+  loading: () => (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {[1, 2, 3, 4, 5, 6].map((item) => (
+        <div
+          key={item}
+          className="h-52 animate-pulse rounded-2xl border border-white/10 bg-neutral-950/80 motion-reduce:animate-none"
+        />
+      ))}
+    </div>
+  ),
+});
 import DashboardShell from "@/components/dashboard-shell";
 import Reveal from "@/components/reveal";
 
 import { getAuthSession } from "@/lib/auth";
 import {
-  buildNeedsYouItems,
-  needsYouSectionSubtitle,
-} from "@/lib/product-attention";
+  attentionLabel,
+  DASHBOARD_STRINGS,
+  needsYouSubtitle,
+} from "@/lib/dashboard-i18n";
+import { LOCALE_COOKIE, parseLocale } from "@/lib/locale";
+import { buildNeedsYouItems } from "@/lib/product-attention";
 import {
   ensureInboundSlug,
   inboundAddressForSlug,
 } from "@/lib/inbound";
+import { MAX_HOUSEHOLD_MEMBERS } from "@/lib/household";
 import { getDashboardHomeData } from "@/lib/products-query";
 
 function DashboardHomeFallback() {
@@ -73,23 +91,38 @@ async function DashboardHome() {
     return null;
   }
 
-  const { items: products, counts, membership, inboundDrafts, inboundSlug } =
-    await getDashboardHomeData(userId);
+  const {
+    items: products,
+    statsRows,
+    productsNextCursor,
+    productsHasMore,
+    counts,
+    membership,
+    inboundDrafts,
+    inboundSlug,
+  } = await getDashboardHomeData(userId);
 
-  const inboundAddress = inboundSlug
-    ? inboundAddressForSlug(inboundSlug)
-    : await ensureInboundSlug(userId)
-        .then(inboundAddressForSlug)
-        .catch((error) => {
-          console.error(error);
-          return null;
-        });
+  const emptyVault = products.length === 0;
 
-  const needsYou = buildNeedsYouItems(products);
-  const needsYouSubtitle = needsYouSectionSubtitle(needsYou);
+  const inboundAddress =
+    inboundSlug != null
+      ? inboundAddressForSlug(inboundSlug)
+      : emptyVault
+        ? await ensureInboundSlug(userId)
+            .then(inboundAddressForSlug)
+            .catch((error) => {
+              console.error(error);
+              return null;
+            })
+        : null;
+
+  const locale = parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+  const t = DASHBOARD_STRINGS[locale];
+  const needsYou = buildNeedsYouItems(statsRows);
+  const needsYouSubtitleText = needsYouSubtitle(needsYou, locale);
 
   const firstName = session.user?.name?.split(" ")[0] || "there";
-  const emptyVault = products.length === 0;
+  const sharedVault = (membership?.household.members.length ?? 0) > 1;
 
   return (
       <div className="flex flex-col gap-10">
@@ -98,29 +131,45 @@ async function DashboardHome() {
           <div className="mt-3 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-xl">
               <h1 className="font-display text-3xl text-white md:text-5xl">
-                {membership && membership.household.members.length > 1
+                {sharedVault && membership
                   ? membership.household.name
                   : "Your vault"}
               </h1>
               <p className="mt-3 text-sm leading-7 text-gray-500 md:text-base">
-                {membership && membership.household.members.length > 1
+                {sharedVault && membership
                   ? `Shared with ${membership.household.members.length} people. Same products, documents, and dates.`
                   : emptyVault
                     ? "Scan a GST invoice or enter the dates. Reminders start once you save."
                     : "What is covered, what is ending soon, and what still needs a serial."}
               </p>
-              {membership && membership.household.members.length > 1 && (
-                <Link
-                  href="/dashboard/settings"
-                  className="mt-3 inline-block text-sm text-cyan-300/90 underline-offset-2 hover:underline"
-                >
-                  Manage vault
-                </Link>
+              {sharedVault && membership && (
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {membership.household.members.map((member) => (
+                      <span
+                        key={member.id}
+                        title={member.user.name || member.user.email}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#030304] bg-neutral-800 text-xs font-semibold uppercase text-cyan-100"
+                      >
+                        {(member.user.name || member.user.email).trim().charAt(0)}
+                      </span>
+                    ))}
+                  </div>
+                  <Link
+                    href="/dashboard/settings"
+                    className="text-sm text-cyan-300/90 underline-offset-2 hover:underline"
+                  >
+                    {membership.role === "owner" &&
+                    membership.household.members.length < MAX_HOUSEHOLD_MEMBERS
+                      ? "Invite someone"
+                      : "Manage vault"}
+                  </Link>
+                </div>
               )}
             </div>
 
             <Link
-              href="/dashboard/add-product"
+              href={emptyVault ? "/dashboard/add-product?focus=scan" : "/dashboard/add-product"}
               className="premium-btn premium-btn-solid inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black"
             >
               <Plus size={16} />
@@ -129,35 +178,17 @@ async function DashboardHome() {
           </div>
         </section>
 
-        {inboundDrafts.length > 0 && (
-          <section className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.06] p-5 md:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <Inbox size={18} className="mt-0.5 text-cyan-300" />
-                <div>
-                  <h2 className="text-base font-medium text-white">
-                    {inboundDrafts.length}{" "}
-                    {inboundDrafts.length === 1 ? "invoice" : "invoices"} to confirm
-                  </h2>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Forwarded bills stay drafts until you check the dates.
-                  </p>
-                </div>
-              </div>
-              <Link
-                href={`/dashboard/add-product?draft=${inboundDrafts[0]!.id}`}
-                className="premium-btn premium-btn-solid inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black"
-              >
-                Review
-              </Link>
-            </div>
-          </section>
-        )}
+        <InboundInbox drafts={inboundDrafts} />
 
         {emptyVault ? (
-          <FirstRunOnboarding inboundAddress={inboundAddress} />
+          <FirstRunOnboarding
+            inboundAddress={inboundAddress}
+            shared={sharedVault}
+            locale={locale}
+          />
         ) : (
           <>
+        <InstallAppHint />
         <Reveal>
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="premium-card rounded-2xl border border-white/10 bg-neutral-950/80 p-5">
@@ -217,9 +248,9 @@ async function DashboardHome() {
           <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 md:p-6">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-medium text-white">Needs you</h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  {needsYouSubtitle}
+                <h2 lang={locale} className="text-base font-medium text-white">{t.needsYou}</h2>
+                <p lang={locale} className="mt-1 text-sm text-gray-500">
+                  {needsYouSubtitleText}
                 </p>
               </div>
               <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
@@ -239,13 +270,13 @@ async function DashboardHome() {
                       {product.name}
                     </p>
                     <p className="mt-0.5 text-xs text-gray-500">
-                      {[product.brand || "Unknown brand", reason.label]
+                      {[product.brand || "Unknown brand", attentionLabel(reason, locale)]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
                   </div>
                   <span className="text-sm font-medium text-amber-300">
-                    Open
+                    {t.open}
                   </span>
                 </Link>
               ))}
@@ -282,7 +313,12 @@ async function DashboardHome() {
                 </a>
               </div>
             </div>
-            <ProductSearch products={products} />
+            <ProductSearch
+              initialProducts={products}
+              initialNextCursor={productsNextCursor}
+              initialHasMore={productsHasMore}
+              totalProducts={counts.totalProducts}
+            />
           </section>
         </Reveal>
           </>
