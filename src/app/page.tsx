@@ -12,10 +12,10 @@ import {
 import FaqList from "@/components/faq-list";
 import JsonLd from "@/components/json-ld";
 import MarketingShell from "@/components/marketing-shell";
-import ProductFilm from "@/components/product-film";
+import HomeProductFilm from "@/components/home-product-film";
+import HomeVaultStage from "@/components/home-vault-stage";
 import Reveal from "@/components/reveal";
 import VaultPreview from "@/components/vault-preview";
-import VaultStage from "@/components/vault-stage";
 import {
   BRAND_DESCRIPTION,
   BRAND_INBOUND_DOMAIN,
@@ -102,6 +102,9 @@ const WHY = [
   },
 ];
 
+/** Marketing shell is static; user-specific UI lives on /dashboard. */
+export const revalidate = 3600;
+
 export default function HomePage() {
   const baseUrl = getAppBaseUrl();
   const homeFaqs = faqsForHome();
@@ -168,7 +171,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto mt-12 max-w-5xl px-5 md:mt-16 md:px-8">
-          <VaultStage />
+          <HomeVaultStage />
         </div>
 
         <div className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3 px-5 pb-20 md:px-8 md:pb-28">
@@ -272,7 +275,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <ProductFilm
+      <HomeProductFilm
         items={FEATURE_SLIDES}
         eyebrow="Features"
         heading="What stays in the vault."

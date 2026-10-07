@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import {
   Component,
@@ -12,9 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
-const VaultScene = dynamic(() => import("@/components/vault-scene"), {
-  ssr: false,
-});
+import VaultScene from "@/components/vault-scene";
 
 function Poster({ decorative }: { decorative: boolean }) {
   return (
@@ -22,7 +19,8 @@ function Poster({ decorative }: { decorative: boolean }) {
       src="/brand/features/claim-pack.png"
       alt={decorative ? "" : "Holographic claim pack on a cyan pedestal"}
       fill
-      priority
+      loading="eager"
+      fetchPriority="high"
       sizes="(max-width: 1024px) 100vw, 960px"
       className="object-cover"
       aria-hidden={decorative}
